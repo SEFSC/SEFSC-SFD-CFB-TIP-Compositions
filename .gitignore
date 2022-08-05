@@ -45,3 +45,5 @@ vignettes/*.pdf
 .Renviron
 
 # Directories to ignore
+data/
+
