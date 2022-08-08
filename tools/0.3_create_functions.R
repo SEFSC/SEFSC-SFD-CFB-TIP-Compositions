@@ -16,7 +16,7 @@
                              paste(sp_codes, collapse="_"),
                              format(Sys.time(),'%Y%m%d'),
                              sep="_")
-        saveRDS(tip_sp, here("data", "raw", paste0(tip_sp_file, ".RData")))
+        saveRDS(tip_sp, file = here("data", "raw", paste0(tip_sp_file, ".RDS")))
     }
   
   # Function to read specific LANDING_AREA_STATE_CODE ####
@@ -31,7 +31,7 @@
                        paste(state_codes, collapse="_"),
                        format(Sys.time(),'%Y%m%d'),
                        sep="_")
-      saveRDS(tip, here("data", "raw", paste0(tip_file, ".RData")))
+      saveRDS(tip, file = here("data", "raw", paste0(tip_file, ".RDS")))
     }
   
   
