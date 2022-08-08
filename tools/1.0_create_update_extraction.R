@@ -8,5 +8,5 @@
     source(file <- here("Tools", "0.2_access_oracle.R"))
     source(file <- here("Tools", "0.3_create_functions.R"))
   
-  # SEDAR 57 ####
+  # SEDAR 57U ####
     cr_tip_sp(state_codes = c('PR', 'VI'), sp_codes = c(97648, 97646))
