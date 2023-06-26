@@ -34,5 +34,19 @@
       saveRDS(tip, file = here("data", "raw", paste0(tip_file, ".RDS")))
     }
   
-  
-
+  # Function to read IDS by LANDING_AREA_STATE_CODE ####
+    n_cr_tip <- function(state_codes) {
+      n_tip <- dbGetQuery(con, 
+                        paste0("SELECT DISTINCT ID, LANDING_AREA_STATE_CODE, STATE_LANDED, COUNTY_LANDED, 
+                               YEAR, AGENT_USERNAME_ID, INTERVIEW_DATE, STANDARDGEARNAME_1, STANDARDGEARNAME_2  FROM ",
+                               tip_view,
+                               " WHERE LANDING_AREA_STATE_CODE IN (",
+                               paste(shQuote(state_codes, type="sh"), collapse=", "),
+                               ")"))
+      n_tip_file <- paste("n_com_tip",
+                        paste(state_codes, collapse="_"),
+                        format(Sys.time(),'%Y%m%d'),
+                        sep="_")
+      saveRDS(n_tip, file = here("data", "raw", paste0(n_tip_file, ".RDS")))
+    }
+    
