@@ -1,7 +1,16 @@
 # TABULATE INTERVIEWS AND INTEVIER DAYS
 librarian::shelf(here, tidyverse)
 
-n_tip <- readRDS(file = here("data", "raw", "n_com_tip_PR_VI_20220906.RDS"))
+tip_date <- max(
+  as.numeric(gsub(".*?([0-9]+).RDS*", "\\1",
+             list.files(here("data", "raw"),
+                       pattern = "n_com_tip"))))
+
+tip_file <- list.files(here("data", "raw"),
+                       pattern = paste0("n_com_tip.+", tip_date))
+
+
+n_tip <- readRDS(file = here("data", "raw", tip_file))
 
 n_tip <- n_tip %>%
   mutate(ISL = case_when(STATE_LANDED == "PUERTO RICO" ~ "PR", 
