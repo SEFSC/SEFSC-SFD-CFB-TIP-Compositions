@@ -3,23 +3,26 @@
 # Load libraries ####
 librarian::shelf(here, tidyverse, car, ggpubr)
 
+# Find out the date of the most recent extraction
 tip_date <- max(
   as.numeric(gsub(".*?([0-9]+).RDS*", "\\1",
                   list.files(here("data", "raw"),
                              pattern = "com_tip_PR_VI"))))
 
+# Find out the name of the most recent extraction
 tip_file <- list.files(here("data", "raw"),
                        pattern = paste0("^com_tip_PR_VI_+", tip_date))
 
 
+# Read in the most recent extraction
 tip <- readRDS(file = here("data", "raw", tip_file))
 
-unique(tip$COUNTY_LANDED)
-
+# Filter to STTJ and Yellowtail Snapper
 sttj_yt <- tip |>
   filter(COUNTY_LANDED %in% c("ST THOMAS", "ST JOHN"),
          OBS_STANDARD_SPECIES_CODE == "168907")
 
+# Get unique list of reported gears and summary of the number of years they are used
 sttj_gears <- sttj_yt |>
   mutate(STANDARDGEARNAME_3 = case_when(STANDARDGEARNAME_3 != STANDARDGEARNAME_2 ~
                                           STANDARDGEARNAME_3,
@@ -41,9 +44,10 @@ sttj_gears <- sttj_yt |>
   ungroup() |>
   mutate(gear_id = row_number())
 
+# Look at unique list of reported gears
 sttj_gears
 
-
+# Run some more summary stats
 sttj_yt |>
   left_join(sttj_gears) |>
   group_by(gear_id) %>%
@@ -55,6 +59,9 @@ sttj_yt |>
     IQR = IQR(LENGTH1_MM, na.rm = TRUE)
   )
 
+
+# Create functions that will compare the distributions of reported lengths
+# Only across years where both gears are reported
 test_gear_years = function(gear_a, gear_b) {
   
   prep_gears <- sttj_yt |>
@@ -90,6 +97,9 @@ test_gear_years = function(gear_a, gear_b) {
   print(years_ab)
 }
 
+
+# Create functions that will compare the distributions of reported lengths
+# Without filtering to years where both gears are reported
 test_gear = function(gear_a, gear_b) {
   
   prep_gears <- sttj_yt |>
