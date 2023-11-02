@@ -1,5 +1,7 @@
 # https://www.r-bloggers.com/2022/05/how-to-perform-the-kruskal-wallis-test-in-r/#google_vignette
 
+# https://fisheries.org/docs/books/55049C/9.pdf (See section 9.4.2)
+
 # Load libraries ####
 librarian::shelf(here, tidyverse, car, ggpubr)
 
