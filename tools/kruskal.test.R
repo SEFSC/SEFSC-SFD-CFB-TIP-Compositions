@@ -64,28 +64,35 @@ sttj_yt |>
 # Only across years where both gears are reported
 test_gear_years = function(gear_a, gear_b) {
   
+  # Merge gear_id assignments to STTJ YTS data set
   prep_gears <- sttj_yt |>
     left_join(sttj_gears) |> 
     mutate(gear_id = as.factor(gear_id))
   
+  # Identify the years of overlap across the two gears
   years_a <- prep_gears |> filter(gear_id == gear_a) |> distinct(YEAR)
   years_b <- prep_gears |> filter(gear_id == gear_b) |> distinct(YEAR)
   years_ab <- pull(inner_join(years_a, years_b, by = "YEAR"), YEAR)
   
+  # Filter to the gears and years for the comparison
   use_gears <- prep_gears |>
     filter(gear_id %in% c(gear_a, gear_b),
            YEAR %in% years_ab)
   
+  # Run Kruskal test
   kt = kruskal.test(LENGTH1_MM ~ gear_id, data = use_gears)
   
+  # Run Wilcox test
   wt <- pairwise.wilcox.test(use_gears$LENGTH1_MM, use_gears$gear_id,
                              p.adjust.method = "BH")
   
+  # Create box plot by year
   box_years = ggboxplot(use_gears, x = "YEAR", y = "LENGTH1_MM",
             color = "gear_id", palette = c("#00AFBB", "#E7B800"),
             ylab = "LENGTH1_MM", xlab = "Gear",
             orientation = "horizontal")
   
+  # Create box plot across years
   box = ggboxplot(use_gears, x = "gear_id", y = "LENGTH1_MM",
             color = "gear_id", palette = c("#00AFBB", "#E7B800"),
             ylab = "LENGTH1_MM", xlab = "Gear")
@@ -102,22 +109,28 @@ test_gear_years = function(gear_a, gear_b) {
 # Without filtering to years where both gears are reported
 test_gear = function(gear_a, gear_b) {
   
+  # Merge gear_id assignments to STTJ YTS data set
   prep_gears <- sttj_yt |>
     left_join(sttj_gears) |> 
     mutate(gear_id = as.factor(gear_id))
   
+  # Filter to the gears and years for the comparison
   use_gears <- prep_gears |>
     filter(gear_id %in% c(gear_a, gear_b))
   
+  # Run Kruskal test
   kt = kruskal.test(LENGTH1_MM ~ gear_id, data = use_gears)
   
+  # Run Wilcox test
   wt <- pairwise.wilcox.test(use_gears$LENGTH1_MM, use_gears$gear_id,
                        p.adjust.method = "BH")
   
+  # Create box plot across years
   box <- ggboxplot(use_gears, x = "gear_id", y = "LENGTH1_MM",
             color = "gear_id", palette = c("#00AFBB", "#E7B800"),
             ylab = "LENGTH1_MM", xlab = "Gear")
   
+  # Create density plot across years
   density_plot <- ggdensity(use_gears, x = "LENGTH1_MM",
             add = "mean", rug = TRUE,
             color = "gear_id", fill = "gear_id",
