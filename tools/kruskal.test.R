@@ -15,7 +15,6 @@ tip_date <- max(
 tip_file <- list.files(here("data", "raw"),
                        pattern = paste0("^com_tip_PR_VI_+", tip_date))
 
-
 # Read in the most recent extraction
 tip <- readRDS(file = here("data", "raw", tip_file))
 
@@ -24,35 +23,10 @@ sttj_yt <- tip |>
   filter(COUNTY_LANDED %in% c("ST THOMAS", "ST JOHN"),
          OBS_STANDARD_SPECIES_CODE == "168907")
 
-# Get unique list of reported gears and summary of the number of years they are used
-sttj_gears <- sttj_yt |>
-  mutate(STANDARDGEARNAME_3 = case_when(STANDARDGEARNAME_3 != STANDARDGEARNAME_2 ~
-                                          STANDARDGEARNAME_3,
-                                        TRUE ~ NA_character_),
-         STANDARDGEARNAME_2 = case_when(STANDARDGEARNAME_2 != STANDARDGEARNAME_1 ~
-                                          STANDARDGEARNAME_2,
-                                        TRUE ~ NA_character_)) |>
-  group_by(STANDARDGEARNAME_1,
-         STANDARDGEARNAME_2,
-         STANDARDGEARNAME_3,
-         STANDARDGEARNAME_4,
-         STANDARDGEARNAME_5) |>
-  summarize(n = sum(QUANTITY, na.rm = TRUE),
-            min_year = min(YEAR),
-            max_year = max(YEAR),
-            years = n_distinct(YEAR),
-            n_year = round(n/years)) |>
-  arrange(desc(n_year)) |>
-  ungroup() |>
-  mutate(gear_id = row_number())
-
-# Look at unique list of reported gears
-sttj_gears
-
-# Run some more summary stats
-sttj_yt |>
+# Run some summary stats
+sttj_yts_summary <- sttj_yt |>
   left_join(sttj_gears) |>
-  group_by(gear_id) %>%
+  group_by(LAND_GEAR_NAME) %>%
   summarise(
     count = n(),
     mean = mean(LENGTH1_MM, na.rm = TRUE),
@@ -61,49 +35,62 @@ sttj_yt |>
     IQR = IQR(LENGTH1_MM, na.rm = TRUE)
   )
 
+# Create function that will compare the distributions of lenghts acorss vaious gears
+test_multi_gear =  function(gears){
+  use_gears <- sttj_yt |>
+    filter(LAND_GEAR_NAME %in% gears)
+  
+kt = kruskal.test(LENGTH1_MM ~ LAND_GEAR_NAME, data = use_gears)
+  
+paste(kt)
+}
+
+
 
 # Create functions that will compare the distributions of reported lengths
 # Only across years where both gears are reported
 test_gear_years = function(gear_a, gear_b) {
   
-  # Merge gear_id assignments to STTJ YTS data set
-  prep_gears <- sttj_yt |>
-    left_join(sttj_gears) |> 
-    mutate(gear_id = as.factor(gear_id))
-  
   # Identify the years of overlap across the two gears
-  years_a <- prep_gears |> filter(gear_id == gear_a) |> distinct(YEAR)
-  years_b <- prep_gears |> filter(gear_id == gear_b) |> distinct(YEAR)
+  years_a <- sttj_yt |> filter(LAND_GEAR_NAME == gear_a) |> distinct(YEAR)
+  years_b <- sttj_yt |> filter(LAND_GEAR_NAME == gear_b) |> distinct(YEAR)
   years_ab <- pull(inner_join(years_a, years_b, by = "YEAR"), YEAR)
   
   # Filter to the gears and years for the comparison
-  use_gears <- prep_gears |>
-    filter(gear_id %in% c(gear_a, gear_b),
+  use_gears <- sttj_yt |>
+    filter(LAND_GEAR_NAME %in% c(gear_a, gear_b),
            YEAR %in% years_ab)
   
   # Run Kruskal test
-  kt = kruskal.test(LENGTH1_MM ~ gear_id, data = use_gears)
+  kt = kruskal.test(LENGTH1_MM ~ LAND_GEAR_NAME, data = use_gears)
   
   # Run Wilcox test
-  wt <- pairwise.wilcox.test(use_gears$LENGTH1_MM, use_gears$gear_id,
+  wt <- pairwise.wilcox.test(use_gears$LENGTH1_MM, use_gears$LAND_GEAR_NAME,
                              p.adjust.method = "BH")
   
   # Create box plot by year
   box_years = ggboxplot(use_gears, x = "YEAR", y = "LENGTH1_MM",
-            color = "gear_id", palette = c("#00AFBB", "#E7B800"),
+            color = "LAND_GEAR_NAME", palette = c("#00AFBB", "#E7B800"),
             ylab = "LENGTH1_MM", xlab = "Gear",
             orientation = "horizontal")
   
   # Create box plot across years
-  box = ggboxplot(use_gears, x = "gear_id", y = "LENGTH1_MM",
-            color = "gear_id", palette = c("#00AFBB", "#E7B800"),
+  box = ggboxplot(use_gears, x = "LAND_GEAR_NAME", y = "LENGTH1_MM",
+            color = "LAND_GEAR_NAME", palette = c("#00AFBB", "#E7B800"),
             ylab = "LENGTH1_MM", xlab = "Gear")
+  
+  density_plot <- ggdensity(use_gears, x = "LENGTH1_MM",
+                            add = "mean", rug = TRUE,
+                            color = "LAND_GEAR_NAME", fill = "LAND_GEAR_NAME",
+                            palette = c("#00AFBB", "#E7B800"),
+                            ylab = "LENGTH1_MM", xlab = "Gear")
   
   print(kt)
   print(wt)
   print(box_years)
   print(box)
   print(years_ab)
+  print(density_plot)
 }
 
 
@@ -111,31 +98,26 @@ test_gear_years = function(gear_a, gear_b) {
 # Without filtering to years where both gears are reported
 test_gear = function(gear_a, gear_b) {
   
-  # Merge gear_id assignments to STTJ YTS data set
-  prep_gears <- sttj_yt |>
-    left_join(sttj_gears) |> 
-    mutate(gear_id = as.factor(gear_id))
-  
   # Filter to the gears and years for the comparison
-  use_gears <- prep_gears |>
-    filter(gear_id %in% c(gear_a, gear_b))
+  use_gears <- sttj_yt |>
+    filter(LAND_GEAR_NAME %in% c(gear_a, gear_b))
   
   # Run Kruskal test
-  kt = kruskal.test(LENGTH1_MM ~ gear_id, data = use_gears)
+  kt = kruskal.test(LENGTH1_MM ~ LAND_GEAR_NAME, data = use_gears)
   
   # Run Wilcox test
-  wt <- pairwise.wilcox.test(use_gears$LENGTH1_MM, use_gears$gear_id,
+  wt <- pairwise.wilcox.test(use_gears$LENGTH1_MM, use_gears$LAND_GEAR_NAME,
                        p.adjust.method = "BH")
   
   # Create box plot across years
-  box <- ggboxplot(use_gears, x = "gear_id", y = "LENGTH1_MM",
-            color = "gear_id", palette = c("#00AFBB", "#E7B800"),
+  box <- ggboxplot(use_gears, x = "LAND_GEAR_NAME", y = "LENGTH1_MM",
+            color = "LAND_GEAR_NAME", palette = c("#00AFBB", "#E7B800"),
             ylab = "LENGTH1_MM", xlab = "Gear")
   
   # Create density plot across years
   density_plot <- ggdensity(use_gears, x = "LENGTH1_MM",
             add = "mean", rug = TRUE,
-            color = "gear_id", fill = "gear_id",
+            color = "LAND_GEAR_NAME", fill = "LAND_GEAR_NAME",
             palette = c("#00AFBB", "#E7B800"),
             ylab = "LENGTH1_MM", xlab = "Gear")
   
@@ -145,30 +127,86 @@ test_gear = function(gear_a, gear_b) {
   print(density_plot)
 }
 
-# CHECK DIFFERNCE BETWEEN (8) POTS AND TRAPS, FISH and (31) POTS AND TRAPS, SPINY LOBSTER
-test_gear(8,31) #Not different
-test_gear_years(8,31) #Not different
 
-# CHECK DIFFERNCE BETWEEN (6) HAUL SEINES and (9) ENCIRCLING NETS (PURSE)
-test_gear(6,9) #Not different
-test_gear_years(6,9) #Not different
+gears <- sttj_yt |>
+  distinct(LAND_GEAR_NAME)
+
+gears
+ 
+# CHECK DIFFERNCE BETWEEN TRAP PAIRS
+
+test_multi_gear(c("POTS AND TRAPS; FISH",
+                  "POTS AND TRAPS; SPINY LOBSTER",
+                  "POTS AND TRAPS; CMB",
+                  "POTS AND TRAPS; BOX TRAP")) # Different 
+
+# CHECK DIFFERNCE BETWEEN TRAP IN PAIRS
+test_gear(gear_a = "POTS AND TRAPS; FISH", 
+          gear_b = "POTS AND TRAPS; SPINY LOBSTER") # Different
+test_gear_years(gear_a = "POTS AND TRAPS; FISH", 
+                gear_b = "POTS AND TRAPS; SPINY LOBSTER") # Different
+
+test_gear(gear_a = "POTS AND TRAPS; FISH", 
+          gear_b = "POTS AND TRAPS; CMB") #Not different
+test_gear_years(gear_a = "POTS AND TRAPS; FISH", 
+                gear_b = "POTS AND TRAPS; CMB") #Not Different
+
+test_gear(gear_a = "POTS AND TRAPS; FISH", 
+          gear_b = "POTS AND TRAPS; BOX TRAP") #Not Different
+test_gear_years(gear_a = "POTS AND TRAPS; FISH", 
+                gear_b = "POTS AND TRAPS; BOX TRAP") #No overlap
+
+test_gear(gear_a = "POTS AND TRAPS; SPINY LOBSTER", 
+          gear_b = "POTS AND TRAPS; CMB") #Not different
+test_gear_years(gear_a = "POTS AND TRAPS; SPINY LOBSTER", 
+                gear_b = "POTS AND TRAPS; CMB") #Not Different
+
+test_gear(gear_a = "POTS AND TRAPS; SPINY LOBSTER", 
+          gear_b = "POTS AND TRAPS; BOX TRAP") #Different
+test_gear_years(gear_a = "POTS AND TRAPS; SPINY LOBSTER", 
+                gear_b = "POTS AND TRAPS; BOX TRAP") #No overlap
+
+test_gear(gear_a = "POTS AND TRAPS; CMB", 
+          gear_b = "POTS AND TRAPS; BOX TRAP") #Not different
+test_gear_years(gear_a = "POTS AND TRAPS; CMB", 
+                gear_b = "POTS AND TRAPS; BOX TRAP") #No overlap
+
+
+# CHECK DIFFERNCE BETWEEN HAUL SEINES and ENCIRCLING NETS (PURSE)
+test_gear(gear_a = "HAUL SEINES; BEACH",
+          gear_b = "ENCIRCLINLING NETS (PURSE)") #Different
+test_gear_years(gear_a = "HAUL SEINES; BEACH",
+                gear_b = "ENCIRCLINLING NETS (PURSE)") #NO OVERLAP
+
+test_gear(gear_a = "HAUL SEINES; LONG",
+          gear_b = "ENCIRCLINLING NETS (PURSE)") #Not Different
+test_gear_years(gear_a = "HAUL SEINES; LONG",
+                gear_b = "ENCIRCLINLING NETS (PURSE)") #NO OVERLAP
+
+test_gear(gear_a = "HAUL SEINES; LONG",
+          gear_b = "HAUL SEINES; BEACH") #Different
+test_gear_years(gear_a = "HAUL SEINES; LONG",
+                gear_b = "HAUL SEINES; BEACH") #NO OVERLAP
 
 # CHECK DIFFERNCE BETWEEN (1) LINES HAND & (15) ROD AND REEL
-test_gear(1,15) #Not different
-test_gear_years(1,15) #Not different
+LINES HAND; OTHER
+TROLL & HAND LINES CMB
+LINES TROLL; OTHER
+ROD AND REEL
+REEL; ELECTRIC OR HYDRAULIC
+ROD AND REEL; ELECTRIC (HAND)
+LINES LONG; REEF FISH
 
-# CHECK DIFFERNCE BETWEEN (1) LINES HAND & (15) ROD AND REEL
-test_gear(1,15) #Not different
-test_gear_years(1,15) #Not different
+test_gear(gear_a = "LINES HAND; OTHER", 
+          gear_b = "TROLL & HAND LINES CMB") #Different
+test_gear_years(gear_a = "LINES HAND; OTHER", 
+          gear_b = "TROLL & HAND LINES CMB") #Not Different
 
-# CHECK DIFFERNCE BETWEEN (1) LINES HAND & (2) LINES POWER TROLL OTHER
-test_gear(1,2) #Different
-test_gear_years(1,2) #Different
+test_gear_years(gear_a = "LINES HAND; OTHER", 
+                gear_b = "LINES TROLL; OTHER") #Different
 
-# CHECK DIFFERNCE BETWEEN (1) LINES HAND & (2) LINES POWER TROLL OTHER
-test_gear(1,2) #Different
-test_gear_years(1,2) #Different
+test_gear_years(gear_a = "LINES HAND; OTHER", 
+                gear_b = "ROD AND REEL") #Not Different
 
-# CHECK DIFFERNCE BETWEEN (1) LINES HAND & (11) REEL, ELECTRIC OR HYDRAULIC
-test_gear(1,11) #Different
-test_gear_years(1,11) #Not different
+test_gear_years(gear_a = "LINES HAND; OTHER", 
+                gear_b = "REEL; ELECTRIC OR HYDRAULIC") #Not Different
