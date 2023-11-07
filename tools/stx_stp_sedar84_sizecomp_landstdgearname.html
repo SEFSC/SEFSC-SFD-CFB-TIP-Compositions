@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.353">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Katherine Godwin">
+
+<title>stx_stp_sedar84_sizecomp_landstdgearname</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="stx_stp_sedar84_sizecomp_landstdgearname_files/libs/clipboard/clipboard.min.js"></script>
+<script src="stx_stp_sedar84_sizecomp_landstdgearname_files/libs/quarto-html/quarto.js"></script>
+<script src="stx_stp_sedar84_sizecomp_landstdgearname_files/libs/quarto-html/popper.min.js"></script>
+<script src="stx_stp_sedar84_sizecomp_landstdgearname_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="stx_stp_sedar84_sizecomp_landstdgearname_files/libs/quarto-html/anchor.min.js"></script>
+<link href="stx_stp_sedar84_sizecomp_landstdgearname_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="stx_stp_sedar84_sizecomp_landstdgearname_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="stx_stp_sedar84_sizecomp_landstdgearname_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="stx_stp_sedar84_sizecomp_landstdgearname_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="stx_stp_sedar84_sizecomp_landstdgearname_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#stoplight-parrotfish-stx" id="toc-stoplight-parrotfish-stx" class="nav-link active" data-scroll-target="#stoplight-parrotfish-stx">Stoplight Parrotfish STX</a>
+  <ul>
+  <li><a href="#control-settings-and-exploratory-frequency-tables" id="toc-control-settings-and-exploratory-frequency-tables" class="nav-link" data-scroll-target="#control-settings-and-exploratory-frequency-tables">Control Settings and Exploratory Frequency Tables</a>
+  <ul class="collapse">
+  <li><a href="#filter-to-commercial-samples" id="toc-filter-to-commercial-samples" class="nav-link" data-scroll-target="#filter-to-commercial-samples">Filter to Commercial samples</a></li>
+  <li><a href="#extract-marfin-samples-look-at-island-distribution" id="toc-extract-marfin-samples-look-at-island-distribution" class="nav-link" data-scroll-target="#extract-marfin-samples-look-at-island-distribution">Extract marfin samples, look at island distribution</a></li>
+  <li><a href="#add-gear-groupings-no-length-length-conversions-available" id="toc-add-gear-groupings-no-length-length-conversions-available" class="nav-link" data-scroll-target="#add-gear-groupings-no-length-length-conversions-available">Add gear groupings, NO length-length conversions available</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#gear-density-plots" id="toc-gear-density-plots" class="nav-link" data-scroll-target="#gear-density-plots">Gear Density Plots</a>
+  <ul>
+  <li><a href="#aggregated-density-plots" id="toc-aggregated-density-plots" class="nav-link" data-scroll-target="#aggregated-density-plots">Aggregated density plots</a></li>
+  <li><a href="#gear-grouping-investigation" id="toc-gear-grouping-investigation" class="nav-link" data-scroll-target="#gear-grouping-investigation">Gear grouping investigation</a></li>
+  <li><a href="#break-at-2011" id="toc-break-at-2011" class="nav-link" data-scroll-target="#break-at-2011">Break at 2011</a></li>
+  <li><a href="#annual-density-plots" id="toc-annual-density-plots" class="nav-link" data-scroll-target="#annual-density-plots">Annual Density plots</a></li>
+  </ul></li>
+  <li><a href="#stacked-bar-charts-visual-representation-of-gear-distribution-within-groupings" id="toc-stacked-bar-charts-visual-representation-of-gear-distribution-within-groupings" class="nav-link" data-scroll-target="#stacked-bar-charts-visual-representation-of-gear-distribution-within-groupings">Stacked bar charts: visual representation of gear distribution within groupings</a></li>
+  <li><a href="#gear-distribution-across-time-by-gear-groupings" id="toc-gear-distribution-across-time-by-gear-groupings" class="nav-link" data-scroll-target="#gear-distribution-across-time-by-gear-groupings">Gear distribution across time by gear groupings</a>
+  <ul>
+  <li><a href="#all-gears-over-time" id="toc-all-gears-over-time" class="nav-link" data-scroll-target="#all-gears-over-time">All gears over time</a></li>
+  <li><a href="#handline-gear-distribution-over-time-by-year---no-grouping" id="toc-handline-gear-distribution-over-time-by-year---no-grouping" class="nav-link" data-scroll-target="#handline-gear-distribution-over-time-by-year---no-grouping">Handline Gear Distribution Over Time by Year - NO GROUPING</a></li>
+  <li><a href="#trap-gear-distribution-over-time-by-year---no-grouping" id="toc-trap-gear-distribution-over-time-by-year---no-grouping" class="nav-link" data-scroll-target="#trap-gear-distribution-over-time-by-year---no-grouping">Trap Gear Distribution Over Time by Year - NO GROUPING</a></li>
+  <li><a href="#diving-gear-distribution-over-time-by-year" id="toc-diving-gear-distribution-over-time-by-year" class="nav-link" data-scroll-target="#diving-gear-distribution-over-time-by-year">Diving Gear Distribution Over Time by Year</a></li>
+  <li><a href="#net-gear-distribution-over-time-by-year" id="toc-net-gear-distribution-over-time-by-year" class="nav-link" data-scroll-target="#net-gear-distribution-over-time-by-year">Net Gear Distribution Over Time by Year</a></li>
+  <li><a href="#spear-gear-distribution-over-time-by-year---no-grouping" id="toc-spear-gear-distribution-over-time-by-year---no-grouping" class="nav-link" data-scroll-target="#spear-gear-distribution-over-time-by-year---no-grouping">Spear Gear Distribution Over Time by Year - NO GROUPING</a></li>
+  <li><a href="#other-gear-distribution-over-time-by-year" id="toc-other-gear-distribution-over-time-by-year" class="nav-link" data-scroll-target="#other-gear-distribution-over-time-by-year">Other Gear Distribution Over Time by Year</a></li>
+  </ul></li>
+  <li><a href="#cummulative-density-plots" id="toc-cummulative-density-plots" class="nav-link" data-scroll-target="#cummulative-density-plots">Cummulative Density Plots</a>
+  <ul>
+  <li><a href="#aggregated-cdf" id="toc-aggregated-cdf" class="nav-link" data-scroll-target="#aggregated-cdf">Aggregated CDF</a></li>
+  <li><a href="#management-periods" id="toc-management-periods" class="nav-link" data-scroll-target="#management-periods">Management periods*</a></li>
+  <li><a href="#annual-cdf" id="toc-annual-cdf" class="nav-link" data-scroll-target="#annual-cdf">Annual CDF</a></li>
+  </ul></li>
+  <li><a href="#island-density-plots" id="toc-island-density-plots" class="nav-link" data-scroll-target="#island-density-plots">Island Density Plots</a>
+  <ul>
+  <li><a href="#aggregated-density-plots-1" id="toc-aggregated-density-plots-1" class="nav-link" data-scroll-target="#aggregated-density-plots-1">Aggregated density plots</a></li>
+  <li><a href="#management-periods-1" id="toc-management-periods-1" class="nav-link" data-scroll-target="#management-periods-1">Management periods*</a></li>
+  <li><a href="#annual-density-plots-1" id="toc-annual-density-plots-1" class="nav-link" data-scroll-target="#annual-density-plots-1">Annual Density plots</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<main class="content page-columns page-full" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">stx_stp_sedar84_sizecomp_landstdgearname</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Katherine Godwin </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>This script will be emulating the length-comp script c1_nominal_len_comps.Rmd created by Molly Stevens.</p>
+<section id="stoplight-parrotfish-stx" class="level1 page-columns page-full">
+<h1>Stoplight Parrotfish STX</h1>
+<div class="cell column-page">
+
+</div>
+<section id="control-settings-and-exploratory-frequency-tables" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="control-settings-and-exploratory-frequency-tables">Control Settings and Exploratory Frequency Tables</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>sp <span class="ot">&lt;-</span> <span class="st">"STP"</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>region <span class="ot">&lt;-</span> <span class="st">"PUERTO RICO - USVI"</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>county <span class="ot">&lt;-</span> <span class="st">"ST CROIX"</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>bin_size <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>len_type <span class="ot">&lt;-</span> <span class="st">"FORK LENGTH"</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(stx_stp<span class="sc">$</span>LENGTH_TYPE1, <span class="at">useNA=</span><span class="st">'always'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+CURVED FORK LENGTH        FORK LENGTH          NO LENGTH       TOTAL LENGTH 
+                 2              29048                120                412 
+              &lt;NA&gt; 
+                 0 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(stx_stp<span class="sc">$</span>LENGTH_TYPE2, <span class="at">useNA=</span><span class="st">'always'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+NO LENGTH      &lt;NA&gt; 
+    29582         0 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">min</span>(stx_stp<span class="sc">$</span>LENGTH1_MM,<span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 123.4</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">max</span>(stx_stp<span class="sc">$</span>LENGTH1_MM,<span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 829</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>tip_range  <span class="ot">&lt;-</span> stx_stp[<span class="fu">with</span>(stx_stp,<span class="fu">order</span>(<span class="sc">-</span>LENGTH1_MM)),]</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>tip_range<span class="sc">$</span>LENGTH1_MM[<span class="dv">1</span><span class="sc">:</span><span class="dv">25</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 829 808 796 793 725 650 640 628 612 602 525 510 507 505 500 495 495 482 480
+[20] 480 470 460 460 460 460</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>tip_range2 <span class="ot">&lt;-</span> stx_stp[<span class="fu">with</span>(stx_stp,<span class="fu">order</span>(LENGTH1_MM)),]</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>tip_range2<span class="sc">$</span>LENGTH1_MM[<span class="dv">1</span><span class="sc">:</span><span class="dv">25</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 123.4 124.0 124.5 125.9 126.0 126.8 127.9 128.8 135.1 161.0 162.0 168.0
+[13] 169.0 170.0 170.0 174.0 175.0 176.0 177.0 178.0 180.0 180.0 180.0 180.0
+[25] 180.0</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="do">##range currently set to not drop any obs (centimeters)</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>min_size <span class="ot">&lt;-</span> <span class="dv">12</span> </span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>max_size <span class="ot">&lt;-</span> <span class="dv">83</span>   </span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="fu">min</span>(stx_stp<span class="sc">$</span>YEAR,<span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "1983"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>min_year <span class="ot">&lt;-</span> <span class="dv">1983</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>max_year <span class="ot">&lt;-</span> <span class="dv">2022</span> </span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>break_year <span class="ot">&lt;-</span> <span class="dv">2011</span> <span class="co"># this is an optional value to denote a change in management. inclusive on the upper bound. can be set to NA if not relevant.  2005 trap specifications were updated and many closures went into place</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="do">####################################################################### </span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  START EDITING HERE</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="do">####################################################################### </span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(stx_stp<span class="sc">$</span>OBS_STANDARD_SPECIES_NAME, <span class="at">useNA=</span><span class="st">'always'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+STOPLIGHT PARROTFISH                 &lt;NA&gt; 
+               29582                    0 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(stx_stp<span class="sc">$</span>LAND_STANDARD_GEAR_NAME, <span class="at">useNA=</span><span class="st">'always'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+        BY HAND; DIVING GEAR ENTANGLING NETS (GILL) UNSPC 
+                         629                         2131 
+            GILL NETS; OTHER                   LINES HAND 
+                         121                          113 
+       LINES LONG; REEF FISH                    NOT CODED 
+                          11                          105 
+    POTS AND TRAPS; BOX TRAP          POTS AND TRAPS; CMB 
+                           1                         2922 
+        POTS AND TRAPS; FISH                       SPEARS 
+                       20041                         2133 
+              SPEARS; DIVING                  STOP SEINES 
+                        1088                            4 
+                TRAMMEL NETS                         &lt;NA&gt; 
+                         283                            0 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(stx_stp<span class="sc">$</span>LAND_STANDARD_GEAR_NAME, stx_stp<span class="sc">$</span>STATE_LANDED, <span class="at">useNA=</span><span class="st">'always'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                              
+                               VIRGIN ISLANDS  &lt;NA&gt;
+  BY HAND; DIVING GEAR                    629     0
+  ENTANGLING NETS (GILL) UNSPC           2131     0
+  GILL NETS; OTHER                        121     0
+  LINES HAND                              113     0
+  LINES LONG; REEF FISH                    11     0
+  NOT CODED                               105     0
+  POTS AND TRAPS; BOX TRAP                  1     0
+  POTS AND TRAPS; CMB                    2922     0
+  POTS AND TRAPS; FISH                  20041     0
+  SPEARS                                 2133     0
+  SPEARS; DIVING                         1088     0
+  STOP SEINES                               4     0
+  TRAMMEL NETS                            283     0
+  &lt;NA&gt;                                      0     0</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(stx_stp<span class="sc">$</span>FISHING_MODE, stx_stp<span class="sc">$</span>INT_TYPE, <span class="at">useNA=</span><span class="st">'always'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            
+             DEALER SAMPLE FISHERMAN SAMPLE UNKNOWN
+  COMMERCIAL           185            28761     153
+  &lt;NA&gt;                   0                0       0
+            
+             USVI MARFIN REEFFISH SAMPLING USVI MRAG BYCATCH STUDY  &lt;NA&gt;
+  COMMERCIAL                           149                     318    16
+  &lt;NA&gt;                                   0                       0     0</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>marfin <span class="ot">&lt;-</span> stx_stp<span class="sc">%&gt;%</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>            <span class="fu">filter</span>(INT_TYPE <span class="sc">==</span> <span class="st">"USVI MARFIN REEFFISH SAMPLING"</span>)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(stx_stp<span class="sc">$</span>YEAR,stx_stp<span class="sc">$</span>OBS_STANDARD_SPECIES_NAME, <span class="at">useNA=</span><span class="st">'always'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      
+       STOPLIGHT PARROTFISH &lt;NA&gt;
+  1983                  139    0
+  1984                 2506    0
+  1985                 2180    0
+  1986                 1552    0
+  1987                 1834    0
+  1988                 5025    0
+  1989                 4594    0
+  1990                 1261    0
+  1991                 2135    0
+  1992                  750    0
+  1993                  433    0
+  1994                  402    0
+  1995                  274    0
+  1996                  106    0
+  1997                  152    0
+  1998                  477    0
+  1999                  165    0
+  2000                   27    0
+  2001                  242    0
+  2002                  908    0
+  2003                  307    0
+  2004                  288    0
+  2005                  146    0
+  2007                  355    0
+  2008                  605    0
+  2009                  633    0
+  2010                  924    0
+  2011                    2    0
+  2016                  304    0
+  2017                  416    0
+  2018                  257    0
+  2019                   76    0
+  2021                   61    0
+  2022                   23    0
+  2023                   23    0
+  &lt;NA&gt;                    0    0</code></pre>
+</div>
+</div>
+<section id="filter-to-commercial-samples" class="level4">
+<h4 class="anchored" data-anchor-id="filter-to-commercial-samples">Filter to Commercial samples</h4>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>          
+           VIRGIN ISLANDS  &lt;NA&gt;
+  ST CROIX          29582     0
+  &lt;NA&gt;                  0     0</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      
+       VIRGIN ISLANDS &lt;NA&gt;
+  1983            139    0
+  1984           2506    0
+  1985           2180    0
+  1986           1552    0
+  1987           1834    0
+  1988           5025    0
+  1989           4594    0
+  1990           1261    0
+  1991           2135    0
+  1992            750    0
+  1993            433    0
+  1994            402    0
+  1995            274    0
+  1996            106    0
+  1997            152    0
+  1998            477    0
+  1999            165    0
+  2000             27    0
+  2001            242    0
+  2002            908    0
+  2003            307    0
+  2004            288    0
+  2005            146    0
+  2007            355    0
+  2008            605    0
+  2009            633    0
+  2010            924    0
+  2011              2    0
+  2016            304    0
+  2017            416    0
+  2018            257    0
+  2019             76    0
+  2021             61    0
+  2022             23    0
+  2023             23    0
+  &lt;NA&gt;              0    0</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          
+           ST CROIX  &lt;NA&gt;
+  ST CROIX    29462     0
+  &lt;NA&gt;            0     0</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      
+       ST CROIX &lt;NA&gt;
+  1983      139    0
+  1984     2506    0
+  1985     2180    0
+  1986     1552    0
+  1987     1834    0
+  1988     5025    0
+  1989     4594    0
+  1990     1261    0
+  1991     2135    0
+  1992      655    0
+  1993      409    0
+  1994      402    0
+  1995      273    0
+  1996      106    0
+  1997      152    0
+  1998      477    0
+  1999      165    0
+  2000       27    0
+  2001      242    0
+  2002      908    0
+  2003      307    0
+  2004      288    0
+  2005      146    0
+  2007      355    0
+  2008      605    0
+  2009      633    0
+  2010      924    0
+  2011        2    0
+  2016      304    0
+  2017      416    0
+  2018      257    0
+  2019       76    0
+  2021       61    0
+  2022       23    0
+  2023       23    0
+  &lt;NA&gt;        0    0</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 829 808 796 793 725 650 640 628 612 602 525 510 507 505 500 495 495 482 480
+[20] 480 470 460 460 460 460</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 123.4 124.0 124.5 125.9 126.0 126.8 127.9 128.8 135.1 161.0 162.0 168.0
+[13] 169.0 170.0 170.0 174.0 175.0 176.0 177.0 178.0 180.0 180.0 180.0 180.0
+[25] 180.0</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+CURVED FORK LENGTH        FORK LENGTH       TOTAL LENGTH               &lt;NA&gt; 
+                 2              29048                412                  0 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+        BY HAND; DIVING GEAR ENTANGLING NETS (GILL) UNSPC 
+                         629                         2131 
+            GILL NETS; OTHER                   LINES HAND 
+                         121                          113 
+       LINES LONG; REEF FISH                    NOT CODED 
+                          11                          105 
+    POTS AND TRAPS; BOX TRAP          POTS AND TRAPS; CMB 
+                           1                         2922 
+        POTS AND TRAPS; FISH                       SPEARS 
+                       20041                         2133 
+              SPEARS; DIVING                  STOP SEINES 
+                        1088                            4 
+                TRAMMEL NETS                         &lt;NA&gt; 
+                         283                            0 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        
+         STOPLIGHT PARROTFISH  &lt;NA&gt;
+  170867                29462     0
+  &lt;NA&gt;                      0     0</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                      
+                           1  &lt;NA&gt;
+  STOPLIGHT PARROTFISH 29462     0
+  &lt;NA&gt;                     0     0</code></pre>
+</div>
+</div>
+</section>
+<section id="extract-marfin-samples-look-at-island-distribution" class="level4">
+<h4 class="anchored" data-anchor-id="extract-marfin-samples-look-at-island-distribution">Extract marfin samples, look at island distribution</h4>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>      
+       ST CROIX &lt;NA&gt;
+  2008        7    0
+  2009       37    0
+  2010      105    0
+  &lt;NA&gt;        0    0</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                      
+                       ST CROIX &lt;NA&gt;
+  LINES HAND                  5    0
+  POTS AND TRAPS; FISH      141    0
+  SPEARS                      3    0
+  &lt;NA&gt;                        0    0</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>, ,  = ST CROIX
+
+                      
+                       2008 2009 2010 &lt;NA&gt;
+  LINES HAND              0    0    5    0
+  POTS AND TRAPS; FISH    4   37  100    0
+  SPEARS                  3    0    0    0
+  &lt;NA&gt;                    0    0    0    0
+
+, ,  = NA
+
+                      
+                       2008 2009 2010 &lt;NA&gt;
+  LINES HAND              0    0    0    0
+  POTS AND TRAPS; FISH    0    0    0    0
+  SPEARS                  0    0    0    0
+  &lt;NA&gt;                    0    0    0    0</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      
+       CURVED FORK LENGTH FORK LENGTH TOTAL LENGTH &lt;NA&gt;
+  1983                  0         139            0    0
+  1984                  2        2504            0    0
+  1985                  0        2180            0    0
+  1986                  0        1552            0    0
+  1987                  0        1834            0    0
+  1988                  0        5025            0    0
+  1989                  0        4594            0    0
+  1990                  0        1261            0    0
+  1991                  0        2135            0    0
+  1992                  0         655            0    0
+  1993                  0         409            0    0
+  1994                  0         402            0    0
+  1995                  0         273            0    0
+  1996                  0         106            0    0
+  1997                  0         152            0    0
+  1998                  0         477            0    0
+  1999                  0         165            0    0
+  2000                  0          27            0    0
+  2001                  0         242            0    0
+  2002                  0         908            0    0
+  2003                  0         307            0    0
+  2004                  0         116          172    0
+  2005                  0           0          146    0
+  2007                  0         355            0    0
+  2008                  0         605            0    0
+  2009                  0         620           13    0
+  2010                  0         924            0    0
+  2011                  0           2            0    0
+  2016                  0         304            0    0
+  2017                  0         416            0    0
+  2018                  0         257            0    0
+  2019                  0          56           20    0
+  2021                  0           0           61    0
+  2022                  0          23            0    0
+  2023                  0          23            0    0
+  &lt;NA&gt;                  0           0            0    0</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          
+           VIRGIN ISLANDS
+  ST CROIX          29462</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                              
+                               BUOY GEAR, VERTICAL BY HAND, DIVING GEAR
+  BY HAND; DIVING GEAR                           0                   95
+  ENTANGLING NETS (GILL) UNSPC                   0                    0
+  GILL NETS; OTHER                               0                    0
+  LINES HAND                                     0                    0
+  LINES LONG; REEF FISH                          0                    0
+  NOT CODED                                      0                    5
+  POTS AND TRAPS; BOX TRAP                       0                    0
+  POTS AND TRAPS; CMB                            0                    0
+  POTS AND TRAPS; FISH                          15                   26
+  SPEARS                                         0                  731
+  SPEARS; DIVING                                 0                  550
+  STOP SEINES                                    0                    0
+  TRAMMEL NETS                                   0                    0
+                              
+                               ENTANGLING NETS (GILL) UNSPC LINES HAND
+  BY HAND; DIVING GEAR                                    0          0
+  ENTANGLING NETS (GILL) UNSPC                           43          0
+  GILL NETS; OTHER                                        0          0
+  LINES HAND                                              0          0
+  LINES LONG; REEF FISH                                   0          0
+  NOT CODED                                               0          0
+  POTS AND TRAPS; BOX TRAP                                0          0
+  POTS AND TRAPS; CMB                                     0        235
+  POTS AND TRAPS; FISH                                    0        396
+  SPEARS                                                  0          0
+  SPEARS; DIVING                                          0          2
+  STOP SEINES                                             0          0
+  TRAMMEL NETS                                            0          0
+                              
+                               LINES POWER TROLL OTHER NOT CODED
+  BY HAND; DIVING GEAR                               0         0
+  ENTANGLING NETS (GILL) UNSPC                       0         4
+  GILL NETS; OTHER                                   0         0
+  LINES HAND                                         0         0
+  LINES LONG; REEF FISH                              0         0
+  NOT CODED                                          0        71
+  POTS AND TRAPS; BOX TRAP                           0         0
+  POTS AND TRAPS; CMB                                0         0
+  POTS AND TRAPS; FISH                              28        40
+  SPEARS                                             0         0
+  SPEARS; DIVING                                     0         0
+  STOP SEINES                                        0         0
+  TRAMMEL NETS                                       0         0
+                              
+                               POTS AND TRAPS, FISH ROD AND REEL SPEARS
+  BY HAND; DIVING GEAR                            0            0    131
+  ENTANGLING NETS (GILL) UNSPC                    0            0      0
+  GILL NETS; OTHER                                0            0      0
+  LINES HAND                                     59            0      0
+  LINES LONG; REEF FISH                           0            0      0
+  NOT CODED                                       0            0      0
+  POTS AND TRAPS; BOX TRAP                        0            0      0
+  POTS AND TRAPS; CMB                             0            0      0
+  POTS AND TRAPS; FISH                         4890           20      0
+  SPEARS                                          0            0    376
+  SPEARS; DIVING                                  0            0      0
+  STOP SEINES                                     0            0      0
+  TRAMMEL NETS                                    0            0      0
+                              
+                               SPEARS, DIVING TRAMMEL NETS
+  BY HAND; DIVING GEAR                      0            0
+  ENTANGLING NETS (GILL) UNSPC              0            0
+  GILL NETS; OTHER                          0            0
+  LINES HAND                                0            0
+  LINES LONG; REEF FISH                     0            0
+  NOT CODED                                 0            0
+  POTS AND TRAPS; BOX TRAP                  0            0
+  POTS AND TRAPS; CMB                       0            0
+  POTS AND TRAPS; FISH                      0            0
+  SPEARS                                    0            0
+  SPEARS; DIVING                          113            0
+  STOP SEINES                               0            0
+  TRAMMEL NETS                              0          152</code></pre>
+</div>
+</div>
+</section>
+<section id="add-gear-groupings-no-length-length-conversions-available" class="level4 page-columns page-full">
+<h4 class="anchored" data-anchor-id="add-gear-groupings-no-length-length-conversions-available">Add gear groupings, NO length-length conversions available</h4>
+<div class="cell column-page">
+<div class="cell-output cell-output-stdout">
+<pre><code>                              
+                               Diving   Net Other  &lt;NA&gt;
+  BY HAND; DIVING GEAR            629     0     0     0
+  ENTANGLING NETS (GILL) UNSPC      0  2131     0     0
+  GILL NETS; OTHER                  0   121     0     0
+  LINES HAND                        0     0   113     0
+  LINES LONG; REEF FISH             0     0    11     0
+  NOT CODED                         0     0   105     0
+  POTS AND TRAPS; BOX TRAP          0     0     1     0
+  POTS AND TRAPS; CMB               0     0  2922     0
+  POTS AND TRAPS; FISH              0     0 19921     0
+  SPEARS                         2133     0     0     0
+  SPEARS; DIVING                 1088     0     0     0
+  STOP SEINES                       0     0     4     0
+  TRAMMEL NETS                      0   283     0     0
+  &lt;NA&gt;                              0     0     0     0</code></pre>
+</div>
+</div>
+<div class="cell column-page">
+
+</div>
+</section>
+</section>
+</section>
+<section id="gear-density-plots" class="level1 page-columns page-full">
+<h1>Gear Density Plots</h1>
+<section id="aggregated-density-plots" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="aggregated-density-plots">Aggregated density plots</h2>
+<div class="cell page-columns page-full">
+<div class="cell-output-display column-page">
+<p><img src="stx_stp_sedar84_sizecomp_landstdgearname_files/figure-html/agg_pdf_plot-1.png" class="img-fluid" width="1152"></p>
+</div>
+</div>
+<p>USVI TIP length comps by gear and interview type. Investigate if MARFIN and MRAG interview types can be used or should be dropped?</p>
+<div class="cell page-columns page-full">
+<div class="cell-output-display column-page">
+<p><img src="stx_stp_sedar84_sizecomp_landstdgearname_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="1440"></p>
+</div>
+</div>
+</section>
+<section id="gear-grouping-investigation" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="gear-grouping-investigation">Gear grouping investigation</h2>
+<div class="cell page-columns page-full">
+<div class="cell-output-display column-page">
+<p><img src="stx_stp_sedar84_sizecomp_landstdgearname_files/figure-html/mgt_period_plot-1.png" class="img-fluid" width="1152"></p>
+</div>
+</div>
+<div class="cell column-page">
+
+</div>
+<div class="cell page-columns page-full">
+<div class="cell-output-display column-page">
+<p><img src="stx_stp_sedar84_sizecomp_landstdgearname_files/figure-html/mgt_period_diving_plot-1.png" class="img-fluid" width="1152"></p>
+</div>
+</div>
+<div class="cell column-page">
+
+</div>
+<div class="cell page-columns page-full">
+<div class="cell-output-display column-page">
+<p><img src="stx_stp_sedar84_sizecomp_landstdgearname_files/figure-html/mgt_period_net_plot-1.png" class="img-fluid" width="1152"></p>
+</div>
+</div>
+<div class="cell column-page">
+
+</div>
+<div class="cell page-columns page-full">
+<div class="cell-output-display column-page">
+<p><img src="stx_stp_sedar84_sizecomp_landstdgearname_files/figure-html/mgt_period_other_plot-1.png" class="img-fluid" width="1152"></p>
+</div>
+</div>
+</section>
+<section id="break-at-2011" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="break-at-2011">Break at 2011</h2>
+<div class="cell page-columns page-full">
+<div class="cell-output-display column-page">
+<p><img src="stx_stp_sedar84_sizecomp_landstdgearname_files/figure-html/mgt_period_plot_2011-1.png" class="img-fluid" width="1440"></p>
+</div>
+</div>
+<div class="cell page-columns page-full">
+<div class="cell-output-display column-page">
+<p><img src="stx_stp_sedar84_sizecomp_landstdgearname_files/figure-html/mgt_period_diving_plot_2011-1.png" class="img-fluid" width="1440"></p>
+</div>
+</div>
+<div class="cell page-columns page-full">
+<div class="cell-output-display column-page">
+<p><img src="stx_stp_sedar84_sizecomp_landstdgearname_files/figure-html/mgt_period_net_plot_2011-1.png" class="img-fluid" width="1152"></p>
+</div>
+</div>
+<div class="cell page-columns page-full">
+<div class="cell-output-display column-page">
+<p><img src="stx_stp_sedar84_sizecomp_landstdgearname_files/figure-html/mgt_period_other_plot_2011-1.png" class="img-fluid" width="1440"></p>
+</div>
+</div>
+</section>
+<section id="annual-density-plots" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="annual-density-plots">Annual Density plots</h2>
+<p>This will be split by final gear aggregations once these are decided, removes “other” gear types.</p>
+<div class="cell column-page">
+
+</div>
+<div class="cell column-page">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ST CROIX 
+   29048 </code></pre>
+</div>
+</div>
+<div class="cell column-page">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ST CROIX 
+   29048 </code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="stacked-bar-charts-visual-representation-of-gear-distribution-within-groupings" class="level1 page-columns page-full">
+<h1>Stacked bar charts: visual representation of gear distribution within groupings</h1>
+<div class="cell page-columns page-full">
+<div class="cell-output-display column-page">
+<p><img src="stx_stp_sedar84_sizecomp_landstdgearname_files/figure-html/gear_distribution_plot-1.png" class="img-fluid" width="960"></p>
+</div>
+</div>
+</section>
+<section id="gear-distribution-across-time-by-gear-groupings" class="level1 page-columns page-full">
+<h1>Gear distribution across time by gear groupings</h1>
+<section id="all-gears-over-time" class="level4 page-columns page-full">
+<h4 class="anchored" data-anchor-id="all-gears-over-time">All gears over time</h4>
+<div class="cell page-columns page-full">
+<div class="cell-output-display column-page">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="stx_stp_sedar84_sizecomp_landstdgearname_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="1440"></p>
+<figcaption class="figure-caption">Stoplight Parrotfish LAND_STANDARD_GEAR_NAME STX</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="handline-gear-distribution-over-time-by-year---no-grouping" class="level4 page-columns page-full">
+<h4 class="anchored" data-anchor-id="handline-gear-distribution-over-time-by-year---no-grouping">Handline Gear Distribution Over Time by Year - NO GROUPING</h4>
+<div class="cell column-page">
+
+</div>
+</section>
+<section id="trap-gear-distribution-over-time-by-year---no-grouping" class="level4 page-columns page-full">
+<h4 class="anchored" data-anchor-id="trap-gear-distribution-over-time-by-year---no-grouping">Trap Gear Distribution Over Time by Year - NO GROUPING</h4>
+<div class="cell column-page">
+
+</div>
+</section>
+<section id="diving-gear-distribution-over-time-by-year" class="level4 page-columns page-full">
+<h4 class="anchored" data-anchor-id="diving-gear-distribution-over-time-by-year">Diving Gear Distribution Over Time by Year</h4>
+<div class="cell page-columns page-full">
+<div class="cell-output-display column-page">
+<p><img src="stx_stp_sedar84_sizecomp_landstdgearname_files/figure-html/gear_distribution_yr_DV_plot-1.png" class="img-fluid" width="1152"></p>
+</div>
+</div>
+</section>
+<section id="net-gear-distribution-over-time-by-year" class="level4 page-columns page-full">
+<h4 class="anchored" data-anchor-id="net-gear-distribution-over-time-by-year">Net Gear Distribution Over Time by Year</h4>
+<div class="cell page-columns page-full">
+<div class="cell-output-display column-page">
+<p><img src="stx_stp_sedar84_sizecomp_landstdgearname_files/figure-html/gear_distribution_yr_net_plot-1.png" class="img-fluid" width="1152"></p>
+</div>
+</div>
+</section>
+<section id="spear-gear-distribution-over-time-by-year---no-grouping" class="level4 page-columns page-full">
+<h4 class="anchored" data-anchor-id="spear-gear-distribution-over-time-by-year---no-grouping">Spear Gear Distribution Over Time by Year - NO GROUPING</h4>
+<div class="cell column-page">
+
+</div>
+</section>
+<section id="other-gear-distribution-over-time-by-year" class="level4 page-columns page-full">
+<h4 class="anchored" data-anchor-id="other-gear-distribution-over-time-by-year">Other Gear Distribution Over Time by Year</h4>
+<div class="cell page-columns page-full">
+<div class="cell-output-display column-page">
+<p><img src="stx_stp_sedar84_sizecomp_landstdgearname_files/figure-html/gear_distribution_yr_ot_plot-1.png" class="img-fluid" width="1152"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="cummulative-density-plots" class="level1 page-columns page-full">
+<h1>Cummulative Density Plots</h1>
+<section id="aggregated-cdf" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="aggregated-cdf">Aggregated CDF</h2>
+<div class="cell page-columns page-full">
+<div class="cell-output-display column-page">
+<p><img src="stx_stp_sedar84_sizecomp_landstdgearname_files/figure-html/agg_cdf_plot-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="management-periods" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="management-periods">Management periods*</h2>
+<p><strong>This section is optional and may be empty if there are not signifcant changes</strong></p>
+<div class="cell page-columns page-full">
+<div class="cell-output-display column-page">
+<p><img src="stx_stp_sedar84_sizecomp_landstdgearname_files/figure-html/mgt_period_cdf_plot-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="annual-cdf" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="annual-cdf">Annual CDF</h2>
+<div class="cell page-columns page-full">
+<div class="cell-output-display column-page">
+<p><img src="stx_stp_sedar84_sizecomp_landstdgearname_files/figure-html/annual_cdf_plot-1.png" class="img-fluid" width="864"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="island-density-plots" class="level1 page-columns page-full">
+<h1>Island Density Plots</h1>
+<section id="aggregated-density-plots-1" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="aggregated-density-plots-1">Aggregated density plots</h2>
+<div class="cell page-columns page-full">
+<div class="cell-output-display column-page">
+<p><img src="stx_stp_sedar84_sizecomp_landstdgearname_files/figure-html/agg_pdf_plot_reg-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="management-periods-1" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="management-periods-1">Management periods*</h2>
+<p><strong>This section is optional and may be empty if there are not significant changes</strong></p>
+<div class="cell page-columns page-full">
+<div class="cell-output-display column-page">
+<p><img src="stx_stp_sedar84_sizecomp_landstdgearname_files/figure-html/mgt_period_pdf_plot_reg-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="annual-density-plots-1" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="annual-density-plots-1">Annual Density plots</h2>
+<div class="cell page-columns page-full">
+<div class="cell-output-display column-page">
+<p><img src="stx_stp_sedar84_sizecomp_landstdgearname_files/figure-html/annual_pdf_plot_reg-1.png" class="img-fluid" width="864"></p>
+</div>
+</div>
+<div class="cell column-page">
+
+</div>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
