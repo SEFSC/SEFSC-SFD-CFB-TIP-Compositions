@@ -815,7 +815,8 @@ for(i in 1:length(final_gears)){
 ```
 
 
-# Stacked bar charts: visual representation of gear distribution within groupings
+# Stacked bar charts
+#### Visual representation of gear distribution within groupings
 
 ```{r gear_distribution_plot, fig.width=10, fig.height=6}
 #| warning: false

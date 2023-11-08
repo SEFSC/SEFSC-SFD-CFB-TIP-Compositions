@@ -19,7 +19,7 @@ This script will be emulating the length-comp script c1_nominal_len_comps.Rmd cr
 
 # Set up library 
 
-librarian::shelf(here, tidyverse, ROracle, keyring, dotenv, reshape, openxlsx, janitor, DT, pander, knitr)
+librarian::shelf(here, plyr, tidyverse, ROracle, keyring, dotenv, reshape, openxlsx, janitor, DT, pander, knitr)
 
 #pull species specific data by island
 # cr_tip(state_codes = c('PR', 'VI'))
@@ -103,7 +103,7 @@ min_year <- 1983
 
 max_year <- 2022 
 
-break_year <- NA # this is an optional value to denote a change in management. inclusive on the upper bound. can be set to NA if not relevant.  2005 trap specifications were updated and many closures went into place
+break_year <- 2005 # this is an optional value to denote a change in management. inclusive on the upper bound. can be set to NA if not relevant.  2005 trap specifications were updated and many closures went into place
 
 ##REVISE THE GEAR GROUPS ; see notes
 ##GENERATE FOR PUERTO RICO FIRST
@@ -580,6 +580,132 @@ ggplot(aes(FL_CM, color = LAND_STANDARD_GEAR_NAME))+
 
 ```
 
+## Break at 2005 
+
+```{r mgt_period_plot_2005, fig.width=15, fig.height=8}
+#| warning: false
+#| column: page 
+#| echo: false
+
+ length_data_final %>%  group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>% # filter(YEAR > 2011) |> 
+ggplot(aes(FL_CM, color = gear))+
+  geom_density(size = 0.75)+
+  scale_color_hue(labels=ycounts$n_labels)+
+#  scale_color_manual(values = gearcols, labels = counts$n_labels)+
+  labs(color = "Gear Type", x = "Fork Length (cm)", title = paste0(region,  "\n (N = ", sum(ycounts$n), ")"))+
+  # facet_wrap(~ISLAND,ncol=1) +
+  facet_wrap(~mgt_period) +
+  # theme_minimal()
+  theme(legend.title = element_text(size=14), 
+    legend.text = element_text(size=12))
+   
+
+```
+
+```{r mgt_period_hookandline_plot_2005, fig.width=15, fig.height=8}
+#| warning: false
+#| column: page
+#| echo: false
+
+HL <- length_data_final[length_data_final$gear_short=='HL',]
+counts = HL %>%
+  tabyl(LAND_STANDARD_GEAR_NAME) %>%
+  mutate(n_labels = paste0(LAND_STANDARD_GEAR_NAME, " (n= ", n, ")" ))
+
+HL %>% #filter(YEAR > 2011) |> 
+ggplot(aes(FL_CM, color = LAND_STANDARD_GEAR_NAME))+
+  geom_density(size = 0.75)+
+ # scale_color_manual( values = gearcols, labels = counts$n_labels)+
+  scale_color_hue(labels = counts$n_labels)+
+  labs(color = "Gear Type", x = "Fork Length (cm)", title = paste0(region,  "\n (N = ", sum(counts$n), ")"))+
+  # facet_wrap(~ISLAND,ncol=1) +
+  facet_wrap(~mgt_period) +
+  # theme_minimal()
+  theme(legend.title = element_text(size=14), 
+    legend.text = element_text(size=12))
+
+```
+
+```{r mgt_period_net_plot_2005, fig.width=12, fig.height=8}
+#| warning: false
+#| column: page
+#| echo: false
+
+#nets might need to be another category because haul seines, trammel, and entangling (gill unsp) have too many occurances to be in other 
+
+net <- length_data_final[length_data_final$gear_short=='NT',]
+counts = net %>%
+  tabyl(LAND_STANDARD_GEAR_NAME) %>%
+  mutate(n_labels = paste0(LAND_STANDARD_GEAR_NAME, " (n= ", n, ")" ))
+
+net %>% #filter(YEAR > 2011) |>
+ggplot(aes(FL_CM,color = LAND_STANDARD_GEAR_NAME))+
+  geom_density(size = 0.75)+
+ # scale_color_manual( values = gearcols, labels = counts$n_labels)+
+  scale_color_hue(labels = counts$n_labels)+
+  labs(color = "Gear Type", x = "Fork Length (cm)", title = paste0(region,  "\n (N = ", sum(counts$n), ")"))+
+  # facet_wrap(~ISLAND,ncol=1) +
+  facet_wrap(~mgt_period) +
+  # theme_minimal()
+  theme(legend.title = element_text(size=14), 
+    legend.text = element_text(size=12))
+
+
+```
+
+```{r mgt_period_trap_plot_2005, fig.width=12, fig.height=8}
+#| warning: false
+#| column: page
+#| echo: false
+
+#nets might need to be another category because haul seines, trammel, and entangling (gill unsp) have too many occurances to be in other 
+
+
+trap <- length_data_final[length_data_final$gear_short=='TR',]
+counts = trap %>%
+  tabyl(LAND_STANDARD_GEAR_NAME) %>%
+  mutate(n_labels = paste0(LAND_STANDARD_GEAR_NAME, " (n= ", n, ")" ))
+
+trap %>% #filter(YEAR > 2011) |>
+ggplot(aes(FL_CM,color = LAND_STANDARD_GEAR_NAME))+
+  geom_density(size = 0.75)+
+ # scale_color_manual( values = gearcols, labels = counts$n_labels)+
+  scale_color_hue(labels = counts$n_labels)+
+  labs(color = "Gear Type", x = "Fork Length (cm)", title = paste0(region,  "\n (N = ", sum(counts$n), ")"))+
+  # facet_wrap(~ISLAND,ncol=1) +
+  facet_wrap(~mgt_period) +
+  # theme_minimal()
+  theme(legend.title = element_text(size=14), 
+    legend.text = element_text(size=12))
+
+
+```
+
+```{r mgt_period_other_plot_2005, fig.width=15, fig.height=8}
+#| warning: false
+#| column: page
+#| echo: false
+
+ot<- length_data_final[length_data_final$gear_short=='OT',]
+counts = ot %>%
+  tabyl(LAND_STANDARD_GEAR_NAME) %>%
+  mutate(n_labels = paste0(LAND_STANDARD_GEAR_NAME, " (n= ", n, ")" ))
+
+ot %>% # filter(YEAR > 2011) |> 
+ggplot(aes(FL_CM, color = LAND_STANDARD_GEAR_NAME))+
+  geom_density(size = 0.75)+
+ # scale_color_manual( values = gearcols, labels = counts$n_labels)+
+  scale_color_hue(labels = counts$n_labels)+
+  labs(color = "Gear Type", x = "Fork Length (cm)", title = paste0(region,  "\n (N = ", sum(counts$n), ")"))+
+  # facet_wrap(~ISLAND,ncol=1) +
+  facet_wrap(~mgt_period) +
+  # theme_minimal()
+  theme(legend.title = element_text(size=14), 
+    legend.text = element_text(size=12))
+
+```
+
+
 ## Annual Density plots
 
 This will be split by final gear aggregations once these are decided, removes "other" gear types.
@@ -762,8 +888,6 @@ sttj_gear_time <- subset(sttj_count, select = -n) %>%
 #| echo: false
 #| column: page
 
-
-
 hl2<- length_data_final[length_data_final$gear_short=='HL',]
 hl4<- aggregate(hl2$FL_CM, list(hl2$YEAR, hl2$LAND_STANDARD_GEAR_NAME), mean)
 colnames(hl4) <- c('Year', 'LAND_STANDARD_GEAR_NAME', 'yearlyValue')
@@ -783,6 +907,88 @@ ggplot(aes(x = Year, y = yearlyValue, color = LAND_STANDARD_GEAR_NAME, group = 1
   # theme_minimal()
   theme(legend.title = element_text(size=14), 
     legend.text = element_text(size=12))
+
+```
+
+```{r gear_distribution_yr_hl_plot_range, fig.width=12, fig.height=8}
+#| warning: false
+#| echo: false
+#| column: page
+
+# display yearly values of gears in same group on same graph
+
+summary_hl2 <- hl2 %>% 
+    group_by(YEAR) %>% 
+    summarise(lower = min(FL_CM), upper = max(FL_CM), p = median(FL_CM))
+
+ggplot(data = summary_hl2, mapping = aes(x = YEAR, y = p)) +
+    geom_pointrange(mapping = aes(ymin = lower, ymax = upper)) # doesn't separate by gear, can we do that? 
+
+## Gives count, mean, standard deviation, standard error of the mean, and confidence interval (default 95%).
+##   data: a data frame.
+##   measurevar: the name of a column that contains the variable to be summariezed
+##   groupvars: a vector containing names of columns that contain grouping variables
+##   na.rm: a boolean that indicates whether to ignore NA's
+##   conf.interval: the percent range of the confidence interval (default is 95%)
+summarySE <- function(data=hl2, measurevar, groupvars=c("gear", "YEAR"), na.rm=FALSE,
+                      conf.interval=.95, .drop=TRUE) {
+    library(plyr)
+
+    # New version of length which can handle NA's: if na.rm==T, don't count them
+    length2 <- function (x, na.rm=FALSE) {
+        if (na.rm) sum(!is.na(x))
+        else       length(x)
+    }
+
+    # This does the summary. For each group's data frame, return a vector with
+    # N, mean, and sd
+    datac <- ddply(data, groupvars, .drop=.drop,
+      .fun = function(xx, col) {
+        c(N    = length2(xx[[col]], na.rm=na.rm),
+          mean = mean   (xx[[col]], na.rm=na.rm),
+          sd   = sd     (xx[[col]], na.rm=na.rm)
+        )
+      },
+      measurevar
+    )
+
+    # Rename the "mean" column    
+    datac <- rename(datac, c("mean" = measurevar))
+
+    datac$se <- datac$sd / sqrt(datac$N)  # Calculate standard error of the mean
+
+    # Confidence interval multiplier for standard error
+    # Calculate t-statistic for confidence interval: 
+    # e.g., if conf.interval is .95, use .975 (above/below), and use df=N-1
+    ciMult <- qt(conf.interval/2 + .5, datac$N-1)
+    datac$ci <- datac$se * ciMult
+
+    return(datac)
+}
+
+hl2sum <- summarySE(hl2, measurevar="FL_CM", groupvars=c("gear","year"))
+
+ggplot(hl2, aes(x=YEAR, y=FL_CM, colour=gear)) + 
+    geom_errorbar(aes(ymin=FL_CM-se, ymax=FL_CM+se), width=.1) +
+    geom_line() +
+    geom_point()
+
+ggplot(hl2, aes(x=YEAR, y=FL_CM, colour=gear, group=gear)) + 
+    geom_errorbar(aes(ymin=FL_CM-se, ymax=FL_CM+se), colour="black", width=.1, position=pd) +
+    geom_line(position=pd) +
+    geom_point(position=pd, size=3, shape=21, fill="white") + # 21 is filled circle
+    xlab("Year") +
+    ylab("Fork Length (cm)") +
+    scale_colour_hue(name="Gear type",    # Legend label, use darker colors
+                     breaks=gear,
+                     labels=gear,
+                     l=40) +                    # Use darker colors, lightness=40
+    ggtitle("Average ") +
+    expand_limits(y=0) +                        # Expand y range
+    scale_y_continuous(breaks=0:20*4) +         # Set tick every 4
+    theme_bw() +
+    theme(legend.justification=c(1,0),
+          legend.position=c(1,0))               # Position legend in bottom right
 
 ```
 

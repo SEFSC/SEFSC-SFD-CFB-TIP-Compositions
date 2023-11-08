@@ -94,6 +94,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#aggregated-density-plots" id="toc-aggregated-density-plots" class="nav-link" data-scroll-target="#aggregated-density-plots">Aggregated density plots</a></li>
   <li><a href="#gear-grouping-investigation" id="toc-gear-grouping-investigation" class="nav-link" data-scroll-target="#gear-grouping-investigation">Gear grouping investigation</a></li>
+  <li><a href="#break-at-2005" id="toc-break-at-2005" class="nav-link" data-scroll-target="#break-at-2005">Break at 2005</a></li>
   <li><a href="#annual-density-plots" id="toc-annual-density-plots" class="nav-link" data-scroll-target="#annual-density-plots">Annual Density plots</a></li>
   </ul></li>
   <li><a href="#stacked-bar-charts" id="toc-stacked-bar-charts" class="nav-link" data-scroll-target="#stacked-bar-charts">Stacked bar charts</a>
@@ -217,7 +218,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>max_year <span class="ot">&lt;-</span> <span class="dv">2022</span> </span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>break_year <span class="ot">&lt;-</span> <span class="cn">NA</span> <span class="co"># this is an optional value to denote a change in management. inclusive on the upper bound. can be set to NA if not relevant.  2005 trap specifications were updated and many closures went into place</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>break_year <span class="ot">&lt;-</span> <span class="dv">2005</span> <span class="co"># this is an optional value to denote a change in management. inclusive on the upper bound. can be set to NA if not relevant.  2005 trap specifications were updated and many closures went into place</span></span>
 <span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="do">##REVISE THE GEAR GROUPS ; see notes</span></span>
 <span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="do">##GENERATE FOR PUERTO RICO FIRST</span></span>
@@ -830,6 +831,34 @@ POTS AND TRAPS; SPINY LOBSTER   REEL; ELECTRIC OR HYDRAULIC
 </div>
 </div>
 </section>
+<section id="break-at-2005" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="break-at-2005">Break at 2005</h2>
+<div class="cell page-columns page-full">
+<div class="cell-output-display column-page">
+<p><img src="sttj_yt_sedar84_sizecomp_landstdgearname_files/figure-html/mgt_period_plot_2005-1.png" class="img-fluid" width="1440"></p>
+</div>
+</div>
+<div class="cell page-columns page-full">
+<div class="cell-output-display column-page">
+<p><img src="sttj_yt_sedar84_sizecomp_landstdgearname_files/figure-html/mgt_period_hookandline_plot_2005-1.png" class="img-fluid" width="1440"></p>
+</div>
+</div>
+<div class="cell page-columns page-full">
+<div class="cell-output-display column-page">
+<p><img src="sttj_yt_sedar84_sizecomp_landstdgearname_files/figure-html/mgt_period_net_plot_2005-1.png" class="img-fluid" width="1152"></p>
+</div>
+</div>
+<div class="cell page-columns page-full">
+<div class="cell-output-display column-page">
+<p><img src="sttj_yt_sedar84_sizecomp_landstdgearname_files/figure-html/mgt_period_trap_plot_2005-1.png" class="img-fluid" width="1152"></p>
+</div>
+</div>
+<div class="cell page-columns page-full">
+<div class="cell-output-display column-page">
+<p><img src="sttj_yt_sedar84_sizecomp_landstdgearname_files/figure-html/mgt_period_other_plot_2005-1.png" class="img-fluid" width="1440"></p>
+</div>
+</div>
+</section>
 <section id="annual-density-plots" class="level2 page-columns page-full">
 <h2 class="anchored" data-anchor-id="annual-density-plots">Annual Density plots</h2>
 <p>This will be split by final gear aggregations once these are decided, removes “other” gear types.</p>
@@ -936,8 +965,10 @@ POTS AND TRAPS; SPINY LOBSTER   REEL; ELECTRIC OR HYDRAULIC
 <section id="management-periods" class="level2 page-columns page-full">
 <h2 class="anchored" data-anchor-id="management-periods">Management periods*</h2>
 <p><strong>This section is optional and may be empty if there are not signifcant changes</strong></p>
-<div class="cell column-page">
-
+<div class="cell page-columns page-full">
+<div class="cell-output-display column-page">
+<p><img src="sttj_yt_sedar84_sizecomp_landstdgearname_files/figure-html/mgt_period_cdf_plot-1.png" class="img-fluid" width="672"></p>
+</div>
 </div>
 </section>
 <section id="annual-cdf" class="level2 page-columns page-full">
@@ -962,8 +993,10 @@ POTS AND TRAPS; SPINY LOBSTER   REEL; ELECTRIC OR HYDRAULIC
 <section id="management-periods-1" class="level2 page-columns page-full">
 <h2 class="anchored" data-anchor-id="management-periods-1">Management periods*</h2>
 <p><strong>This section is optional and may be empty if there are not significant changes</strong></p>
-<div class="cell column-page">
-
+<div class="cell page-columns page-full">
+<div class="cell-output-display column-page">
+<p><img src="sttj_yt_sedar84_sizecomp_landstdgearname_files/figure-html/mgt_period_pdf_plot_reg-1.png" class="img-fluid" width="672"></p>
+</div>
 </div>
 </section>
 <section id="annual-density-plots-1" class="level2 page-columns page-full">
