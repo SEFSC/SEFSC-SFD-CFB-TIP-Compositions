@@ -521,6 +521,11 @@ ggplot(aes(FL_CM, color = LAND_STANDARD_GEAR_NAME))+
   theme(legend.title = element_text(size=14), 
     legend.text = element_text(size=12))
 
+table(diving$FL_CM, diving$YEAR )
+diving_small <- diving |> 
+  filter(YEAR == '2017',
+         FL_CM < 20)
+
 ```
 
 ```{r mgt_period_trap_plot, fig.width=12, fig.height=8}

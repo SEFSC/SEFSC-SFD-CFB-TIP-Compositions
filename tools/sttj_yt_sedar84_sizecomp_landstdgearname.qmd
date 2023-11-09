@@ -966,6 +966,7 @@ summarySE <- function(data=hl2, measurevar, groupvars=c("gear", "YEAR"), na.rm=F
     return(datac)
 }
 
+hl2sum <- summarySE(data=hl2, measurevar="FL_CM", groupvars=c("gear","year"), na.rm=FALSE, conf.interval=.95)
 hl2sum <- summarySE(hl2, measurevar="FL_CM", groupvars=c("gear","year"))
 
 ggplot(hl2, aes(x=YEAR, y=FL_CM, colour=gear)) + 
