@@ -90,6 +90,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#add-gear-groupings-no-length-length-conversions-available" id="toc-add-gear-groupings-no-length-length-conversions-available" class="nav-link" data-scroll-target="#add-gear-groupings-no-length-length-conversions-available">Add gear groupings, NO length-length conversions available</a></li>
   </ul></li>
   </ul></li>
+  <li><a href="#trip-id-investigation" id="toc-trip-id-investigation" class="nav-link" data-scroll-target="#trip-id-investigation">Trip ID investigation</a>
+  <ul>
+  <li><a href="#how-many-unique-trip-ids-per-year" id="toc-how-many-unique-trip-ids-per-year" class="nav-link" data-scroll-target="#how-many-unique-trip-ids-per-year">how many unique trip ID’s per year</a>
+  <ul class="collapse">
+  <li><a href="#group-by-year-count-unique-trip-ids" id="toc-group-by-year-count-unique-trip-ids" class="nav-link" data-scroll-target="#group-by-year-count-unique-trip-ids">group by year, count unique trip id’s</a></li>
+  </ul></li>
+  </ul></li>
   <li><a href="#gear-density-plots" id="toc-gear-density-plots" class="nav-link" data-scroll-target="#gear-density-plots">Gear Density Plots</a>
   <ul>
   <li><a href="#aggregated-density-plots" id="toc-aggregated-density-plots" class="nav-link" data-scroll-target="#aggregated-density-plots">Aggregated density plots</a></li>
@@ -787,6 +794,50 @@ POTS AND TRAPS; SPINY LOBSTER   REEL; ELECTRIC OR HYDRAULIC
 </section>
 </section>
 </section>
+<section id="trip-id-investigation" class="level1 page-columns page-full">
+<h1>Trip ID investigation</h1>
+<section id="how-many-unique-trip-ids-per-year" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="how-many-unique-trip-ids-per-year">how many unique trip ID’s per year</h2>
+<section id="group-by-year-count-unique-trip-ids" class="level3 page-columns page-full">
+<h3 class="anchored" data-anchor-id="group-by-year-count-unique-trip-ids">group by year, count unique trip id’s</h3>
+<div class="cell column-page">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 33 × 2
+    YEAR `n_distinct(ID)`
+   &lt;dbl&gt;            &lt;int&gt;
+ 1  1983                8
+ 2  1984               71
+ 3  1985               70
+ 4  1986               16
+ 5  1987                7
+ 6  1988                1
+ 7  1991                2
+ 8  1992               23
+ 9  1993               36
+10  1994               11
+# ℹ 23 more rows</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 12 × 2
+    YEAR `n_distinct(ID)`
+   &lt;dbl&gt;            &lt;int&gt;
+ 1  1984               71
+ 2  1985               70
+ 3  1993               36
+ 4  2009               54
+ 5  2010              137
+ 6  2011              106
+ 7  2012               64
+ 8  2016               53
+ 9  2017               72
+10  2018               65
+11  2019               62
+12  2023               42</code></pre>
+</div>
+</div>
+</section>
+</section>
+</section>
 <section id="gear-density-plots" class="level1 page-columns page-full">
 <h1>Gear Density Plots</h1>
 <section id="aggregated-density-plots" class="level2 page-columns page-full">
@@ -799,7 +850,7 @@ POTS AND TRAPS; SPINY LOBSTER   REEL; ELECTRIC OR HYDRAULIC
 <p>USVI TIP length comps by gear and interview type. Investigate if MARFIN and MRAG interview types can be used or should be dropped?</p>
 <div class="cell page-columns page-full">
 <div class="cell-output-display column-page">
-<p><img src="sttj_yt_sedar84_sizecomp_landstdgearname_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="1152"></p>
+<p><img src="sttj_yt_sedar84_sizecomp_landstdgearname_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="1152"></p>
 </div>
 </div>
 </section>
@@ -900,7 +951,7 @@ POTS AND TRAPS; SPINY LOBSTER   REEL; ELECTRIC OR HYDRAULIC
 <div class="cell-output-display column-page">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="sttj_yt_sedar84_sizecomp_landstdgearname_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="1440"></p>
+<p><img src="sttj_yt_sedar84_sizecomp_landstdgearname_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="1440"></p>
 <figcaption class="figure-caption">Stoplight Parrotfish LAND_STANDARD_GEAR_NAME STX</figcaption>
 </figure>
 </div>
@@ -912,6 +963,11 @@ POTS AND TRAPS; SPINY LOBSTER   REEL; ELECTRIC OR HYDRAULIC
 <div class="cell page-columns page-full">
 <div class="cell-output-display column-page">
 <p><img src="sttj_yt_sedar84_sizecomp_landstdgearname_files/figure-html/gear_distribution_yr_hl_plot-1.png" class="img-fluid" width="1152"></p>
+</div>
+</div>
+<div class="cell page-columns page-full">
+<div class="cell-output-display column-page">
+<p><img src="sttj_yt_sedar84_sizecomp_landstdgearname_files/figure-html/gear_distribution_yr_hl_plot_range-1.png" class="img-fluid" width="1152"></p>
 </div>
 </div>
 </section>

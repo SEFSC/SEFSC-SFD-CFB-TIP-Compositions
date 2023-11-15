@@ -19,8 +19,9 @@ This script will be emulating the length-comp script c1_nominal_len_comps.Rmd cr
 
 # Set up library 
 
-librarian::shelf(here, plyr, tidyverse, ROracle, keyring, dotenv, reshape, openxlsx, janitor, DT, pander, knitr)
-
+librarian::shelf(here, tidyverse, ROracle, keyring, dotenv, reshape, openxlsx, janitor, DT, pander, knitr) #plyr 
+# library(conflicted)
+# conflicted::conflicts_prefer(here::here)
 #pull species specific data by island
 # cr_tip(state_codes = c('PR', 'VI'))
 
@@ -363,7 +364,7 @@ dropped_obs <- anti_join(join_length_dat, length_data_final, by = "OBS_ID")
 
 ###this is writing only size data issues (e.g. samples too small/large to be considered realistic)
 
-write.xlsx(dropped_obs, file = paste0("./outputs/", sp, "_size_dropped_observations_", gsub("-", "", Sys.Date()), ".xlsx"))
+# write.xlsx(dropped_obs, file = paste0("./outputs/", sp, "_size_dropped_observations_", gsub("-", "", Sys.Date()), ".xlsx"))
 
 ```
 
@@ -380,6 +381,92 @@ full_set <- crossing(YEAR = seq(from = min_year, to = max_year, by = 1),
   pivot_wider(names_from = lbin, values_from = N)
 
 comp_names = c("YEAR", "ln_fish", "ln_trips", "ln_dealers","ln_vessels", names(full_set)[-1])
+
+```
+
+# Trip ID vs gear by year investigation 
+## how many unique trip ID's per year
+### group by year, count unique trip id's
+When we remove data from years with less than 30 unique trip ID's, we are left with only 12 years of data. IMO too few for assessment
+
+```{r }
+#| warning: false
+#| echo: false
+#| column: page 
+
+length_data_tripid <- length_data_final |> 
+  group_by( YEAR, ID) #|> 
+  # filter(n() >= 30)  |>  
+  # ungroup () 
+
+length_data_tripcount <- length_data_final |> 
+  group_by(YEAR) |>
+  summarise(n_distinct(ID)) 
+print.data.frame(length_data_tripcount)
+
+length_data_trip30 <- length_data_final |> 
+  group_by(YEAR) |>
+  filter(n_distinct(ID) >= 30)|>
+  summarise(n_distinct(ID)) 
+print.data.frame(length_data_trip30)
+
+```
+
+## how many records per gear per year
+### group by year, count occurances of each gear
+There are years when individual gears occur less than 30 times but when grouped, the gear groups exceed 30 occurrences per year. Do we want to rely on gear groups with larger than 30 occurrences per year or individual gears with more than 30 occurrences? 
+```{r }
+#| warning: false
+#| echo: false
+#| column: page 
+
+length_data_gearid <- length_data_final |> 
+  group_by( YEAR, LAND_STANDARD_GEAR_NAME) #|> 
+  # filter(n() >= 30)  |>  
+  # ungroup () 
+
+length_data_gearcount <- length_data_final |> 
+  group_by(YEAR, LAND_STANDARD_GEAR_NAME) |>
+  summarise(count = n()) 
+print.data.frame(length_data_gearcount)
+
+length_data_gear30 <- length_data_final |> 
+  group_by(YEAR, LAND_STANDARD_GEAR_NAME) |>
+  filter(n() >= 30)|>
+  summarise(count = n()) 
+print.data.frame(length_data_gear30)
+
+length_data_geargroup30 <- length_data_final |> 
+  group_by(YEAR, LAND_STANDARD_GEAR_NAME) |>
+  filter(n() >= 30)|>
+  ungroup() |> 
+  group_by(YEAR, gear) |> 
+  summarise(count = n())
+print.data.frame(length_data_geargroup30)
+
+table(length_data_geargroup30$YEAR, length_data_geargroup30$gear)
+
+# count number of records that are removed if counted by individual gears 
+length_data_gearg29 <- length_data_final |> 
+  group_by(YEAR, LAND_STANDARD_GEAR_NAME) |>
+  filter(n() < 30)|>
+  # ungroup() |> 
+  # group_by(YEAR, gear) |> 
+   summarise(count = n())
+print.data.frame(length_data_gear29)
+
+# VS 
+
+# count number of records that are removed if counted by gear groups 
+length_data_geargroup29 <- length_data_final |> 
+  group_by(YEAR, gear) |>
+  filter(n() < 30)|>
+  # ungroup() |> 
+  # group_by(YEAR, gear) |> 
+   summarise(count = n())
+print.data.frame(length_data_geargroup29)
+
+
 
 ```
 
@@ -429,6 +516,32 @@ ggplot(aes(FL_CM))+
   # theme_minimal()
   theme(legend.title = element_text(size=14), 
     legend.text = element_text(size=12))
+ 
+ 
+ 
+ 
+ygearcounts =length_data_final |> 
+  group_by(YEAR, LAND_STANDARD_GEAR_NAME) |>
+  filter(n() >= 30)|>
+  ungroup() |> 
+  tabyl(gear) %>%
+  mutate(n_gearlabels = paste0(gear, " (n= ", n, ")" ))
+
+ length_data_final |> 
+  group_by(YEAR, LAND_STANDARD_GEAR_NAME) |>
+  filter(n() >= 30)|>
+  ungroup() |> 
+ggplot(aes(FL_CM))+
+ # geom_density( aes(color = "Combined"),lwd=1.5)+
+  geom_density(aes(color = gear), size = 0.75)+
+  scale_color_hue(labels=ygearcounts$n_gearlabels)+
+ # scale_color_hue(labels=c("Combined",ycounts$n_labels))+
+  #scale_color_manual(values = gearcols, labels = c("Combined", counts$n_labels))+
+  labs(color = "Gear Type", x = "Fork Length (cm)", title = paste0(region,  "\n (N = ", sum(ygearcounts$n), ")"))+
+  # theme_minimal()
+  theme(legend.title = element_text(size=14), 
+    legend.text = element_text(size=12))
+ 
  
 ```
 
@@ -580,7 +693,7 @@ ggplot(aes(FL_CM, color = LAND_STANDARD_GEAR_NAME))+
 
 ```
 
-## Break at 2005 
+## Break at 2005
 
 ```{r mgt_period_plot_2005, fig.width=15, fig.height=8}
 #| warning: false
@@ -705,7 +818,6 @@ ggplot(aes(FL_CM, color = LAND_STANDARD_GEAR_NAME))+
 
 ```
 
-
 ## Annual Density plots
 
 This will be split by final gear aggregations once these are decided, removes "other" gear types.
@@ -750,7 +862,6 @@ ggplot(aes(FL_CM, color = gear))+
 #
 
 ```
-
 
 ```{r STT}
 #| warning: false
@@ -804,6 +915,7 @@ for(i in 1:length(final_gears)){
 ```
 
 # Stacked bar charts
+
 #### Visual representation of gear distribution within groupings
 
 ```{r gear_distribution_plot, fig.width=10, fig.height=6}
@@ -849,8 +961,7 @@ ggplot(aes(fill = LAND_STANDARD_GEAR_NAME, y = FL_CM, x= gear))+
 
 # Gear distribution across time by gear groupings
 
-## All gears over time 
-
+## All gears over time
 
 ```{r, fig.width=15, fig.height=15}
 #| echo: false
@@ -881,7 +992,7 @@ sttj_gear_time <- subset(sttj_count, select = -n) %>%
 
 ```
 
-## Hook and Line Gear Distribution Over Time by Year 
+## Hook and Line Gear Distribution Over Time by Year
 
 ```{r gear_distribution_yr_hl_plot, fig.width=12, fig.height=8}
 #| warning: false
@@ -930,70 +1041,70 @@ ggplot(data = summary_hl2, mapping = aes(x = YEAR, y = p)) +
 ##   groupvars: a vector containing names of columns that contain grouping variables
 ##   na.rm: a boolean that indicates whether to ignore NA's
 ##   conf.interval: the percent range of the confidence interval (default is 95%)
-summarySE <- function(data=hl2, measurevar, groupvars=c("gear", "YEAR"), na.rm=FALSE,
-                      conf.interval=.95, .drop=TRUE) {
-    library(plyr)
-
-    # New version of length which can handle NA's: if na.rm==T, don't count them
-    length2 <- function (x, na.rm=FALSE) {
-        if (na.rm) sum(!is.na(x))
-        else       length(x)
-    }
-
-    # This does the summary. For each group's data frame, return a vector with
-    # N, mean, and sd
-    datac <- ddply(data, groupvars, .drop=.drop,
-      .fun = function(xx, col) {
-        c(N    = length2(xx[[col]], na.rm=na.rm),
-          mean = mean   (xx[[col]], na.rm=na.rm),
-          sd   = sd     (xx[[col]], na.rm=na.rm)
-        )
-      },
-      measurevar
-    )
-
-    # Rename the "mean" column    
-    datac <- rename(datac, c("mean" = measurevar))
-
-    datac$se <- datac$sd / sqrt(datac$N)  # Calculate standard error of the mean
-
-    # Confidence interval multiplier for standard error
-    # Calculate t-statistic for confidence interval: 
-    # e.g., if conf.interval is .95, use .975 (above/below), and use df=N-1
-    ciMult <- qt(conf.interval/2 + .5, datac$N-1)
-    datac$ci <- datac$se * ciMult
-
-    return(datac)
-}
-
-hl2sum <- summarySE(data=hl2, measurevar="FL_CM", groupvars=c("gear","year"), na.rm=FALSE, conf.interval=.95)
-hl2sum <- summarySE(hl2, measurevar="FL_CM", groupvars=c("gear","year"))
-
-ggplot(hl2, aes(x=YEAR, y=FL_CM, colour=gear)) + 
-    geom_errorbar(aes(ymin=FL_CM-se, ymax=FL_CM+se), width=.1) +
-    geom_line() +
-    geom_point()
-
-ggplot(hl2, aes(x=YEAR, y=FL_CM, colour=gear, group=gear)) + 
-    geom_errorbar(aes(ymin=FL_CM-se, ymax=FL_CM+se), colour="black", width=.1, position=pd) +
-    geom_line(position=pd) +
-    geom_point(position=pd, size=3, shape=21, fill="white") + # 21 is filled circle
-    xlab("Year") +
-    ylab("Fork Length (cm)") +
-    scale_colour_hue(name="Gear type",    # Legend label, use darker colors
-                     breaks=gear,
-                     labels=gear,
-                     l=40) +                    # Use darker colors, lightness=40
-    ggtitle("Average ") +
-    expand_limits(y=0) +                        # Expand y range
-    scale_y_continuous(breaks=0:20*4) +         # Set tick every 4
-    theme_bw() +
-    theme(legend.justification=c(1,0),
-          legend.position=c(1,0))               # Position legend in bottom right
+# summarySE <- function(data=hl2, measurevar, groupvars=c("gear", "YEAR"), na.rm=FALSE,
+#                       conf.interval=.95, .drop=TRUE) {
+#     library(plyr)
+# 
+#     # New version of length which can handle NA's: if na.rm==T, don't count them
+#     length2 <- function (x, na.rm=FALSE) {
+#         if (na.rm) sum(!is.na(x))
+#         else       length(x)
+#     }
+# 
+#     # This does the summary. For each group's data frame, return a vector with
+#     # N, mean, and sd
+#     datac <- ddply(data, groupvars, .drop=.drop,
+#       .fun = function(xx, col) {
+#         c(N    = length2(xx[[col]], na.rm=na.rm),
+#           mean = mean   (xx[[col]], na.rm=na.rm),
+#           sd   = sd     (xx[[col]], na.rm=na.rm)
+#         )
+#       },
+#       measurevar
+#     )
+# 
+#     # Rename the "mean" column    
+#     datac <- rename(datac, c("mean" = measurevar))
+# 
+#     datac$se <- datac$sd / sqrt(datac$N)  # Calculate standard error of the mean
+# 
+#     # Confidence interval multiplier for standard error
+#     # Calculate t-statistic for confidence interval: 
+#     # e.g., if conf.interval is .95, use .975 (above/below), and use df=N-1
+#     ciMult <- qt(conf.interval/2 + .5, datac$N-1)
+#     datac$ci <- datac$se * ciMult
+# 
+#     return(datac)
+# }
+# 
+# hl2sum <- summarySE(data=hl2, measurevar="FL_CM", groupvars=c("gear","year"), na.rm=FALSE, conf.interval=.95)
+# hl2sum <- summarySE(hl2, measurevar="FL_CM", groupvars=c("gear","year"))
+# 
+# ggplot(hl2, aes(x=YEAR, y=FL_CM, colour=gear)) + 
+#     geom_errorbar(aes(ymin=FL_CM-se, ymax=FL_CM+se), width=.1) +
+#     geom_line() +
+#     geom_point()
+# 
+# ggplot(hl2, aes(x=YEAR, y=FL_CM, colour=gear, group=gear)) + 
+#     geom_errorbar(aes(ymin=FL_CM-se, ymax=FL_CM+se), colour="black", width=.1, position=pd) +
+#     geom_line(position=pd) +
+#     geom_point(position=pd, size=3, shape=21, fill="white") + # 21 is filled circle
+#     xlab("Year") +
+#     ylab("Fork Length (cm)") +
+#     scale_colour_hue(name="Gear type",    # Legend label, use darker colors
+#                      breaks=gear,
+#                      labels=gear,
+#                      l=40) +                    # Use darker colors, lightness=40
+#     ggtitle("Average ") +
+#     expand_limits(y=0) +                        # Expand y range
+#     scale_y_continuous(breaks=0:20*4) +         # Set tick every 4
+#     theme_bw() +
+#     theme(legend.justification=c(1,0),
+#           legend.position=c(1,0))               # Position legend in bottom right
 
 ```
 
-## Trap Gear Distribution Over Time by Year 
+## Trap Gear Distribution Over Time by Year
 
 ```{r gear_distribution_yr_tr_plot, fig.width=12, fig.height=8}
 #| warning: false
@@ -1123,7 +1234,6 @@ ggplot(aes(x = Year, y = yearlyValue, color = LAND_STANDARD_GEAR_NAME, group = 1
     legend.text = element_text(size=12))
 
 ```
-
 
 # Cummulative Density Plots
 
@@ -1306,4 +1416,3 @@ for(i in 1:length(final_gears)){
 # write.xlsx(comps, file = paste0("./outputs/", sp, "_com_lfd_", sprintf('%02d', min_year %% 100), sprintf('%02d', max_year %% 100), "_", gsub("-", "", Sys.Date()), ".xlsx"))
 
 ```
-
