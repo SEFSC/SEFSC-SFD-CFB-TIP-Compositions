@@ -29,7 +29,14 @@ sttj_yt <- tip |>
          OBS_STANDARD_SPECIES_CODE == "168907",
          FISHING_MODE == 'COMMERCIAL',
          LENGTH1_MM > 0) |>
-  left_join(TIP_gears, by = join_by(LAND_STANDARD_GEAR_NAME))
+  left_join(TIP_gears, by = join_by(LAND_STANDARD_GEAR_NAME)) |> 
+  mutate(TEST_DATE = as.Date(ymd_hms(INTERVIEW_DATE)),
+         FINAL_DATE = case_when(is.na(TEST_DATE) ~ INTERVIEW_DATE, 
+                                TRUE ~ TEST_DATE))%>%
+  select(YEAR, FINAL_DATE, ID, COUNTY_LANDED, LENGTH1_MM, LAND_STANDARD_GEAR_NAME, gear) #%>%  #STAT_AREA
+  # filter(between(FL_CM , min_size, max_size),
+  #        ISLAND != 'NOT CODED')
+
 
 
 # Summary Stats ####
@@ -64,8 +71,9 @@ gear_group_summary <- sttj_yt |>
 unique(sttj_yt$gear) # "Hook and Line", "Trap", "Other", "Net"
 
 use_gear <- sttj_yt |>
-  filter(gear == "Trap")
-
+  filter(gear == "Trap") |> 
+  mutate(ID = as.character(ID)) |> 
+  select(-gear)
 
 # Create box plot across years
 box_plot <- ggboxplot(use_gear, x = "LAND_GEAR_NAME", y = "LENGTH1_MM",
@@ -80,3 +88,10 @@ density_plot <- ggdensity(use_gear, x = "LENGTH1_MM",
 density_plot
 
 # GLMs
+
+library(lme4)
+
+# str(use_gear)
+
+
+
