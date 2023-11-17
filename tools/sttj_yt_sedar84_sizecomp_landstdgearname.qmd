@@ -8,7 +8,7 @@ toc_expand: true
 toc-depth: 4
 ---
 
-This script will be emulating the length-comp script c1_nominal_len_comps.Rmd created by Molly Stevens.
+This script will be expanding upon the length-comp script c1_nominal_len_comps.Rmd created by Molly Stevens.
 
 # Yellowtail Snapper STTJ
 
@@ -19,10 +19,13 @@ This script will be emulating the length-comp script c1_nominal_len_comps.Rmd cr
 
 # Set up library 
 
-librarian::shelf(here, tidyverse, ROracle, keyring, dotenv, reshape, openxlsx, janitor, DT, pander, knitr) #plyr 
+librarian::shelf(here, tidyverse, ROracle, keyring, dotenv, reshape, openxlsx, janitor, DT, pander, knitr) #plyr
+# if conflicts in pkgs arise, use the following:
 # library(conflicted)
 # conflicted::conflicts_prefer(here::here)
-#pull species specific data by island
+
+
+#pull data by island
 # cr_tip(state_codes = c('PR', 'VI'))
 
   # Find out the date of the most recent extraction
@@ -106,17 +109,8 @@ max_year <- 2022
 
 break_year <- 2005 # this is an optional value to denote a change in management. inclusive on the upper bound. can be set to NA if not relevant.  2005 trap specifications were updated and many closures went into place
 
-##REVISE THE GEAR GROUPS ; see notes
-##GENERATE FOR PUERTO RICO FIRST
-##INVESTIGATE SHIFT FROM FL TO TL ; IS IT REAL?
-
-# S57 TIP merge files that I created and used are here:
-# 
-# R:\_Assessments-SEDAR\SEDAR_57_Caribbean_Spiny_Lobster\Data\Fishery\Size-composition-commercial\Landings\SEDAR 57 TIP Lengths Processed\Input
-
-
 ####################################################################### 
-##  START EDITING HERE
+##  TABLES START HERE 
 ####################################################################### 
 table(sttj_yt$OBS_STANDARD_SPECIES_NAME, useNA='always')
 
@@ -133,23 +127,23 @@ table(sttj_yt$YEAR,sttj_yt$OBS_STANDARD_SPECIES_NAME, useNA='always')
     
 ```
 
+```{r}
+#| warning: false
+
+table(sttj_yt$COUNTY_LANDED,sttj_yt$STATE_LANDED,useNA = 'always')
+
+table(sttj_yt$YEAR,sttj_yt$STATE_LANDED,useNA = 'always')
+```
+
 #### Filter to Commercial samples
 
 ```{r}
 #| warning: false
 #| echo: false
 
-# would replace with list files *sizeTIP* and *sizeGFIN*
-
-## ++could move this to c0
-# Load TIP data and prepare to merge
-##################PICK VARIABLES THAT I NEED HERE ;
-##################ASSIGN GEARS, ETC. BASED ON FLOW CHART
-
+################## PICK VARIABLES THAT I NEED HERE ;
+################## ASSIGN GEARS, ETC. BASED ON FLOW CHART
 ## FILTER OUT COMMERCIAL SAMPLES
-
-table(sttj_yt$COUNTY_LANDED,sttj_yt$STATE_LANDED,useNA = 'always')
-table(sttj_yt$YEAR,sttj_yt$STATE_LANDED,useNA = 'always')
 
 tip2 <- #readRDS('./data_clean/tip_GOM.Rdata') %>%
   sttj_yt %>%
@@ -178,6 +172,7 @@ tip2 <- #readRDS('./data_clean/tip_GOM.Rdata') %>%
          source,
          ID,
          INTERVIEW_DATE,
+         FINAL_DATE,
          FISHING_MODE,
          INT_TYPE,
          YEAR = YEAR,
@@ -212,6 +207,13 @@ tip2 <- #readRDS('./data_clean/tip_GOM.Rdata') %>%
          DEALER_CODE,
          VESSEL_ID
   )
+```
+
+Length composition after filtering to commercial records
+
+```{r}
+#| warning: false
+#| #| echo: false
 
 table(tip2$COUNTY_LANDED,tip2$ISLAND,useNA = 'always')
 table(tip2$YEAR,tip2$ISLAND,useNA = 'always')
@@ -239,8 +241,6 @@ table(tip2$SPECIES,tip2$YTS,useNA='always')
 ```{r}
 #| warning: false
 #| echo: false
-###########################################
-##add in variable for queen triggerfish/other for proportions by year, gear, island
 
 ##extract marfin samples, look at island distribution
 marfin <- tip2%>%
@@ -337,7 +337,7 @@ join_length_dat <- tip4 %>% #bind_rows(tip3 , gfin2) %>%
 # FINAL dataset here ----
 
 length_data_final <- join_length_dat %>%
-  select(YEAR, INTERVIEW_DATE, ID, OBS_ID, STATE = STATE_LANDED, COUNTY=COUNTY_LANDED, COUNTY_CODE, FL_CM, lbin, source, gear, gear_short, LAND_STANDARD_GEAR_NAME, mgt_period, ISLAND, INT_TYPE, fleet, DEALER_CODE, VESSEL_ID, LICENSE) %>%  #STAT_AREA
+  select(YEAR, INTERVIEW_DATE, FINAL_DATE, ID, OBS_ID, STATE = STATE_LANDED, COUNTY=COUNTY_LANDED, COUNTY_CODE, FL_CM, lbin, source, gear, gear_short, LAND_STANDARD_GEAR_NAME, mgt_period, ISLAND, INT_TYPE, fleet, DEALER_CODE, VESSEL_ID, LICENSE) %>%  #STAT_AREA
   filter(between(FL_CM , min_size, max_size),
          ISLAND != 'NOT CODED')
          #,
@@ -384,10 +384,11 @@ comp_names = c("YEAR", "ln_fish", "ln_trips", "ln_dealers","ln_vessels", names(f
 
 ```
 
-# Trip ID vs gear by year investigation 
-## how many unique trip ID's per year
-### group by year, count unique trip id's
-When we remove data from years with less than 30 unique trip ID's, we are left with only 12 years of data. IMO too few for assessment
+# Trip ID vs gear by year investigation
+
+#### how many unique trip ID's per year
+
+#####group by year, count unique trip id's When we remove data from years with less than 30 unique trip ID's, we are left with only 12 years of data. IMO too few for assessment
 
 ```{r }
 #| warning: false
@@ -413,8 +414,11 @@ print.data.frame(length_data_trip30)
 ```
 
 ## how many records per gear per year
+
 ### group by year, count occurances of each gear
-There are years when individual gears occur less than 30 times but when grouped, the gear groups exceed 30 occurrences per year. Do we want to rely on gear groups with larger than 30 occurrences per year or individual gears with more than 30 occurrences? 
+
+There are years when individual gears occur less than 30 times but when grouped, the gear groups exceed 30 occurrences per year. Do we want to rely on gear groups with larger than 30 occurrences per year or individual gears with more than 30 occurrences?
+
 ```{r }
 #| warning: false
 #| echo: false
@@ -447,7 +451,7 @@ print.data.frame(length_data_geargroup30)
 table(length_data_geargroup30$YEAR, length_data_geargroup30$gear)
 
 # count number of records that are removed if counted by individual gears 
-length_data_gearg29 <- length_data_final |> 
+length_data_gear29 <- length_data_final |> 
   group_by(YEAR, LAND_STANDARD_GEAR_NAME) |>
   filter(n() < 30)|>
   # ungroup() |> 
@@ -818,6 +822,98 @@ ggplot(aes(FL_CM, color = LAND_STANDARD_GEAR_NAME))+
 
 ```
 
+# GLM analysis 
+
+```{r glm_hookandline_plot}
+#| warning: false
+# str(length_data_final)
+library(ggplot2)
+use_gear_hl <- length_data_final |>
+  select(YEAR, FINAL_DATE, ID, COUNTY, FL_CM, LAND_STANDARD_GEAR_NAME, gear) |> 
+  filter(gear == "Hook and Line") |> 
+  mutate(ID = as.character(ID)) |> 
+  select(-gear)
+library(ggpubr)
+# Create box plot across years
+box_plot <- ggboxplot(use_gear_hl, x = "LAND_STANDARD_GEAR_NAME", y = "FL_CM",
+                 color = "LAND_STANDARD_GEAR_NAME",
+                 ylab = "FL_CM", xlab = "LAND_STANDARD_GEAR_NAME")
+box_plot
+# Create density plot across years
+density_plot <- ggdensity(use_gear_hl, x = "FL_CM",
+                          add = "mean", rug = TRUE,
+                          color = "LAND_STANDARD_GEAR_NAME", fill = "LAND_STANDARD_GEAR_NAME",
+                          ylab = "FL_CM", xlab = "Gear")
+density_plot
+
+# plot data
+library(ggplot2)
+ggplot(use_gear_hl, aes(x = as.Date(FINAL_DATE), y = FL_CM)) +
+  geom_point(aes(colour = LAND_STANDARD_GEAR_NAME, shape = LAND_STANDARD_GEAR_NAME), size = 1, alpha = 0.5) +
+  geom_smooth(method = "lm", formula = "y ~ x", col = "black") +
+  # facet_wrap(~ COUNTY_LANDED) +
+  labs(x = "", y = "Length (cm)", colour = "", shape = "") +
+  theme_bw() +
+  theme(legend.position = "bottom", legend.text = element_text(size = 10),
+        legend.box.spacing = unit(0, "npc"), panel.grid = element_blank()) +
+  guides(colour = guide_legend(override.aes = list(size = 2)))
+
+```
+
+```{r glm_hookandline_analysis}
+#| warning: false
+# fit models
+library(lmerTest)
+mod0 = lmer(FL_CM ~ COUNTY * scale(FINAL_DATE) + LAND_STANDARD_GEAR_NAME + (1 | YEAR) + (1 | ID),
+            data = use_gear_hl, REML = FALSE)
+anova(mod0)
+
+mod0.1 = lmer(FL_CM ~ COUNTY + scale(FINAL_DATE) + LAND_STANDARD_GEAR_NAME + (1 | YEAR) + (1 | ID),
+               data = use_gear_hl, REML = FALSE)
+anova(mod0.1)
+
+# Gaussian full model - not using county landed because it is effectively one island
+mod1 = lmer(FL_CM ~ COUNTY + LAND_STANDARD_GEAR_NAME + (1 | YEAR) + (1 | ID),
+            data = use_gear_hl, REML = FALSE)
+anova(mod1)
+summary(mod1, correlation = FALSE)
+
+mod1.1 = lmer(FL_CM ~ scale(FINAL_DATE) + LAND_STANDARD_GEAR_NAME + (1 | YEAR) + (1 | ID),
+            data = use_gear_hl, REML = FALSE)
+anova(mod1.1)
+summary(mod1.1, correlation = FALSE)
+
+
+# gamma full model
+mod2 = glmer(FL_CM ~ scale(FINAL_DATE) + LAND_STANDARD_GEAR_NAME + (1 | YEAR) + (1 | ID),
+             data = use_gear_hl, family = Gamma(link=log))
+
+# CHECK WHICH NUMBER IS LOWER
+AIC(mod1.1, mod2)
+# glm is better fit
+
+# gamma reduced model
+mod3 = glmer(FL_CM ~ scale(FINAL_DATE) + (1 | YEAR) + (1 | ID),
+             data = use_gear_hl, family = Gamma(link=log))
+
+mod4 = glmer(FL_CM ~ LAND_STANDARD_GEAR_NAME + (1 | YEAR) + (1 | ID),
+             data = use_gear_hl, family = Gamma(link=log))
+
+# likelihood ratio test
+anova(mod2, mod3) #gives p value of gear 
+anova(mod2, mod4) #gives p value of date
+anova(mod2) #no p value given
+
+
+## pairwise comparisons (if needed)
+mod_contr = emmeans::emmeans(object = mod2, pairwise ~ "LAND_STANDARD_GEAR_NAME", adjust = "tukey")
+mod_contr
+
+multcomp::cld(object = mod_contr$emmeans)
+  
+
+
+```
 ## Annual Density plots
 
 This will be split by final gear aggregations once these are decided, removes "other" gear types.
@@ -981,7 +1077,7 @@ sttj_gear_time <- subset(sttj_count, select = -n) %>%
 
 # plot    
 
-  ggplot(data = sttj_gear_time, aes(x = INTERVIEW_DATE, y = LAND_STANDARD_GEAR_NAMEn , group = COUNTY ,color = COUNTYn )) + 
+  ggplot(data = sttj_gear_time, aes(x = FINAL_DATE, y = LAND_STANDARD_GEAR_NAMEn , group = COUNTY ,color = COUNTYn )) + 
     facet_wrap(vars(COUNTY), ncol = 1) +
     geom_point(size = 2) + 
     labs(x = "Year", y = "STANDARDGEARNAME_1 (# obs)", 

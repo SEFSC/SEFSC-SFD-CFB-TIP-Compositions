@@ -90,11 +90,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#add-gear-groupings-no-length-length-conversions-available" id="toc-add-gear-groupings-no-length-length-conversions-available" class="nav-link" data-scroll-target="#add-gear-groupings-no-length-length-conversions-available">Add gear groupings, NO length-length conversions available</a></li>
   </ul></li>
   </ul></li>
-  <li><a href="#trip-id-investigation" id="toc-trip-id-investigation" class="nav-link" data-scroll-target="#trip-id-investigation">Trip ID investigation</a>
+  <li><a href="#trip-id-vs-gear-by-year-investigation" id="toc-trip-id-vs-gear-by-year-investigation" class="nav-link" data-scroll-target="#trip-id-vs-gear-by-year-investigation">Trip ID vs gear by year investigation</a>
   <ul>
-  <li><a href="#how-many-unique-trip-ids-per-year" id="toc-how-many-unique-trip-ids-per-year" class="nav-link" data-scroll-target="#how-many-unique-trip-ids-per-year">how many unique trip ID’s per year</a>
+  <li><a href="#how-many-unique-trip-ids-per-year" id="toc-how-many-unique-trip-ids-per-year" class="nav-link" data-scroll-target="#how-many-unique-trip-ids-per-year">how many unique trip ID’s per year</a></li>
+  <li><a href="#how-many-records-per-gear-per-year" id="toc-how-many-records-per-gear-per-year" class="nav-link" data-scroll-target="#how-many-records-per-gear-per-year">how many records per gear per year</a>
   <ul class="collapse">
-  <li><a href="#group-by-year-count-unique-trip-ids" id="toc-group-by-year-count-unique-trip-ids" class="nav-link" data-scroll-target="#group-by-year-count-unique-trip-ids">group by year, count unique trip id’s</a></li>
+  <li><a href="#group-by-year-count-occurances-of-each-gear" id="toc-group-by-year-count-occurances-of-each-gear" class="nav-link" data-scroll-target="#group-by-year-count-occurances-of-each-gear">group by year, count occurances of each gear</a></li>
   </ul></li>
   </ul></li>
   <li><a href="#gear-density-plots" id="toc-gear-density-plots" class="nav-link" data-scroll-target="#gear-density-plots">Gear Density Plots</a>
@@ -102,6 +103,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#aggregated-density-plots" id="toc-aggregated-density-plots" class="nav-link" data-scroll-target="#aggregated-density-plots">Aggregated density plots</a></li>
   <li><a href="#gear-grouping-investigation" id="toc-gear-grouping-investigation" class="nav-link" data-scroll-target="#gear-grouping-investigation">Gear grouping investigation</a></li>
   <li><a href="#break-at-2005" id="toc-break-at-2005" class="nav-link" data-scroll-target="#break-at-2005">Break at 2005</a></li>
+  </ul></li>
+  <li><a href="#glm-analysis" id="toc-glm-analysis" class="nav-link" data-scroll-target="#glm-analysis">GLM analysis</a>
+  <ul>
   <li><a href="#annual-density-plots" id="toc-annual-density-plots" class="nav-link" data-scroll-target="#annual-density-plots">Annual Density plots</a></li>
   </ul></li>
   <li><a href="#stacked-bar-charts" id="toc-stacked-bar-charts" class="nav-link" data-scroll-target="#stacked-bar-charts">Stacked bar charts</a>
@@ -158,7 +162,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<p>This script will be emulating the length-comp script c1_nominal_len_comps.Rmd created by Molly Stevens.</p>
+<p>This script will be expanding upon the length-comp script c1_nominal_len_comps.Rmd created by Molly Stevens.</p>
 <section id="yellowtail-snapper-sttj" class="level1 page-columns page-full">
 <h1>Yellowtail Snapper STTJ</h1>
 <div class="cell column-page">
@@ -227,19 +231,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>break_year <span class="ot">&lt;-</span> <span class="dv">2005</span> <span class="co"># this is an optional value to denote a change in management. inclusive on the upper bound. can be set to NA if not relevant.  2005 trap specifications were updated and many closures went into place</span></span>
 <span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="do">##REVISE THE GEAR GROUPS ; see notes</span></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="do">##GENERATE FOR PUERTO RICO FIRST</span></span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="do">##INVESTIGATE SHIFT FROM FL TO TL ; IS IT REAL?</span></span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="co"># S57 TIP merge files that I created and used are here:</span></span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="co"># R:\_Assessments-SEDAR\SEDAR_57_Caribbean_Spiny_Lobster\Data\Fishery\Size-composition-commercial\Landings\SEDAR 57 TIP Lengths Processed\Input</span></span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="do">####################################################################### </span></span>
-<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="do">##  START EDITING HERE</span></span>
-<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a><span class="do">####################################################################### </span></span>
-<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(sttj_yt<span class="sc">$</span>OBS_STANDARD_SPECIES_NAME, <span class="at">useNA=</span><span class="st">'always'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="do">####################################################################### </span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  TABLES START HERE </span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="do">####################################################################### </span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(sttj_yt<span class="sc">$</span>OBS_STANDARD_SPECIES_NAME, <span class="at">useNA=</span><span class="st">'always'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 YELLOWTAIL SNAPPER,OCYURUS CHR                           &lt;NA&gt; 
@@ -356,10 +351,8 @@ POTS AND TRAPS; SPINY LOBSTER   REEL; ELECTRIC OR HYDRAULIC
   &lt;NA&gt;                              0    0</code></pre>
 </div>
 </div>
-</section>
-<section id="filter-to-commercial-samples" class="level4">
-<h4 class="anchored" data-anchor-id="filter-to-commercial-samples">Filter to Commercial samples</h4>
 <div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(sttj_yt<span class="sc">$</span>COUNTY_LANDED,sttj_yt<span class="sc">$</span>STATE_LANDED,<span class="at">useNA =</span> <span class="st">'always'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>           
             VIRGIN ISLANDS  &lt;NA&gt;
@@ -367,6 +360,7 @@ POTS AND TRAPS; SPINY LOBSTER   REEL; ELECTRIC OR HYDRAULIC
   ST THOMAS          19916     0
   &lt;NA&gt;                   0     0</code></pre>
 </div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(sttj_yt<span class="sc">$</span>YEAR,sttj_yt<span class="sc">$</span>STATE_LANDED,<span class="at">useNA =</span> <span class="st">'always'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      
        VIRGIN ISLANDS &lt;NA&gt;
@@ -405,6 +399,13 @@ POTS AND TRAPS; SPINY LOBSTER   REEL; ELECTRIC OR HYDRAULIC
   2023            825    0
   &lt;NA&gt;              0    0</code></pre>
 </div>
+</div>
+</section>
+<section id="filter-to-commercial-samples" class="level4">
+<h4 class="anchored" data-anchor-id="filter-to-commercial-samples">Filter to Commercial samples</h4>
+<p>Length composition after filtering to commercial records</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(tip2<span class="sc">$</span>COUNTY_LANDED,tip2<span class="sc">$</span>ISLAND,<span class="at">useNA =</span> <span class="st">'always'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>           
             ST JOHN ST THOMAS  &lt;NA&gt;
@@ -412,6 +413,7 @@ POTS AND TRAPS; SPINY LOBSTER   REEL; ELECTRIC OR HYDRAULIC
   ST THOMAS       0     19902     0
   &lt;NA&gt;            0         0     0</code></pre>
 </div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(tip2<span class="sc">$</span>YEAR,tip2<span class="sc">$</span>ISLAND,<span class="at">useNA =</span> <span class="st">'always'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      
        ST JOHN ST THOMAS &lt;NA&gt;
@@ -450,19 +452,27 @@ POTS AND TRAPS; SPINY LOBSTER   REEL; ELECTRIC OR HYDRAULIC
   2023       0       825    0
   &lt;NA&gt;       0         0    0</code></pre>
 </div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>lencheck <span class="ot">&lt;-</span> tip2[tip2<span class="sc">$</span>LENGTH1_MM<span class="sc">&gt;</span><span class="dv">2000</span>,] <span class="co">#no lengths greater than 2000</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>tip_range  <span class="ot">&lt;-</span> tip2[<span class="fu">with</span>(tip2,<span class="fu">order</span>(<span class="sc">-</span>LENGTH1_MM)),]</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>tip_range<span class="sc">$</span>LENGTH1_MM[<span class="dv">1</span><span class="sc">:</span><span class="dv">25</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] 796 690 660 650 650 645 645 640 632 628 620 610 600 600 595 595 590 590 588
 [20] 585 585 585 585 585 585</code></pre>
 </div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>tip_range2 <span class="ot">&lt;-</span> tip2[<span class="fu">with</span>(tip2,<span class="fu">order</span>(LENGTH1_MM)),]</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>tip_range2<span class="sc">$</span>LENGTH1_MM[<span class="dv">1</span><span class="sc">:</span><span class="dv">25</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] 166 183 183 185 190 190 190 190 191 192 192 194 195 196 198 200 203 203 204
 [20] 204 205 205 205 206 206</code></pre>
 </div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(tip2<span class="sc">$</span>LENGTH_TYPE1,<span class="at">useNA=</span><span class="st">'always'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     FORK LENGTH STANDARD LENGTH    TOTAL LENGTH            &lt;NA&gt; 
           19888              67              56               0 </code></pre>
 </div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(sttj_yt<span class="sc">$</span>LAND_STANDARD_GEAR_NAME,<span class="at">useNA=</span><span class="st">'always'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
          BY HAND; DIVING GEAR                      DIP NETS 
@@ -490,12 +500,14 @@ POTS AND TRAPS; SPINY LOBSTER   REEL; ELECTRIC OR HYDRAULIC
                          &lt;NA&gt; 
                             0 </code></pre>
 </div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(tip2<span class="sc">$</span>ITIS_CODE,tip2<span class="sc">$</span>SPECIES,<span class="at">useNA=</span><span class="st">'always'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        
          YELLOWTAIL SNAPPER,OCYURUS CHR  &lt;NA&gt;
   168907                          20011     0
   &lt;NA&gt;                                0     0</code></pre>
 </div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(tip2<span class="sc">$</span>SPECIES,tip2<span class="sc">$</span>YTS,<span class="at">useNA=</span><span class="st">'always'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                                
                                      1  &lt;NA&gt;
@@ -794,45 +806,433 @@ POTS AND TRAPS; SPINY LOBSTER   REEL; ELECTRIC OR HYDRAULIC
 </section>
 </section>
 </section>
-<section id="trip-id-investigation" class="level1 page-columns page-full">
-<h1>Trip ID investigation</h1>
-<section id="how-many-unique-trip-ids-per-year" class="level2 page-columns page-full">
-<h2 class="anchored" data-anchor-id="how-many-unique-trip-ids-per-year">how many unique trip ID’s per year</h2>
-<section id="group-by-year-count-unique-trip-ids" class="level3 page-columns page-full">
-<h3 class="anchored" data-anchor-id="group-by-year-count-unique-trip-ids">group by year, count unique trip id’s</h3>
+<section id="trip-id-vs-gear-by-year-investigation" class="level1 page-columns page-full">
+<h1>Trip ID vs gear by year investigation</h1>
+<section id="how-many-unique-trip-ids-per-year" class="level4 page-columns page-full">
+<h4 class="anchored" data-anchor-id="how-many-unique-trip-ids-per-year">how many unique trip ID’s per year</h4>
+<p>#####group by year, count unique trip id’s When we remove data from years with less than 30 unique trip ID’s, we are left with only 12 years of data. IMO too few for assessment</p>
 <div class="cell column-page">
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 33 × 2
-    YEAR `n_distinct(ID)`
-   &lt;dbl&gt;            &lt;int&gt;
- 1  1983                8
- 2  1984               71
- 3  1985               70
- 4  1986               16
- 5  1987                7
- 6  1988                1
- 7  1991                2
- 8  1992               23
- 9  1993               36
-10  1994               11
-# ℹ 23 more rows</code></pre>
+<pre><code>   YEAR n_distinct(ID)
+1  1983              8
+2  1984             71
+3  1985             70
+4  1986             16
+5  1987              7
+6  1988              1
+7  1991              2
+8  1992             23
+9  1993             36
+10 1994             11
+11 1995             12
+12 1996             10
+13 2002             10
+14 2003              2
+15 2004              4
+16 2005             12
+17 2006             28
+18 2008              3
+19 2009             54
+20 2010            137
+21 2011            106
+22 2012             64
+23 2013             20
+24 2014              3
+25 2015              1
+26 2016             53
+27 2017             72
+28 2018             65
+29 2019             62
+30 2020             11
+31 2021             21
+32 2022             25
+33 2023             42</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 12 × 2
-    YEAR `n_distinct(ID)`
-   &lt;dbl&gt;            &lt;int&gt;
- 1  1984               71
- 2  1985               70
- 3  1993               36
- 4  2009               54
- 5  2010              137
- 6  2011              106
- 7  2012               64
- 8  2016               53
- 9  2017               72
-10  2018               65
-11  2019               62
-12  2023               42</code></pre>
+<pre><code>   YEAR n_distinct(ID)
+1  1984             71
+2  1985             70
+3  1993             36
+4  2009             54
+5  2010            137
+6  2011            106
+7  2012             64
+8  2016             53
+9  2017             72
+10 2018             65
+11 2019             62
+12 2023             42</code></pre>
+</div>
+</div>
+</section>
+<section id="how-many-records-per-gear-per-year" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="how-many-records-per-gear-per-year">how many records per gear per year</h2>
+<section id="group-by-year-count-occurances-of-each-gear" class="level3 page-columns page-full">
+<h3 class="anchored" data-anchor-id="group-by-year-count-occurances-of-each-gear">group by year, count occurances of each gear</h3>
+<p>There are years when individual gears occur less than 30 times but when grouped, the gear groups exceed 30 occurrences per year. Do we want to rely on gear groups with larger than 30 occurrences per year or individual gears with more than 30 occurrences?</p>
+<div class="cell column-page">
+<div class="cell-output cell-output-stdout">
+<pre><code>    YEAR       LAND_STANDARD_GEAR_NAME count
+1   1983                    LINES HAND   102
+2   1983                     NOT CODED     2
+3   1983          POTS AND TRAPS; FISH    45
+4   1984                      DIP NETS   109
+5   1984                  GRABS; HOOKS     1
+6   1984                 HOOKS; SPONGE    38
+7   1984                    LINES HAND   273
+8   1984          POTS AND TRAPS; FISH   214
+9   1984 POTS AND TRAPS; SPINY LOBSTER     6
+10  1985  ENTANGLING NETS (GILL) UNSPC    48
+11  1985                    LINES HAND   181
+12  1985         LINES LONG; REEF FISH   109
+13  1985       LINES POWER TROLL OTHER   464
+14  1985           POTS AND TRAPS; CMB    15
+15  1985          POTS AND TRAPS; FISH   204
+16  1986       LINES POWER TROLL OTHER    80
+17  1986          POTS AND TRAPS; FISH    64
+18  1987          POTS AND TRAPS; FISH    12
+19  1988          POTS AND TRAPS; FISH     4
+20  1991          POTS AND TRAPS; FISH     4
+21  1992       ENCIRCLING NETS (PURSE)   127
+22  1992                    LINES HAND   110
+23  1992          POTS AND TRAPS; FISH    46
+24  1993       ENCIRCLING NETS (PURSE)   126
+25  1993                    LINES HAND   151
+26  1993           POTS AND TRAPS; CMB     1
+27  1993          POTS AND TRAPS; FISH    57
+28  1994       ENCIRCLING NETS (PURSE)     1
+29  1994                    LINES HAND   152
+30  1994          POTS AND TRAPS; FISH    19
+31  1994 POTS AND TRAPS; SPINY LOBSTER     3
+32  1995       ENCIRCLING NETS (PURSE)    13
+33  1995                    LINES HAND   172
+34  1995           POTS AND TRAPS; CMB     3
+35  1995          POTS AND TRAPS; FISH    26
+36  1995 POTS AND TRAPS; SPINY LOBSTER     7
+37  1996                    LINES HAND   182
+38  1996          POTS AND TRAPS; FISH     6
+39  2002                    LINES HAND    37
+40  2002           POTS AND TRAPS; CMB     8
+41  2002          POTS AND TRAPS; FISH    24
+42  2003          POTS AND TRAPS; FISH     3
+43  2004      POTS AND TRAPS; BOX TRAP     6
+44  2005                    LINES HAND   335
+45  2005          POTS AND TRAPS; FISH     8
+46  2005 POTS AND TRAPS; SPINY LOBSTER    15
+47  2006                   HAUL SEINES   182
+48  2006                    LINES HAND   944
+49  2006     LINES LONG SET WITH HOOKS     4
+50  2006           POTS AND TRAPS; CMB     7
+51  2006          POTS AND TRAPS; FISH    31
+52  2008           POTS AND TRAPS; CMB     4
+53  2008          POTS AND TRAPS; FISH     3
+54  2009       ENCIRCLING NETS (PURSE)    30
+55  2009                    LINES HAND   962
+56  2009           POTS AND TRAPS; CMB    30
+57  2009          POTS AND TRAPS; FISH   166
+58  2010       ENCIRCLING NETS (PURSE)    66
+59  2010                   HAUL SEINES   292
+60  2010                    LINES HAND  2033
+61  2010           POTS AND TRAPS; CMB     6
+62  2010          POTS AND TRAPS; FISH   189
+63  2010                  ROD AND REEL    18
+64  2010                        SPEARS     1
+65  2011                   HAUL SEINES     1
+66  2011                    LINES HAND  1765
+67  2011                     NOT CODED    13
+68  2011           POTS AND TRAPS; CMB     1
+69  2011          POTS AND TRAPS; FISH   130
+70  2011 POTS AND TRAPS; SPINY LOBSTER     4
+71  2011                  ROD AND REEL    13
+72  2012                   HAUL SEINES     3
+73  2012                    LINES HAND   888
+74  2012          POTS AND TRAPS; FISH   137
+75  2012                  ROD AND REEL     6
+76  2013                    LINES HAND   197
+77  2013          POTS AND TRAPS; FISH    20
+78  2013 POTS AND TRAPS; SPINY LOBSTER     4
+79  2014                    LINES HAND    47
+80  2014          POTS AND TRAPS; FISH     2
+81  2015          POTS AND TRAPS; FISH    12
+82  2016                    LINES HAND   653
+83  2016          POTS AND TRAPS; FISH    92
+84  2016 POTS AND TRAPS; SPINY LOBSTER     1
+85  2016   REEL; ELECTRIC OR HYDRAULIC     6
+86  2016                  ROD AND REEL    49
+87  2017                   HAUL SEINES    69
+88  2017                    LINES HAND  1292
+89  2017          POTS AND TRAPS; FISH   210
+90  2017 POTS AND TRAPS; SPINY LOBSTER     1
+91  2017                  ROD AND REEL    17
+92  2018                   HAUL SEINES     7
+93  2018                    LINES HAND  1616
+94  2018           POTS AND TRAPS; CMB     2
+95  2018          POTS AND TRAPS; FISH   102
+96  2018                  ROD AND REEL     3
+97  2019                   HAUL SEINES     2
+98  2019                    LINES HAND  1865
+99  2019          POTS AND TRAPS; FISH   136
+100 2019                  ROD AND REEL    38
+101 2019 ROD AND REEL; ELECTRIC (HAND)    20
+102 2020                    LINES HAND   149
+103 2020           POTS AND TRAPS; CMB     1
+104 2020          POTS AND TRAPS; FISH    19
+105 2020                  ROD AND REEL     4
+106 2021          BY HAND; DIVING GEAR     1
+107 2021                    LINES HAND   260
+108 2021          POTS AND TRAPS; FISH     5
+109 2021   REEL; ELECTRIC OR HYDRAULIC    48
+110 2021                  ROD AND REEL    57
+111 2022                    LINES HAND   386
+112 2022          POTS AND TRAPS; FISH    43
+113 2022 POTS AND TRAPS; SPINY LOBSTER     2
+114 2022   REEL; ELECTRIC OR HYDRAULIC    85
+115 2023                    LINES HAND   492
+116 2023          POTS AND TRAPS; FISH    51
+117 2023 POTS AND TRAPS; SPINY LOBSTER    21
+118 2023                  ROD AND REEL   156
+119 2023 ROD AND REEL; ELECTRIC (HAND)   104
+120 2023                SPEARS; DIVING     1</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   YEAR       LAND_STANDARD_GEAR_NAME count
+1  1983                    LINES HAND   102
+2  1983          POTS AND TRAPS; FISH    45
+3  1984                      DIP NETS   109
+4  1984                 HOOKS; SPONGE    38
+5  1984                    LINES HAND   273
+6  1984          POTS AND TRAPS; FISH   214
+7  1985  ENTANGLING NETS (GILL) UNSPC    48
+8  1985                    LINES HAND   181
+9  1985         LINES LONG; REEF FISH   109
+10 1985       LINES POWER TROLL OTHER   464
+11 1985          POTS AND TRAPS; FISH   204
+12 1986       LINES POWER TROLL OTHER    80
+13 1986          POTS AND TRAPS; FISH    64
+14 1992       ENCIRCLING NETS (PURSE)   127
+15 1992                    LINES HAND   110
+16 1992          POTS AND TRAPS; FISH    46
+17 1993       ENCIRCLING NETS (PURSE)   126
+18 1993                    LINES HAND   151
+19 1993          POTS AND TRAPS; FISH    57
+20 1994                    LINES HAND   152
+21 1995                    LINES HAND   172
+22 1996                    LINES HAND   182
+23 2002                    LINES HAND    37
+24 2005                    LINES HAND   335
+25 2006                   HAUL SEINES   182
+26 2006                    LINES HAND   944
+27 2006          POTS AND TRAPS; FISH    31
+28 2009       ENCIRCLING NETS (PURSE)    30
+29 2009                    LINES HAND   962
+30 2009           POTS AND TRAPS; CMB    30
+31 2009          POTS AND TRAPS; FISH   166
+32 2010       ENCIRCLING NETS (PURSE)    66
+33 2010                   HAUL SEINES   292
+34 2010                    LINES HAND  2033
+35 2010          POTS AND TRAPS; FISH   189
+36 2011                    LINES HAND  1765
+37 2011          POTS AND TRAPS; FISH   130
+38 2012                    LINES HAND   888
+39 2012          POTS AND TRAPS; FISH   137
+40 2013                    LINES HAND   197
+41 2014                    LINES HAND    47
+42 2016                    LINES HAND   653
+43 2016          POTS AND TRAPS; FISH    92
+44 2016                  ROD AND REEL    49
+45 2017                   HAUL SEINES    69
+46 2017                    LINES HAND  1292
+47 2017          POTS AND TRAPS; FISH   210
+48 2018                    LINES HAND  1616
+49 2018          POTS AND TRAPS; FISH   102
+50 2019                    LINES HAND  1865
+51 2019          POTS AND TRAPS; FISH   136
+52 2019                  ROD AND REEL    38
+53 2020                    LINES HAND   149
+54 2021                    LINES HAND   260
+55 2021   REEL; ELECTRIC OR HYDRAULIC    48
+56 2021                  ROD AND REEL    57
+57 2022                    LINES HAND   386
+58 2022          POTS AND TRAPS; FISH    43
+59 2022   REEL; ELECTRIC OR HYDRAULIC    85
+60 2023                    LINES HAND   492
+61 2023          POTS AND TRAPS; FISH    51
+62 2023                  ROD AND REEL   156
+63 2023 ROD AND REEL; ELECTRIC (HAND)   104</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   YEAR          gear count
+1  1983 Hook and Line   102
+2  1983          Trap    45
+3  1984 Hook and Line   273
+4  1984         Other   147
+5  1984          Trap   214
+6  1985 Hook and Line   645
+7  1985           Net    48
+8  1985         Other   109
+9  1985          Trap   204
+10 1986 Hook and Line    80
+11 1986          Trap    64
+12 1992 Hook and Line   110
+13 1992           Net   127
+14 1992          Trap    46
+15 1993 Hook and Line   151
+16 1993           Net   126
+17 1993          Trap    57
+18 1994 Hook and Line   152
+19 1995 Hook and Line   172
+20 1996 Hook and Line   182
+21 2002 Hook and Line    37
+22 2005 Hook and Line   335
+23 2006 Hook and Line   944
+24 2006           Net   182
+25 2006          Trap    31
+26 2009 Hook and Line   962
+27 2009           Net    30
+28 2009          Trap   196
+29 2010 Hook and Line  2033
+30 2010           Net   358
+31 2010          Trap   189
+32 2011 Hook and Line  1765
+33 2011          Trap   130
+34 2012 Hook and Line   888
+35 2012          Trap   137
+36 2013 Hook and Line   197
+37 2014 Hook and Line    47
+38 2016 Hook and Line   702
+39 2016          Trap    92
+40 2017 Hook and Line  1292
+41 2017           Net    69
+42 2017          Trap   210
+43 2018 Hook and Line  1616
+44 2018          Trap   102
+45 2019 Hook and Line  1903
+46 2019          Trap   136
+47 2020 Hook and Line   149
+48 2021 Hook and Line   365
+49 2022 Hook and Line   471
+50 2022          Trap    43
+51 2023 Hook and Line   752
+52 2023          Trap    51</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      
+       Hook and Line Net Other Trap
+  1983             1   0     0    1
+  1984             1   0     1    1
+  1985             1   1     1    1
+  1986             1   0     0    1
+  1992             1   1     0    1
+  1993             1   1     0    1
+  1994             1   0     0    0
+  1995             1   0     0    0
+  1996             1   0     0    0
+  2002             1   0     0    0
+  2005             1   0     0    0
+  2006             1   1     0    1
+  2009             1   1     0    1
+  2010             1   1     0    1
+  2011             1   0     0    1
+  2012             1   0     0    1
+  2013             1   0     0    0
+  2014             1   0     0    0
+  2016             1   0     0    1
+  2017             1   1     0    1
+  2018             1   0     0    1
+  2019             1   0     0    1
+  2020             1   0     0    0
+  2021             1   0     0    0
+  2022             1   0     0    1
+  2023             1   0     0    1</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   YEAR       LAND_STANDARD_GEAR_NAME count
+1  1983                     NOT CODED     2
+2  1984                  GRABS; HOOKS     1
+3  1984 POTS AND TRAPS; SPINY LOBSTER     6
+4  1985           POTS AND TRAPS; CMB    15
+5  1987          POTS AND TRAPS; FISH    12
+6  1988          POTS AND TRAPS; FISH     4
+7  1991          POTS AND TRAPS; FISH     4
+8  1993           POTS AND TRAPS; CMB     1
+9  1994       ENCIRCLING NETS (PURSE)     1
+10 1994          POTS AND TRAPS; FISH    19
+11 1994 POTS AND TRAPS; SPINY LOBSTER     3
+12 1995       ENCIRCLING NETS (PURSE)    13
+13 1995           POTS AND TRAPS; CMB     3
+14 1995          POTS AND TRAPS; FISH    26
+15 1995 POTS AND TRAPS; SPINY LOBSTER     7
+16 1996          POTS AND TRAPS; FISH     6
+17 2002           POTS AND TRAPS; CMB     8
+18 2002          POTS AND TRAPS; FISH    24
+19 2003          POTS AND TRAPS; FISH     3
+20 2004      POTS AND TRAPS; BOX TRAP     6
+21 2005          POTS AND TRAPS; FISH     8
+22 2005 POTS AND TRAPS; SPINY LOBSTER    15
+23 2006     LINES LONG SET WITH HOOKS     4
+24 2006           POTS AND TRAPS; CMB     7
+25 2008           POTS AND TRAPS; CMB     4
+26 2008          POTS AND TRAPS; FISH     3
+27 2010           POTS AND TRAPS; CMB     6
+28 2010                  ROD AND REEL    18
+29 2010                        SPEARS     1
+30 2011                   HAUL SEINES     1
+31 2011                     NOT CODED    13
+32 2011           POTS AND TRAPS; CMB     1
+33 2011 POTS AND TRAPS; SPINY LOBSTER     4
+34 2011                  ROD AND REEL    13
+35 2012                   HAUL SEINES     3
+36 2012                  ROD AND REEL     6
+37 2013          POTS AND TRAPS; FISH    20
+38 2013 POTS AND TRAPS; SPINY LOBSTER     4
+39 2014          POTS AND TRAPS; FISH     2
+40 2015          POTS AND TRAPS; FISH    12
+41 2016 POTS AND TRAPS; SPINY LOBSTER     1
+42 2016   REEL; ELECTRIC OR HYDRAULIC     6
+43 2017 POTS AND TRAPS; SPINY LOBSTER     1
+44 2017                  ROD AND REEL    17
+45 2018                   HAUL SEINES     7
+46 2018           POTS AND TRAPS; CMB     2
+47 2018                  ROD AND REEL     3
+48 2019                   HAUL SEINES     2
+49 2019 ROD AND REEL; ELECTRIC (HAND)    20
+50 2020           POTS AND TRAPS; CMB     1
+51 2020          POTS AND TRAPS; FISH    19
+52 2020                  ROD AND REEL     4
+53 2021          BY HAND; DIVING GEAR     1
+54 2021          POTS AND TRAPS; FISH     5
+55 2022 POTS AND TRAPS; SPINY LOBSTER     2
+56 2023 POTS AND TRAPS; SPINY LOBSTER    21
+57 2023                SPEARS; DIVING     1</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   YEAR  gear count
+1  1983 Other     2
+2  1987  Trap    12
+3  1988  Trap     4
+4  1991  Trap     4
+5  1994   Net     1
+6  1994  Trap    22
+7  1995   Net    13
+8  1996  Trap     6
+9  2003  Trap     3
+10 2004  Trap     6
+11 2005  Trap    23
+12 2006 Other     4
+13 2008  Trap     7
+14 2010 Other     1
+15 2011   Net     1
+16 2011 Other    13
+17 2012   Net     3
+18 2013  Trap    24
+19 2014  Trap     2
+20 2015  Trap    12
+21 2018   Net     7
+22 2019   Net     2
+23 2020  Trap    20
+24 2021 Other     1
+25 2021  Trap     5
+26 2023 Other     1</code></pre>
 </div>
 </div>
 </section>
@@ -846,11 +1246,14 @@ POTS AND TRAPS; SPINY LOBSTER   REEL; ELECTRIC OR HYDRAULIC
 <div class="cell-output-display column-page">
 <p><img src="sttj_yt_sedar84_sizecomp_landstdgearname_files/figure-html/agg_pdf_plot-1.png" class="img-fluid" width="1152"></p>
 </div>
+<div class="cell-output-display column-page">
+<p><img src="sttj_yt_sedar84_sizecomp_landstdgearname_files/figure-html/agg_pdf_plot-2.png" class="img-fluid" width="1152"></p>
+</div>
 </div>
 <p>USVI TIP length comps by gear and interview type. Investigate if MARFIN and MRAG interview types can be used or should be dropped?</p>
 <div class="cell page-columns page-full">
 <div class="cell-output-display column-page">
-<p><img src="sttj_yt_sedar84_sizecomp_landstdgearname_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="1152"></p>
+<p><img src="sttj_yt_sedar84_sizecomp_landstdgearname_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="1152"></p>
 </div>
 </div>
 </section>
@@ -910,6 +1313,306 @@ POTS AND TRAPS; SPINY LOBSTER   REEL; ELECTRIC OR HYDRAULIC
 </div>
 </div>
 </section>
+</section>
+<section id="glm-analysis" class="level1 page-columns page-full">
+<h1>GLM analysis</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="co"># str(length_data_final)</span></span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>use_gear_hl <span class="ot">&lt;-</span> length_data_final <span class="sc">|&gt;</span></span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(YEAR, FINAL_DATE, ID, COUNTY, FL_CM, LAND_STANDARD_GEAR_NAME, gear) <span class="sc">|&gt;</span> </span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(gear <span class="sc">==</span> <span class="st">"Hook and Line"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ID =</span> <span class="fu">as.character</span>(ID)) <span class="sc">|&gt;</span> </span>
+<span id="cb60-7"><a href="#cb60-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>gear)</span>
+<span id="cb60-8"><a href="#cb60-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggpubr)</span>
+<span id="cb60-9"><a href="#cb60-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Create box plot across years</span></span>
+<span id="cb60-10"><a href="#cb60-10" aria-hidden="true" tabindex="-1"></a>box_plot <span class="ot">&lt;-</span> <span class="fu">ggboxplot</span>(use_gear_hl, <span class="at">x =</span> <span class="st">"LAND_STANDARD_GEAR_NAME"</span>, <span class="at">y =</span> <span class="st">"FL_CM"</span>,</span>
+<span id="cb60-11"><a href="#cb60-11" aria-hidden="true" tabindex="-1"></a>                 <span class="at">color =</span> <span class="st">"LAND_STANDARD_GEAR_NAME"</span>,</span>
+<span id="cb60-12"><a href="#cb60-12" aria-hidden="true" tabindex="-1"></a>                 <span class="at">ylab =</span> <span class="st">"FL_CM"</span>, <span class="at">xlab =</span> <span class="st">"LAND_STANDARD_GEAR_NAME"</span>)</span>
+<span id="cb60-13"><a href="#cb60-13" aria-hidden="true" tabindex="-1"></a>box_plot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="sttj_yt_sedar84_sizecomp_landstdgearname_files/figure-html/glm_hookandline_plot-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create density plot across years</span></span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>density_plot <span class="ot">&lt;-</span> <span class="fu">ggdensity</span>(use_gear_hl, <span class="at">x =</span> <span class="st">"FL_CM"</span>,</span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>                          <span class="at">add =</span> <span class="st">"mean"</span>, <span class="at">rug =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>                          <span class="at">color =</span> <span class="st">"LAND_STANDARD_GEAR_NAME"</span>, <span class="at">fill =</span> <span class="st">"LAND_STANDARD_GEAR_NAME"</span>,</span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>                          <span class="at">ylab =</span> <span class="st">"FL_CM"</span>, <span class="at">xlab =</span> <span class="st">"Gear"</span>)</span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>density_plot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="sttj_yt_sedar84_sizecomp_landstdgearname_files/figure-html/glm_hookandline_plot-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot data</span></span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(use_gear_hl, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">as.Date</span>(FINAL_DATE), <span class="at">y =</span> FL_CM)) <span class="sc">+</span></span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> LAND_STANDARD_GEAR_NAME, <span class="at">shape =</span> LAND_STANDARD_GEAR_NAME), <span class="at">size =</span> <span class="dv">1</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">formula =</span> <span class="st">"y ~ x"</span>, <span class="at">col =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># facet_wrap(~ COUNTY_LANDED) +</span></span>
+<span id="cb62-7"><a href="#cb62-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">""</span>, <span class="at">y =</span> <span class="st">"Length (cm)"</span>, <span class="at">colour =</span> <span class="st">""</span>, <span class="at">shape =</span> <span class="st">""</span>) <span class="sc">+</span></span>
+<span id="cb62-8"><a href="#cb62-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb62-9"><a href="#cb62-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>, <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>),</span>
+<span id="cb62-10"><a href="#cb62-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.box.spacing =</span> <span class="fu">unit</span>(<span class="dv">0</span>, <span class="st">"npc"</span>), <span class="at">panel.grid =</span> <span class="fu">element_blank</span>()) <span class="sc">+</span></span>
+<span id="cb62-11"><a href="#cb62-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">colour =</span> <span class="fu">guide_legend</span>(<span class="at">override.aes =</span> <span class="fu">list</span>(<span class="at">size =</span> <span class="dv">2</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="sttj_yt_sedar84_sizecomp_landstdgearname_files/figure-html/glm_hookandline_plot-3.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="co"># fit models</span></span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lmerTest)</span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>mod0 <span class="ot">=</span> <span class="fu">lmer</span>(FL_CM <span class="sc">~</span> COUNTY <span class="sc">*</span> <span class="fu">scale</span>(FINAL_DATE) <span class="sc">+</span> LAND_STANDARD_GEAR_NAME <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> YEAR) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> ID),</span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> use_gear_hl, <span class="at">REML =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(mod0)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Type III Analysis of Variance Table with Satterthwaite's method
+                         Sum Sq Mean Sq NumDF  DenDF F value    Pr(&gt;F)    
+COUNTY                     0.95   0.950     1 444.98  0.0468 0.8287698    
+scale(FINAL_DATE)          7.88   7.881     1 608.59  0.3885 0.5333059    
+LAND_STANDARD_GEAR_NAME  425.46 106.365     4 321.53  5.2438 0.0004197 ***
+COUNTY:scale(FINAL_DATE)   2.65   2.646     1 607.60  0.1304 0.7181098    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>mod0<span class="fl">.1</span> <span class="ot">=</span> <span class="fu">lmer</span>(FL_CM <span class="sc">~</span> COUNTY <span class="sc">+</span> <span class="fu">scale</span>(FINAL_DATE) <span class="sc">+</span> LAND_STANDARD_GEAR_NAME <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> YEAR) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> ID),</span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">data =</span> use_gear_hl, <span class="at">REML =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(mod0<span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Type III Analysis of Variance Table with Satterthwaite's method
+                        Sum Sq Mean Sq NumDF  DenDF F value    Pr(&gt;F)    
+COUNTY                    5.08    5.08     1 555.86  0.2503 0.6170352    
+scale(FINAL_DATE)       558.08  558.08     1  61.33 27.5136 2.047e-06 ***
+LAND_STANDARD_GEAR_NAME 425.83  106.46     4 321.44  5.2483 0.0004165 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Gaussian full model - not using county landed because it is effectively one island</span></span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>mod1 <span class="ot">=</span> <span class="fu">lmer</span>(FL_CM <span class="sc">~</span> COUNTY <span class="sc">+</span> LAND_STANDARD_GEAR_NAME <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> YEAR) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> ID),</span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> use_gear_hl, <span class="at">REML =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(mod1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Type III Analysis of Variance Table with Satterthwaite's method
+                        Sum Sq Mean Sq NumDF  DenDF F value  Pr(&gt;F)   
+COUNTY                     5.3   5.301     1 540.28  0.2613 0.60940   
+LAND_STANDARD_GEAR_NAME  351.3  87.825     4 226.59  4.3298 0.00215 **
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mod1, <span class="at">correlation =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by maximum likelihood . t-tests use Satterthwaite's
+  method [lmerModLmerTest]
+Formula: FL_CM ~ COUNTY + LAND_STANDARD_GEAR_NAME + (1 | YEAR) + (1 |      ID)
+   Data: use_gear_hl
+
+     AIC      BIC   logLik deviance df.resid 
+ 97421.8  97491.1 -48701.9  97403.8    16403 
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-4.2821 -0.5940 -0.1183  0.4762  9.6863 
+
+Random effects:
+ Groups   Name        Variance Std.Dev.
+ ID       (Intercept) 16.284   4.035   
+ YEAR     (Intercept)  2.839   1.685   
+ Residual             20.284   4.504   
+Number of obs: 16412, groups:  ID, 512; YEAR, 26
+
+Fixed effects:
+                                                     Estimate Std. Error
+(Intercept)                                           31.1980     3.1921
+COUNTYST THOMAS                                        1.6214     3.1716
+LAND_STANDARD_GEAR_NAMELINES POWER TROLL OTHER         0.5602     1.4417
+LAND_STANDARD_GEAR_NAMEREEL; ELECTRIC OR HYDRAULIC     1.2064     1.9699
+LAND_STANDARD_GEAR_NAMEROD AND REEL                    3.7918     0.9216
+LAND_STANDARD_GEAR_NAMEROD AND REEL; ELECTRIC (HAND)   0.1791     1.9213
+                                                           df t value Pr(&gt;|t|)
+(Intercept)                                          558.0158   9.774  &lt; 2e-16
+COUNTYST THOMAS                                      540.2819   0.511    0.609
+LAND_STANDARD_GEAR_NAMELINES POWER TROLL OTHER        83.3040   0.389    0.699
+LAND_STANDARD_GEAR_NAMEREEL; ELECTRIC OR HYDRAULIC   478.0436   0.612    0.541
+LAND_STANDARD_GEAR_NAMEROD AND REEL                  625.3446   4.115  4.4e-05
+LAND_STANDARD_GEAR_NAMEROD AND REEL; ELECTRIC (HAND) 556.0945   0.093    0.926
+                                                        
+(Intercept)                                          ***
+COUNTYST THOMAS                                         
+LAND_STANDARD_GEAR_NAMELINES POWER TROLL OTHER          
+LAND_STANDARD_GEAR_NAMEREEL; ELECTRIC OR HYDRAULIC      
+LAND_STANDARD_GEAR_NAMEROD AND REEL                  ***
+LAND_STANDARD_GEAR_NAMEROD AND REEL; ELECTRIC (HAND)    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>mod1<span class="fl">.1</span> <span class="ot">=</span> <span class="fu">lmer</span>(FL_CM <span class="sc">~</span> <span class="fu">scale</span>(FINAL_DATE) <span class="sc">+</span> LAND_STANDARD_GEAR_NAME <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> YEAR) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> ID),</span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> use_gear_hl, <span class="at">REML =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(mod1<span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Type III Analysis of Variance Table with Satterthwaite's method
+                        Sum Sq Mean Sq NumDF  DenDF F value    Pr(&gt;F)    
+scale(FINAL_DATE)       558.58  558.58     1  61.34 27.5380 2.028e-06 ***
+LAND_STANDARD_GEAR_NAME 427.81  106.95     4 321.73  5.2727 0.0003993 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mod1<span class="fl">.1</span>, <span class="at">correlation =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by maximum likelihood . t-tests use Satterthwaite's
+  method [lmerModLmerTest]
+Formula: FL_CM ~ scale(FINAL_DATE) + LAND_STANDARD_GEAR_NAME + (1 | YEAR) +  
+    (1 | ID)
+   Data: use_gear_hl
+
+     AIC      BIC   logLik deviance df.resid 
+ 97399.6  97468.9 -48690.8  97381.6    16403 
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-4.2958 -0.5947 -0.1188  0.4767  9.6856 
+
+Random effects:
+ Groups   Name        Variance Std.Dev.
+ ID       (Intercept) 16.0083  4.0010  
+ YEAR     (Intercept)  0.9272  0.9629  
+ Residual             20.2840  4.5038  
+Number of obs: 16412, groups:  ID, 512; YEAR, 26
+
+Fixed effects:
+                                                     Estimate Std. Error
+(Intercept)                                           32.3561     0.3115
+scale(FINAL_DATE)                                     -1.4685     0.2798
+LAND_STANDARD_GEAR_NAMELINES POWER TROLL OTHER        -1.5743     1.3583
+LAND_STANDARD_GEAR_NAMEREEL; ELECTRIC OR HYDRAULIC     1.5383     1.9343
+LAND_STANDARD_GEAR_NAMEROD AND REEL                    4.0377     0.9120
+LAND_STANDARD_GEAR_NAMEROD AND REEL; ELECTRIC (HAND)   0.5508     1.8974
+                                                           df t value Pr(&gt;|t|)
+(Intercept)                                           24.4115 103.856  &lt; 2e-16
+scale(FINAL_DATE)                                     61.3424  -5.248 2.03e-06
+LAND_STANDARD_GEAR_NAMELINES POWER TROLL OTHER       144.3665  -1.159    0.248
+LAND_STANDARD_GEAR_NAMEREEL; ELECTRIC OR HYDRAULIC   477.8143   0.795    0.427
+LAND_STANDARD_GEAR_NAMEROD AND REEL                  632.4644   4.427 1.12e-05
+LAND_STANDARD_GEAR_NAMEROD AND REEL; ELECTRIC (HAND) 567.3931   0.290    0.772
+                                                        
+(Intercept)                                          ***
+scale(FINAL_DATE)                                    ***
+LAND_STANDARD_GEAR_NAMELINES POWER TROLL OTHER          
+LAND_STANDARD_GEAR_NAMEREEL; ELECTRIC OR HYDRAULIC      
+LAND_STANDARD_GEAR_NAMEROD AND REEL                  ***
+LAND_STANDARD_GEAR_NAMEROD AND REEL; ELECTRIC (HAND)    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="co"># gamma full model</span></span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>mod2 <span class="ot">=</span> <span class="fu">glmer</span>(FL_CM <span class="sc">~</span> <span class="fu">scale</span>(FINAL_DATE) <span class="sc">+</span> LAND_STANDARD_GEAR_NAME <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> YEAR) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> ID),</span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">data =</span> use_gear_hl, <span class="at">family =</span> <span class="fu">Gamma</span>(<span class="at">link=</span>log))</span>
+<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb75-5"><a href="#cb75-5" aria-hidden="true" tabindex="-1"></a><span class="co"># CHECK WHICH NUMBER IS LOWER</span></span>
+<span id="cb75-6"><a href="#cb75-6" aria-hidden="true" tabindex="-1"></a><span class="fu">AIC</span>(mod1<span class="fl">.1</span>, mod2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       df      AIC
+mod1.1  9 97399.60
+mod2    9 94348.12</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="co"># glm is better fit</span></span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a><span class="co"># gamma reduced model</span></span>
+<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a>mod3 <span class="ot">=</span> <span class="fu">glmer</span>(FL_CM <span class="sc">~</span> <span class="fu">scale</span>(FINAL_DATE) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> YEAR) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> ID),</span>
+<span id="cb77-5"><a href="#cb77-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">data =</span> use_gear_hl, <span class="at">family =</span> <span class="fu">Gamma</span>(<span class="at">link=</span>log))</span>
+<span id="cb77-6"><a href="#cb77-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-7"><a href="#cb77-7" aria-hidden="true" tabindex="-1"></a>mod4 <span class="ot">=</span> <span class="fu">glmer</span>(FL_CM <span class="sc">~</span> LAND_STANDARD_GEAR_NAME <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> YEAR) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> ID),</span>
+<span id="cb77-8"><a href="#cb77-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">data =</span> use_gear_hl, <span class="at">family =</span> <span class="fu">Gamma</span>(<span class="at">link=</span>log))</span>
+<span id="cb77-9"><a href="#cb77-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-10"><a href="#cb77-10" aria-hidden="true" tabindex="-1"></a><span class="co"># likelihood ratio test</span></span>
+<span id="cb77-11"><a href="#cb77-11" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(mod2, mod3) <span class="co">#gives p value of gear </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Data: use_gear_hl
+Models:
+mod3: FL_CM ~ scale(FINAL_DATE) + (1 | YEAR) + (1 | ID)
+mod2: FL_CM ~ scale(FINAL_DATE) + LAND_STANDARD_GEAR_NAME + (1 | YEAR) + (1 | ID)
+     npar   AIC   BIC logLik deviance  Chisq Df Pr(&gt;Chisq)    
+mod3    5 94365 94404 -47178    94355                         
+mod2    9 94348 94417 -47165    94330 25.098  4  4.808e-05 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(mod2, mod4) <span class="co">#gives p value of date</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Data: use_gear_hl
+Models:
+mod4: FL_CM ~ LAND_STANDARD_GEAR_NAME + (1 | YEAR) + (1 | ID)
+mod2: FL_CM ~ scale(FINAL_DATE) + LAND_STANDARD_GEAR_NAME + (1 | YEAR) + (1 | ID)
+     npar   AIC   BIC logLik deviance Chisq Df Pr(&gt;Chisq)    
+mod4    8 94360 94422 -47172    94344                        
+mod2    9 94348 94417 -47165    94330 14.27  1  0.0001584 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(mod2) <span class="co">#no p value given</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Variance Table
+                        npar Sum Sq Mean Sq F value
+scale(FINAL_DATE)          1 1.7561  1.7561  94.662
+LAND_STANDARD_GEAR_NAME    4 1.2980  0.3245  17.492</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="do">## pairwise comparisons (if needed)</span></span>
+<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a>mod_contr <span class="ot">=</span> emmeans<span class="sc">::</span><span class="fu">emmeans</span>(<span class="at">object =</span> mod2, pairwise <span class="sc">~</span> <span class="st">"LAND_STANDARD_GEAR_NAME"</span>, <span class="at">adjust =</span> <span class="st">"tukey"</span>)</span>
+<span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a>mod_contr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$emmeans
+ LAND_STANDARD_GEAR_NAME       emmean     SE  df asymp.LCL asymp.UCL
+ LINES HAND                      3.45 0.0133 Inf      3.42      3.48
+ LINES POWER TROLL OTHER         3.41 0.0522 Inf      3.30      3.51
+ REEL; ELECTRIC OR HYDRAULIC     3.54 0.0737 Inf      3.40      3.69
+ ROD AND REEL                    3.59 0.0290 Inf      3.53      3.65
+ ROD AND REEL; ELECTRIC (HAND)   3.47 0.0666 Inf      3.34      3.60
+
+Results are given on the log (not the response) scale. 
+Confidence level used: 0.95 
+
+$contrasts
+ contrast                                                    estimate     SE
+ LINES HAND - LINES POWER TROLL OTHER                          0.0428 0.0527
+ LINES HAND - REEL; ELECTRIC OR HYDRAULIC                     -0.0911 0.0738
+ LINES HAND - ROD AND REEL                                    -0.1420 0.0288
+ LINES HAND - ROD AND REEL; ELECTRIC (HAND)                   -0.0170 0.0662
+ LINES POWER TROLL OTHER - REEL; ELECTRIC OR HYDRAULIC        -0.1338 0.0915
+ LINES POWER TROLL OTHER - ROD AND REEL                       -0.1848 0.0608
+ LINES POWER TROLL OTHER - ROD AND REEL; ELECTRIC (HAND)      -0.0597 0.0850
+ REEL; ELECTRIC OR HYDRAULIC - ROD AND REEL                   -0.0510 0.0781
+ REEL; ELECTRIC OR HYDRAULIC - ROD AND REEL; ELECTRIC (HAND)   0.0741 0.0987
+ ROD AND REEL - ROD AND REEL; ELECTRIC (HAND)                  0.1251 0.0704
+  df z.ratio p.value
+ Inf   0.811  0.9273
+ Inf  -1.234  0.7316
+ Inf  -4.926  &lt;.0001
+ Inf  -0.256  0.9991
+ Inf  -1.462  0.5872
+ Inf  -3.037  0.0202
+ Inf  -0.703  0.9560
+ Inf  -0.652  0.9663
+ Inf   0.751  0.9444
+ Inf   1.777  0.3873
+
+Results are given on the log (not the response) scale. 
+P value adjustment: tukey method for comparing a family of 5 estimates </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a>multcomp<span class="sc">::</span><span class="fu">cld</span>(<span class="at">object =</span> mod_contr<span class="sc">$</span>emmeans)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> LAND_STANDARD_GEAR_NAME       emmean     SE  df asymp.LCL asymp.UCL .group
+ LINES POWER TROLL OTHER         3.41 0.0522 Inf      3.30      3.51  1    
+ LINES HAND                      3.45 0.0133 Inf      3.42      3.48  1    
+ ROD AND REEL; ELECTRIC (HAND)   3.47 0.0666 Inf      3.34      3.60  12   
+ REEL; ELECTRIC OR HYDRAULIC     3.54 0.0737 Inf      3.40      3.69  12   
+ ROD AND REEL                    3.59 0.0290 Inf      3.53      3.65   2   
+
+Results are given on the log (not the response) scale. 
+Confidence level used: 0.95 
+P value adjustment: tukey method for comparing a family of 5 estimates 
+significance level used: alpha = 0.05 
+NOTE: If two or more means share the same grouping symbol,
+      then we cannot show them to be different.
+      But we also did not show them to be the same. </code></pre>
+</div>
+</div>
 <section id="annual-density-plots" class="level2 page-columns page-full">
 <h2 class="anchored" data-anchor-id="annual-density-plots">Annual Density plots</h2>
 <p>This will be split by final gear aggregations once these are decided, removes “other” gear types.</p>
@@ -951,7 +1654,7 @@ POTS AND TRAPS; SPINY LOBSTER   REEL; ELECTRIC OR HYDRAULIC
 <div class="cell-output-display column-page">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="sttj_yt_sedar84_sizecomp_landstdgearname_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="1440"></p>
+<p><img src="sttj_yt_sedar84_sizecomp_landstdgearname_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="1440"></p>
 <figcaption class="figure-caption">Stoplight Parrotfish LAND_STANDARD_GEAR_NAME STX</figcaption>
 </figure>
 </div>
