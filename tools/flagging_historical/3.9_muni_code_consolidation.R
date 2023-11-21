@@ -51,15 +51,17 @@ pr_area_comparisons_mer$MER_latitude <- str_sub(pr_area_comparisons_mer$MER_lat,
 pr_area_comparisons_mer$MER_longitude <- str_sub(pr_area_comparisons_mer$MER_long, end = -2)  
 pr_area_comparisons_mer$MER_longitude = as.numeric(as.character(pr_area_comparisons_mer$MER_longitude)) 
 pr_area_comparisons_mer <- pr_area_comparisons_mer |> 
-  mutate(MER_longitued_d = MER_longitude*(-1)) |> 
-  rename(MER_latitude_d = MER_latitude)
+  mutate(MER_longitued_d = MER_longitude*(-1))  
+  # rename(MER_latitude_d = MER_latitude)
+colnames(pr_area_comparisons_mer)[24] = "MER_latitude_d"
 
 # convert all lat column to numeric
 pr_area_comparisons_mer$MER_latitude_d = as.numeric(as.character(pr_area_comparisons_mer$MER_latitude_d)) 
 
 # create common muni and site column names
-pr_historical <- pr_area_comparisons_historical%>%
-  rename(MUNICIPIO = H_muni_name)
+# pr_historical <- pr_area_comparisons_historical%>%
+#   rename(MUNICIPIO = H_muni_name)
+colnames(pr_area_comparisons_historical)[2] = "MUNICIPIO"
 
 # pr_mer <- pr_area_comparisons_mer%>%
 #   rename(#MUNICIPIO = MER_Municipio,
@@ -69,8 +71,9 @@ pr_historical <- pr_area_comparisons_historical%>%
 #   rename(#MUNICIPIO = MRIP_County,
 #          SITE_NAME = MRIP_Site_Name)
 
-pr_tip <- pr_area_comparisons_tip%>%
-  rename(MUNICIPIO = TIP_CNTY_NAME)
+# pr_tip <- pr_area_comparisons_tip%>%
+#   rename(MUNICIPIO = TIP_CNTY_NAME)
+colnames(pr_area_comparisons_tip)[4] = "MUNICIPIO"
 
 # pr_spatialjoin <- pr_mrip_mer_area_comparison_spatialjoin%>%
 #   rename(MUNICIPIO = MRIP_County)
@@ -104,3 +107,6 @@ combo_merge_mermrip_clean <- combo_merge_mermrip[, c(1, 2, 3, 6, 7, 8, 9, 10, 11
 combo_merge <- combo_merge_mermrip_clean |> 
   mutate(SITE_NAME = case_when(!is.na(MER_Name) ~ MER_Name, 
                                TRUE ~ MRIP_Site_Name))
+
+write.csv(combo_merge, file = "data/CSVs/combo_merge_muni.csv", row.names = FALSE)
+
