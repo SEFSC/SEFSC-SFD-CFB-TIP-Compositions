@@ -6,6 +6,8 @@ editor: visual
 toc: true
 toc_expand: true
 toc-depth: 4
+code-fold: true
+code-tools: true
 ---
 
 This script will be expanding upon the length-comp script c1_nominal_len_comps.Rmd created by Molly Stevens.
@@ -486,12 +488,143 @@ No filtering based on number of trips/fish per year yet, analysis of all availab
 unique(length_data_final$gear) # "Hook and Line", "Trap", "Other", "Net"
 ```
 
+## All Gears
+
+```{r glm_allgear_plot, fig.width=15, fig.height=8}
+#| warning: false
+#| echo: false
+#| column: page
+
+# str(length_data_final)
+library(ggplot2)
+length_data_glm <- length_data_final |>
+  select(YEAR, FINAL_DATE, ID, COUNTY, FL_CM, LAND_STANDARD_GEAR_NAME, gear) |> 
+  # filter(gear == "Hook and Line") |> 
+  mutate(ID = as.character(ID)) |> 
+  select(-gear)
+library(ggpubr)
+# Create box plot across years
+box_plot <- ggboxplot(length_data_glm, x = "LAND_STANDARD_GEAR_NAME", y = "FL_CM",
+                 color = "LAND_STANDARD_GEAR_NAME",
+                 ylab = "FL_CM", xlab = "LAND_STANDARD_GEAR_NAME")
+box_plot
+# Create density plot across years
+density_plot <- ggdensity(length_data_glm, x = "FL_CM",
+                          add = "mean", rug = TRUE,
+                          color = "LAND_STANDARD_GEAR_NAME", fill = "LAND_STANDARD_GEAR_NAME",
+                          ylab = "FL_CM", xlab = "Gear")
+density_plot
+
+table(length_data_glm$LAND_STANDARD_GEAR_NAME, length_data_glm$YEAR)
+
+# plot data
+library(ggplot2)
+ggplot(length_data_glm, aes(x = as.Date(FINAL_DATE), y = FL_CM)) +
+  geom_point(aes(colour = LAND_STANDARD_GEAR_NAME, shape = LAND_STANDARD_GEAR_NAME), size = 1, alpha = 0.5) +
+  geom_smooth(method = "lm", formula = "y ~ x", col = "black") +
+  # facet_wrap(~ COUNTY_LANDED) +
+  labs(x = "", y = "Length (cm)", colour = "", shape = "") +
+  theme_bw() +
+  theme(legend.position = "bottom", legend.text = element_text(size = 10),
+        legend.box.spacing = unit(0, "npc"), panel.grid = element_blank()) +
+  guides(colour = guide_legend(override.aes = list(size = 2)))
+
+# # run again but with only sig different gears
+# rodreelfishtraps <- length_data_glm |> 
+#   filter(LAND_STANDARD_GEAR_NAME == c("LINES HAND", "POTS AND TRAPS; FISH", "ROD AND REEL"))
+# 
+# ggplot(rodreelfishtraps, aes(x = as.Date(FINAL_DATE), y = FL_CM)) +
+#   geom_point(aes(colour = LAND_STANDARD_GEAR_NAME, shape = LAND_STANDARD_GEAR_NAME), size = 1, alpha = 0.5) +
+#   geom_smooth(method = "lm", formula = "y ~ x", col = "black") +
+#   # facet_wrap(~ COUNTY_LANDED) +
+#   labs(x = "", y = "Length (cm)", colour = "", shape = "") +
+#   theme_bw() +
+#   theme(legend.position = "bottom", legend.text = element_text(size = 10),
+#         legend.box.spacing = unit(0, "npc"), panel.grid = element_blank()) +
+#   guides(colour = guide_legend(override.aes = list(size = 2)))
+# 
+# density_plot <- ggdensity(rodreelfishtraps, x = "FL_CM",
+#                           add = "mean", rug = TRUE,
+#                           color = "LAND_STANDARD_GEAR_NAME", fill = "LAND_STANDARD_GEAR_NAME",
+#                           ylab = "FL_CM", xlab = "Gear")
+# density_plot
+```
+
+```{r glm_allgear_analysis, fig.fullwidth}
+#| warning: false
+#| column: screen-inset  
+
+# fit models
+library(lmerTest)
+# mod0 = lmer(FL_CM ~ COUNTY * scale(FINAL_DATE) + LAND_STANDARD_GEAR_NAME + (1 | YEAR) + (1 | ID),
+#             data = length_data_glm, REML = FALSE)
+# anova(mod0)
+# 
+# mod0.1 = lmer(FL_CM ~ COUNTY + scale(FINAL_DATE) + LAND_STANDARD_GEAR_NAME + (1 | YEAR) + (1 | ID),
+#                data = length_data_glm, REML = FALSE)
+# anova(mod0.1)
+# 
+# # Gaussian full model - not using county landed because it is effectively one island
+# mod1 = lmer(FL_CM ~ COUNTY + LAND_STANDARD_GEAR_NAME + (1 | YEAR) + (1 | ID),
+#             data = length_data_glm, REML = FALSE)
+# anova(mod1)
+# summary(mod1, correlation = FALSE)
+
+# comparing length to date and gear in a linear model
+mod1.1 = lmer(FL_CM ~ scale(FINAL_DATE) + LAND_STANDARD_GEAR_NAME + (1 | YEAR) + (1 | ID),
+            data = length_data_glm, REML = FALSE)
+anova(mod1.1) # both date and gear are significant in linear model
+
+# comparing length to date and gear in a gamma full model
+mod2 = glmer(FL_CM ~ scale(FINAL_DATE) + LAND_STANDARD_GEAR_NAME + (1 | YEAR) + (1 | ID),
+             data = length_data_glm, family = Gamma(link=log))
+
+# check which number is lower, lower number is better fitting model 
+AIC(mod1.1, mod2) # glm is better fit
+
+# gamma reduced model
+mod3 = glmer(FL_CM ~ scale(FINAL_DATE) + (1 | YEAR) + (1 | ID),
+             data = length_data_glm, family = Gamma(link=log))
+
+mod4 = glmer(FL_CM ~ LAND_STANDARD_GEAR_NAME + (1 | YEAR) + (1 | ID),
+             data = length_data_glm, family = Gamma(link=log))
+
+# likelihood ratio test - compare gamma full model to reduced model to find p-value of value excluded from reduced model 
+ 
+# gives p value of gear - significant p value shows one of the gears present is significantly different from the others
+### 
+anova(mod2, mod3)
+# gives p value of date - significant p value shows the slope of the line of fit across time is significantly different from a 0(zero) slope 
+### 
+anova(mod2, mod4)
+
+# pairwise comparisons (if needed)(needed for Hook and Line)
+### 
+mod_contr = emmeans::emmeans(object = mod2, pairwise ~ "LAND_STANDARD_GEAR_NAME", adjust = "tukey")
+mod_contr
+
+# cld provides gear groupings based on which gears are similar vs significantly different from each other 
+### 
+multcomp::cld(object = mod_contr$emmeans)
+
+allgears_multcompcld <- multcomp::cld(object = mod_contr$emmeans)
+
+length_data_fishcount <- length_data_final |> 
+  group_by(LAND_STANDARD_GEAR_NAME) |>
+  summarise(n_fish = n()) 
+length_data_tripcount <- length_data_final |> 
+  group_by(LAND_STANDARD_GEAR_NAME) |>
+  summarise(n_distinct(ID)) 
+
+allgears_multcompcld_fish <- full_join(allgears_multcompcld, length_data_fishcount, by = "LAND_STANDARD_GEAR_NAME")
+allgears_multcompcld_trip <- full_join(allgears_multcompcld_fish, length_data_tripcount, by = "LAND_STANDARD_GEAR_NAME")
+```
 ## Hook and Line
 
 ```{r glm_hookline_plot, fig.width=15, fig.height=8}
 #| warning: false
 #| echo: false
-#| column: page 
+#| column: page
 
 # str(length_data_final)
 library(ggplot2)
@@ -527,9 +660,9 @@ ggplot(use_gear_hl, aes(x = as.Date(FINAL_DATE), y = FL_CM)) +
 
 ```
 
-```{r glm_hookandline_analysis}
+```{r glm_hookandline_analysis, fig.fullwidth}
 #| warning: false
-#| column: page 
+#| column: screen-inset  
 
 # fit models
 library(lmerTest)
@@ -934,7 +1067,7 @@ ggplot(aes(FL_CM, color = INT_TYPE))+
 
 ## Gear grouping investigation
 
-```{r mgt_period_plot, fig.width=12, fig.height=12}
+```{r mgt_period_plot, fig.width=12, fig.height=8}
 #| warning: false
 #| column: page 
 #| echo: false
@@ -953,7 +1086,7 @@ ggplot(aes(FL_CM, color = gear))+
 
 ```
 
-```{r mgt_period_hl_plot, fig.width=12, fig.height=12}
+```{r mgt_period_hl_plot, fig.width=12, fig.height=8}
 #| warning: false
 #| column: page 
 #| echo: false
@@ -981,7 +1114,7 @@ ggplot(aes(FL_CM, color = LAND_STANDARD_GEAR_NAME))+
 
 ```
 
-```{r mgt_period_trap_plot, fig.width=12, fig.height=12}
+```{r mgt_period_trap_plot, fig.width=12, fig.height=8}
 #| warning: false
 #| column: page
 #| echo: false
@@ -1004,7 +1137,7 @@ ggplot(aes(FL_CM, color = LAND_STANDARD_GEAR_NAME))+
 
 ```
 
-```{r mgt_period_net_plot, fig.width=12, fig.height=12}
+```{r mgt_period_net_plot,fig.width=12, fig.height=8}
 #| warning: false
 #| column: page
 #| echo: false
@@ -1067,7 +1200,7 @@ ggplot(aes(FL_CM, color = gear))+
 #  scale_color_manual(values = gearcols, labels = counts$n_labels)+
   labs(color = "Gear Type", x = "Fork Length (cm)", title = paste0(county,  "\n (N = ", sum(ycounts$n), ")"))+
   # facet_wrap(~ISLAND,ncol=1) +
-  # facet_wrap(~mgt_period) +
+  facet_wrap(~mgt_period) +
   # theme_minimal()
   theme(legend.title = element_text(size=14), 
     legend.text = element_text(size=12))
@@ -1092,7 +1225,7 @@ ggplot(aes(FL_CM, color = LAND_STANDARD_GEAR_NAME))+
   scale_color_hue(labels = counts$n_labels)+
   labs(color = "Gear Type", x = "Fork Length (cm)", title = paste0(county,  "\n (N = ", sum(counts$n), ")"))+
   # facet_wrap(~ISLAND,ncol=1) +
-  # facet_wrap(~mgt_period) +
+  facet_wrap(~mgt_period) +
   # theme_minimal()
   theme(legend.title = element_text(size=14), 
     legend.text = element_text(size=12))
@@ -1118,7 +1251,7 @@ ggplot(aes(FL_CM,color = LAND_STANDARD_GEAR_NAME))+
   scale_color_hue(labels = counts$n_labels)+
   labs(color = "Gear Type", x = "Fork Length (cm)", title = paste0(county,  "\n (N = ", sum(counts$n), ")"))+
   # facet_wrap(~ISLAND,ncol=1) +
-  # facet_wrap(~mgt_period) +
+  facet_wrap(~mgt_period) +
   # theme_minimal()
   theme(legend.title = element_text(size=14), 
     legend.text = element_text(size=12))
