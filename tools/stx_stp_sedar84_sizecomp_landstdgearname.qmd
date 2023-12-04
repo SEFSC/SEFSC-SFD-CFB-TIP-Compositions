@@ -623,7 +623,7 @@ ggplot(aes(FL_CM, color = LAND_STANDARD_GEAR_NAME))+
 
 ```
 
-## Break at 2011 
+## Break at 2011
 
 ```{r mgt_period_plot_2011, fig.width=15, fig.height=8}
 #| warning: false
@@ -819,8 +819,8 @@ for(i in 1:length(final_gears)){
 
 ```
 
-
 # Stacked bar charts
+
 #### Visual representation of gear distribution within groupings
 
 ```{r gear_distribution_plot, fig.width=10, fig.height=6}
@@ -866,8 +866,7 @@ ggplot(aes(fill = LAND_STANDARD_GEAR_NAME, y = FL_CM, x= gear))+
 
 # Gear distribution across time by gear groupings
 
-#### All gears over time 
-
+#### All gears over time
 
 ```{r, fig.width=15, fig.height=8}
 #| echo: false
@@ -1064,7 +1063,6 @@ ggplot(aes(x = Year, y = yearlyValue, color = LAND_STANDARD_GEAR_NAME, group = 1
 
 ```
 
-
 # Cummulative Density Plots
 
 ## Aggregated CDF
@@ -1246,4 +1244,3 @@ for(i in 1:length(final_gears)){
 # write.xlsx(comps, file = paste0("./outputs/", sp, "_com_lfd_", sprintf('%02d', min_year %% 100), sprintf('%02d', max_year %% 100), "_", gsub("-", "", Sys.Date()), ".xlsx"))
 
 ```
-

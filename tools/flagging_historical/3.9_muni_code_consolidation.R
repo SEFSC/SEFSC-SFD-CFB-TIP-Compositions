@@ -81,32 +81,44 @@ colnames(pr_area_comparisons_tip)[4] = "MUNICIPIO"
 # pair down to necessary columns 
 pr_mer_skeleton <- pr_area_comparisons_mer[,c(2, 3, 24, 26)]
 pr_mrip_skeleton <- pr_area_comparisons_mrip[,c(2, 6, 9, 10)]
-spatialjoin_skeleton <- pr_mrip_mer_area_comparison_spatialjoin[, c(1, 6, 19, 20, 37,  44, 45)]
+spatialjoin_skeleton <- pr_mrip_mer_area_comparison_spatialjoin[, c(1, 2, 6, 19, 20, 37,  44, 45)]
 
 # remove rows from MER that have na's as those locations are not used
 pr_mer_clean <- na.omit(pr_mer_skeleton)
 
 # # try full join
-# mer_mrip_combo <- full_join(pr_mrip_skeleton, pr_mer_clean, by = 'SITE_NAME')
 # # only one location with the same site name in both tables, figure out another way to cross reference
 
 # merge to add mer locations not in the join
 combo_merge_mer <- merge(spatialjoin_skeleton,pr_mer_clean, by = 'MER_Name', all = TRUE)
 
 # clean columns of mer merge
-combo_merge_mer_clean <- combo_merge_mer[, c(1, 2, 5, 6, 7, 8, 9, 10)]
+combo_merge_mer_clean <- combo_merge_mer[, c(1, 2, 3, 6, 7, 8, 9, 10, 11)]
 
 
 # merge to add mrip locations not in the join
 combo_merge_mermrip <- merge(combo_merge_mer_clean,pr_mrip_skeleton, by = 'MRIP_Site_Name', all = TRUE)
 
 # clean columns of mrip merge
-combo_merge_mermrip_clean <- combo_merge_mermrip[, c(1, 2, 3, 6, 7, 8, 9, 10, 11)]
+combo_merge_mermrip_clean <- combo_merge_mermrip[, c(1, 2, 3, 4, 7, 8, 9, 10, 11, 12)]
+write.csv(combo_merge_mermrip_clean, file = "tools/output/combo_merge_firstdraft.csv", row.names = FALSE)
+
+# read in cleaned first draft (combined mer/mrip locations fixed)
+combo_merge_firstdraft_edited <- read_csv("tools/output/combo_merge_firstdraft_edited.csv")
 
 # create a new column for official site name
-combo_merge <- combo_merge_mermrip_clean |> 
+combo_merge <- combo_merge_firstdraft_edited |> 
   mutate(SITE_NAME = case_when(!is.na(MER_Name) ~ MER_Name, 
-                               TRUE ~ MRIP_Site_Name))
+                               TRUE ~ MRIP_Site_Name),
+         MUNICIPIO = case_when(!is.na(MER_Municipio) ~ MER_Municipio, 
+                               TRUE ~ MRIP_County),
+         GEN_LAT = case_when(!is.na(MER_latitude_d) ~ MER_latitude_d, 
+                               TRUE ~ MRIP_Latitude.y),
+         GEN_LONG = case_when(!is.na(MER_longitued_d) ~ MER_longitued_d, 
+                               TRUE ~ MRIP_Longitude.y)) 
+combo_merge_ID <- rowid_to_column(combo_merge, "SITE_ID") |> 
+  select(SITE_ID, SITE_NAME, MUNICIPIO, GEN_LAT, GEN_LONG)
 
-write.csv(combo_merge, file = "data/CSVs/combo_merge_muni.csv", row.names = FALSE)
+
+write.csv(combo_merge_ID, file = "tools/output/combo_merge_muni.csv", row.names = FALSE)
 
