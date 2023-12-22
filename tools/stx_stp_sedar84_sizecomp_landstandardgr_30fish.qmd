@@ -287,7 +287,7 @@ table(stx_slp$LAND_STANDARD_GEAR_NAME, stx_slp$STANDARDGEARNAME_2)
 
 #### Add gear groupings, NO length-length conversions available
 
-Trap gears were originally placed in "other" category based on previous landings discussions. I moved them to their own group for visualization purposes right now. 
+Trap gears were originally placed in "other" category based on previous landings discussions. I moved them to their own group for visualization purposes right now.
 
 ```{r }
 #| warning: false
@@ -1797,7 +1797,6 @@ ggplot(aes(x = Year, y = yearlyValue, color = LAND_STANDARD_GEAR_NAME, group = 1
     legend.text = element_text(size=12))
 
 ```
-
 
 ## Other Gear Distribution Over Time by Year
 
