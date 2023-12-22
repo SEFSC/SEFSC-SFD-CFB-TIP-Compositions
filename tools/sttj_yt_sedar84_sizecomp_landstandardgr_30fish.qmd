@@ -21,7 +21,7 @@ This script will be expanding upon the length-comp script c1_nominal_len_comps.R
 
 # Set up library 
 
-librarian::shelf(here, tidyverse, ROracle, keyring, dotenv, reshape, openxlsx, janitor, DT, pander, knitr) #plyr
+librarian::shelf(here, tidyverse, ROracle, keyring, dotenv, reshape, openxlsx, janitor, DT, pander, knitr, flextable) #plyr
 # if conflicts in pkgs arise, use the following:
 # library(conflicted)
 # conflicted::conflicts_prefer(here::here)
@@ -83,7 +83,8 @@ bin_size <- 1
 
 len_type <- "FORK LENGTH"
 
-table(sttj_yt$LENGTH_TYPE1, useNA='always')
+flextable(as.data.frame(table(sttj_yt$LENGTH_TYPE1, useNA='always')))%>%
+  autofit()
 table(sttj_yt$LENGTH_TYPE2, useNA='always')
 
 min(sttj_yt$LENGTH1_MM,na.rm = TRUE)
@@ -530,25 +531,7 @@ ggplot(length_data_glm, aes(x = as.Date(FINAL_DATE), y = FL_CM)) +
         legend.box.spacing = unit(0, "npc"), panel.grid = element_blank()) +
   guides(colour = guide_legend(override.aes = list(size = 2)))
 
-# # run again but with only sig different gears
-# rodreelfishtraps <- length_data_glm |> 
-#   filter(LAND_STANDARD_GEAR_NAME == c("LINES HAND", "POTS AND TRAPS; FISH", "ROD AND REEL"))
-# 
-# ggplot(rodreelfishtraps, aes(x = as.Date(FINAL_DATE), y = FL_CM)) +
-#   geom_point(aes(colour = LAND_STANDARD_GEAR_NAME, shape = LAND_STANDARD_GEAR_NAME), size = 1, alpha = 0.5) +
-#   geom_smooth(method = "lm", formula = "y ~ x", col = "black") +
-#   # facet_wrap(~ COUNTY_LANDED) +
-#   labs(x = "", y = "Length (cm)", colour = "", shape = "") +
-#   theme_bw() +
-#   theme(legend.position = "bottom", legend.text = element_text(size = 10),
-#         legend.box.spacing = unit(0, "npc"), panel.grid = element_blank()) +
-#   guides(colour = guide_legend(override.aes = list(size = 2)))
-# 
-# density_plot <- ggdensity(rodreelfishtraps, x = "FL_CM",
-#                           add = "mean", rug = TRUE,
-#                           color = "LAND_STANDARD_GEAR_NAME", fill = "LAND_STANDARD_GEAR_NAME",
-#                           ylab = "FL_CM", xlab = "Gear")
-# density_plot
+
 ```
 
 ```{r glm_allgear_analysis, fig.fullwidth}
@@ -683,25 +666,7 @@ ggplot(length_data_glm_2012, aes(x = as.Date(FINAL_DATE), y = FL_CM)) +
         legend.box.spacing = unit(0, "npc"), panel.grid = element_blank()) +
   guides(colour = guide_legend(override.aes = list(size = 2)))
 
-# # run again but with only sig different gears
-# rodreelfishtraps <- length_data_glm |> 
-#   filter(LAND_STANDARD_GEAR_NAME == c("LINES HAND", "POTS AND TRAPS; FISH", "ROD AND REEL"))
-# 
-# ggplot(rodreelfishtraps, aes(x = as.Date(FINAL_DATE), y = FL_CM)) +
-#   geom_point(aes(colour = LAND_STANDARD_GEAR_NAME, shape = LAND_STANDARD_GEAR_NAME), size = 1, alpha = 0.5) +
-#   geom_smooth(method = "lm", formula = "y ~ x", col = "black") +
-#   # facet_wrap(~ COUNTY_LANDED) +
-#   labs(x = "", y = "Length (cm)", colour = "", shape = "") +
-#   theme_bw() +
-#   theme(legend.position = "bottom", legend.text = element_text(size = 10),
-#         legend.box.spacing = unit(0, "npc"), panel.grid = element_blank()) +
-#   guides(colour = guide_legend(override.aes = list(size = 2)))
-# 
-# density_plot <- ggdensity(rodreelfishtraps, x = "FL_CM",
-#                           add = "mean", rug = TRUE,
-#                           color = "LAND_STANDARD_GEAR_NAME", fill = "LAND_STANDARD_GEAR_NAME",
-#                           ylab = "FL_CM", xlab = "Gear")
-# density_plot
+
 ```
 
 ```{r glm_allgear2012_analysis, fig.fullwidth}
@@ -873,12 +838,17 @@ anova(mod2, mod4)
 # pairwise comparisons (if needed)(needed for Hook and Line)
 ### lines hand vs rod and reel and lines power troll other vs rod and reel are signifficantly different 
 mod_contr = emmeans::emmeans(object = mod2, pairwise ~ "LAND_STANDARD_GEAR_NAME", adjust = "tukey")
-mod_contr
+# flextable(as.data.frame(mod_contr)) |> autofit()
+flextable(as.data.frame(mod_contr$emmeans)) |> autofit()
+
+flextable(as.data.frame(mod_contr$contrasts)) |> autofit()
 
 # cld provides gear groupings based on which gears are similar vs significantly different from each other 
 ### suggestion: "lines power troll other", "lines hand" "rod and reel electric" and "reel electric or hydroulic" be grouped together
 ### "rod and reel" be kept separate 
-multcomp::cld(object = mod_contr$emmeans)
+# multcomp::cld(object = mod_contr$emmeans)
+flextable(as.data.frame(multcomp::cld(object = mod_contr$emmeans))) |> autofit()
+
 ```
 
 ## Net

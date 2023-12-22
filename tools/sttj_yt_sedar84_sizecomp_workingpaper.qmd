@@ -65,6 +65,8 @@ gearcols <- c("Net" = "#FF0000", "Trap" = "#00A08A", "Other" = "#5D057D", "Hook 
 
 ```{r}
 #| warning: false
+#| echo: false
+#| column: page
 
 sp <- "YTS"
 

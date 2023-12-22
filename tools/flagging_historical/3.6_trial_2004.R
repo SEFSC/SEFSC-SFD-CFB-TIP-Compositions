@@ -20,12 +20,11 @@ com_tip_PR_2004 <- readRDS("~/SEFSC-SFD-CFB-TIP-Compositions/data/raw/com_tip_PR
 
 # Create a comparable table 
 com_tip_PR_2004_skeleton <- com_tip_PR_2004 %>%  # select comparable variables 
-  select(ID, INTERVIEW_DATE, YEAR, REPORTING_AREA_ZIP, SAMPLE_AREA_STATE_CODE, SAMPLE_AREA_COUNTY_CODE,
-         SAMPLE_AREA_ZIP, LANDING_AREA_PLACE_CODE, LANDING_AREA_COUNTY_CODE, SAMPLE_AREA_PLACE_CODE, 
-         GEAR_1, GEARNAME_1, GEAR_QTY_1, GEAR_FREQUENCY1, MIN_DEPTH1, MAX_DEPTH1, 
-         OBS_STANDARD_SPECIES_CODE, OBS_STANDARD_SPECIES_NAME, TRIP_DAYS_FISHED, 
-         LENGTH1, LENGTH_UNIT1, LENGTH_UNIT_CODE1, LENGTH_TYPE1, LENGTH_TYPE_CODE1, 
-         LENGTH1_MM, OBS_WEIGHT, OBS_WEIGHT_KG, OBS_WEIGHT_UNIT, OBS_WEIGHT_UNIT_ID)
+  select(ID, INTERVIEW_DATE, YEAR, REPORTING_AREA_ZIP, SAMPLE_AREA_COUNTY_CODE, 
+         SAMPLE_AREA_PLACE_CODE, SAMPLE_AREA_STATE_CODE,  SAMPLE_AREA_ZIP, 
+         SITE_LOCATION, STANDARDGEAR_1,
+         STANDARDGEARNAME_1, OBS_STANDARD_SPECIES_CODE, OBS_STANDARD_SPECIES_NAME,
+         LENGTH1_MM, OBS_WEIGHT_KG)
 
 # create new filterable date value
 com_tip_PR_2004_NEWDATE <- com_tip_PR_2004_skeleton %>%
@@ -33,7 +32,7 @@ com_tip_PR_2004_NEWDATE <- com_tip_PR_2004_skeleton %>%
          FINAL_DATE = case_when(is.na(TEST_DATE) ~ INTERVIEW_DATE, 
                                 TRUE ~ TEST_DATE))
 
-com_tip_PR_2004_ORGANIZED <- com_tip_PR_2004_NEWDATE[,c(1,2,3,31, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30)]
+com_tip_PR_2004_ORGANIZED <- com_tip_PR_2004_NEWDATE[,c(1,2,3,17, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)]
 
 save(com_tip_PR_2004_ORGANIZED,file="data/dataframes/com_tip_PR_2004_ORGANIZED.Rda") # file is saved in data folder  
 
