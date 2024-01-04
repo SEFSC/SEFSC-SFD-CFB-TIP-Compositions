@@ -6,6 +6,7 @@ output-file: test.docx
 execute:
   cache: true
 ---
+# Summary 
 
 ```{r}
 #| echo: false
@@ -13,27 +14,29 @@ execute:
 #| message: false
 
 library(here)
-source(here("tools", "stx", 'slp'))
+source(here::here( "tools", "sedar_84_stx_stp_2022", 'stx_stp_2022_figures.R'))
+source("C:/Users/katherine.godwin/Documents/SEFSC-SFD-CFB-TIP-Compositions/tools/sedar_84_stx_stp_2022/stx_stp_2022_figures.R")
+?source
 ```
 
 
-## Quarto
+In early (what month?) 2023, the Caribbean Fishery Management Council (CFMC) requested the assistance of the National Marine Fisheries Service (NOAA Fisheries), Southeast Fisheries Science Center (SEFSC) to conduct stoplight parrotfish assessment updates outside the SouthEast Data, Assessment, and Review (SEDAR) process. The request was to provide size composition analysis of the Trip Interview Program (TIP) data available for the St. Croix region utilizing methods established previously in SEDAR 80 (is this the origination??). This document provides size composition analysis for stoplight parrotfish in St. Croix using TIP data for the years 1988 to 2022. This work was conducted by the Southeast Fisheries Science Center, Sustainable Fisheries Division, Caribbean Fisheries Branch. 
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+There are two main portions of this document. First,  gear groupings were established based on a general linear model (glm) analysis. Second, the size composition of each gear grouping was assessed. 
 
-## Running Code
+\newpage
 
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+This report provides a summary of the procedures used to complete the size composition analysis of stoplight parrotfish in St. Croix using TIP data from 1988 to 2022. The glm analysis used a gamma-distributed dependent variable. 
 
-```{r}
-1 + 1
-```
-
-You can add options to executable code like this
+\
 
 ```{r}
 #| echo: false
-2 * 2
-```
+#| label: fig-abc2
+#| fig-cap: |
+#|   Aggregated density plot of lengths measured in millimeters of Stoplight Parrotfish in St. Croix grouped by assigned gear groupings. 
+#| fig-width: 6
+#| fig-height: 3
 
-The `echo: false` option disables the printing of code (only output is displayed).
+abc2
+```
