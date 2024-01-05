@@ -14,9 +14,11 @@ execute:
 #| message: false
 
 library(here)
-source(here::here( "tools", "sedar_84_stx_stp_2022", 'stx_stp_2022_figures.R'))
+source(here::here('tools','sedar_84_stx_stp_2022','stx_stp_2022_figures.R'))
 source("C:/Users/katherine.godwin/Documents/SEFSC-SFD-CFB-TIP-Compositions/tools/sedar_84_stx_stp_2022/stx_stp_2022_figures.R")
 ?source
+
+source("./tools/sedar_84_stx_stp_2022/stx_stp_2022_figures.R")
 ```
 
 
