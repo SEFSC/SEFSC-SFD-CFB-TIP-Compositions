@@ -6,7 +6,8 @@ output-file: test.docx
 execute:
   cache: true
 ---
-# Summary 
+
+# Summary
 
 ```{r}
 #| echo: false
@@ -22,24 +23,35 @@ source("./tools/sedar_84_stx_stp_2022/stx_stp_2022_figures.R")
 
 ```
 
+In early (what month?) 2023, the Caribbean Fishery Management Council (CFMC) requested the assistance of the National Marine Fisheries Service (NOAA Fisheries), Southeast Fisheries Science Center (SEFSC) to conduct stoplight parrotfish assessment updates outside the SouthEast Data, Assessment, and Review (SEDAR) process. The request was to provide size composition analysis of the Trip Interview Program (TIP) data available for the St. Croix region utilizing methods established previously in SEDAR 80 (is this the origination??). This document provides size composition analysis for stoplight parrotfish in St. Croix using TIP data for the years 1988 to 2022. This work was conducted by the Southeast Fisheries Science Center, Sustainable Fisheries Division, Caribbean Fisheries Branch.
 
-In early (what month?) 2023, the Caribbean Fishery Management Council (CFMC) requested the assistance of the National Marine Fisheries Service (NOAA Fisheries), Southeast Fisheries Science Center (SEFSC) to conduct stoplight parrotfish assessment updates outside the SouthEast Data, Assessment, and Review (SEDAR) process. The request was to provide size composition analysis of the Trip Interview Program (TIP) data available for the St. Croix region utilizing methods established previously in SEDAR 80 (is this the origination??). This document provides size composition analysis for stoplight parrotfish in St. Croix using TIP data for the years 1988 to 2022. This work was conducted by the Southeast Fisheries Science Center, Sustainable Fisheries Division, Caribbean Fisheries Branch. 
-
-There are two main portions of this document. First,  gear groupings were established based on a general linear model (glm) analysis. Second, the size composition of each gear grouping was assessed. 
+There are two main portions of this document. First, gear groupings were established based on a general linear model (glm) analysis. Second, the size composition of each gear grouping was assessed.
 
 \newpage
 
-This report provides a summary of the procedures used to complete the size composition analysis of stoplight parrotfish in St. Croix using TIP data from 1988 to 2022. The glm analysis used a gamma-distributed dependent variable. 
+This report provides a summary of the procedures used to complete the size composition analysis of Stoplight Parrotfish in St. Croix using TIP data from 1988 to 2022. The glm analysis used a gamma-distributed dependent variable.
 
 \
 
-
+## Aggregated Gear Density 
 
 ```{r}
 #| echo: false
 #| label: fig-abc2
 #| fig-cap: |
-#|   Aggregated density plot of lengths measured in millimeters of Stoplight Parrotfish in St. Croix grouped by assigned gear groupings. 
+#|   Aggregated density plots of lengths measured in centimeters of Stoplight Parrotfish in St. Croix grouped by assigned gear groupings. 
+#| fig-width: 6
+#| fig-height: 3
+
+abc2
+
+```
+
+```{r}
+#| echo: false
+#| label: fig-abc2
+#| fig-cap: |
+#|   Aggregated density plot of lengths measured in centimeters of each gear within the diving gear group of Stoplight Parrotfish in St. Croix.
 #| fig-width: 6
 #| fig-height: 3
 
@@ -50,14 +62,28 @@ abc3
 
 \newpage
 
+## Generalized Linear Model (GLM) Analysis
+
+```{r}
+#| echo: false
+#| label: fig-abc4
+#| fig-cap: |
+#|   Plot of all lengths measured in centimeters of Stoplight Parrotfish in St. Croix across time collected. Trend line is mapped across data, each point is color and shape specific to the gear it represents. 
+#| fig-width: 6
+#| fig-height: 3
+
+abc4
+
+
+```
+
 ```{r}
 #| echo: false
 #| warning: false
 #| label: tbl-abc2
 #| tbl-cap: |
-#|   Caribbean Spiny Lobster variable-catch (annual) and constant-catch (average) OFLs and ABCs for Puerto Rico, based on the Tier 3 of the ABC Control Rule. The column titled "Source" indicates if the rows are associated with the SEDAR 57 benchmark with input landings through 2020 or with the SEDAR 57 update with input landings through 2023. All OFLs and ABCs are in pounds whole weight.
+#|   This shows the results of glm analysis on the full TIP data set of Stoplight Parrotfish lengths in St. Croix. The column titled "group" indicates the group (1 or 2 or both) that the gear can statistically be included in, and thus be statistically similar to the other gears grouped similarly. The "n_fish" column indicates the number of unique lengths recorded for each gear. The "n_distinct_ID" column indicates the number of distinct trip ID's associated with each gear. The "Percentage" column inticates the percent(n_fish) of the total recorded fish lengths that are included within each gear. 
 
-library(knitr)
-kable("")
+tbl1
 
 ```
