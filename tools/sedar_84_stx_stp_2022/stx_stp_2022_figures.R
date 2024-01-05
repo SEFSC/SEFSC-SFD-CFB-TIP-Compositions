@@ -460,8 +460,9 @@ density_plot
 
 # plot data
 library(ggplot2)
-ggplot(length_data_glm, aes(x = as.Date(FINAL_DATE), y = FL_CM)) +
-  geom_point(aes(colour = LAND_STANDARD_GEAR_NAME, shape = LAND_STANDARD_GEAR_NAME), size = 1, alpha = 0.5) +
+adc4 = ggplot(length_data_glm, aes(x = as.Date(FINAL_DATE), y = FL_CM)) +
+  geom_point(aes(colour = LAND_STANDARD_GEAR_NAME, shape=LAND_STANDARD_GEAR_NAME), size = 1, alpha = 0.5) +
+  scale_shape_manual(values=c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14))+
   geom_smooth(method = "lm", formula = "y ~ x", col = "black") +
   # facet_wrap(~ COUNTY_LANDED) +
   labs(x = "", y = "Length (cm)", colour = "", shape = "") +
@@ -604,7 +605,7 @@ density_plot
 
 # plot data
 library(ggplot2)
-ggplot(length_data_glm_2012, aes(x = as.Date(FINAL_DATE), y = FL_CM)) +
+abc5 = ggplot(length_data_glm_2012, aes(x = as.Date(FINAL_DATE), y = FL_CM)) +
   geom_point(aes(colour = LAND_STANDARD_GEAR_NAME, shape = LAND_STANDARD_GEAR_NAME), size = 1, alpha = 0.5) +
   geom_smooth(method = "lm", formula = "y ~ x", col = "black") +
   # facet_wrap(~ COUNTY_LANDED) +
@@ -1009,7 +1010,7 @@ multcomp::cld(object = mod_contr$emmeans)
  
 
 
-########################################################
+#-------------------------------------------------------#
 # dscounts = VLg %>% group_by(source) %>% filter(n() >= 30) %>% ungroup %>% 
 #   tabyl(source) %>%
 #   mutate(n_labels = paste0(source, " (n= ", scales::comma(n), ")" ))
@@ -1026,7 +1027,7 @@ multcomp::cld(object = mod_contr$emmeans)
 #  
 #  
 # table(VLg$YEAR,VLg$source)
-########################################################
+#--------------------------------------------------------#
 
 #####################EDIT HERE ; NOT WORKING BELOW (I don't think)
 
@@ -1037,7 +1038,7 @@ ycounts =length_data_final %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup 
 abc2 =  length_data_final %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
   ggplot(aes(FL_CM))+
   # geom_density( aes(color = "Combined"),lwd=1.5)+
-  geom_density(aes(color = gear), size = 0.75)+
+  geom_density(aes(color = gear), linewidth = 0.75)+
   scale_color_hue(labels=ycounts$n_labels)+
   # scale_color_hue(labels=c("Combined",ycounts$n_labels))+
   #scale_color_manual(values = gearcols, labels = c("Combined", counts$n_labels))+
@@ -1046,6 +1047,12 @@ abc2 =  length_data_final %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %
   theme(legend.title = element_text(size=14), 
         legend.text = element_text(size=12))
 
+geardensity_plot <- length_data_final %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
+  ggdensity(x = "FL_CM",
+                          add = "mean", rug = TRUE,
+                          color = "gear", fill = "gear",
+                          ylab = "FL_CM", xlab = "Gear")
+abc3 = geardensity_plot
 
 
 #  filter to 30 or more of same gear each year 
@@ -1094,11 +1101,11 @@ usvi %>%
   theme(legend.title = element_text(size=14), 
         legend.text = element_text(size=12))
 
-```
+
 
 ## Gear grouping investigation ####
 
-Filtered to minimum 30 fish per year
+# Filtered to minimum 30 fish per year
 
 
 
@@ -1301,7 +1308,7 @@ ot %>%  group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
 
 ## Annual Density plots ####
 
-This will be split by final gear aggregations once these are decided, removes "other" gear types.
+# This will be split by final gear aggregations once these are decided, removes "other" gear types.
 
 
 fleet_final <- length_data_final[length_data_final$fleet==1,]

@@ -15,8 +15,8 @@ execute:
 
 library(here)
 source(here::here( "tools", "sedar_84_stx_stp_2022", 'stx_stp_2022_figures.R'))
-source("C:/Users/katherine.godwin/Documents/SEFSC-SFD-CFB-TIP-Compositions/tools/sedar_84_stx_stp_2022/stx_stp_2022_figures.R")
-?source
+source("~/SEFSC-SFD-CFB-TIP-Compositions/tools/sedar_84_stx_stp_2022/stx_stp_2022_figures.R")
+
 ```
 
 
@@ -30,6 +30,8 @@ This report provides a summary of the procedures used to complete the size compo
 
 \
 
+
+
 ```{r}
 #| echo: false
 #| label: fig-abc2
@@ -39,4 +41,20 @@ This report provides a summary of the procedures used to complete the size compo
 #| fig-height: 3
 
 abc2
+
+
+```
+
+\newpage
+
+```{r}
+#| echo: false
+#| warning: false
+#| label: tbl-abc2
+#| tbl-cap: |
+#|   Caribbean Spiny Lobster variable-catch (annual) and constant-catch (average) OFLs and ABCs for Puerto Rico, based on the Tier 3 of the ABC Control Rule. The column titled "Source" indicates if the rows are associated with the SEDAR 57 benchmark with input landings through 2020 or with the SEDAR 57 update with input landings through 2023. All OFLs and ABCs are in pounds whole weight.
+
+library(knitr)
+kable("")
+
 ```
