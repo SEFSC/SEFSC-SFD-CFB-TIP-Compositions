@@ -49,14 +49,50 @@ abc2
 
 ```{r}
 #| echo: false
-#| label: fig-abc2
+#| label: fig-abc5
 #| fig-cap: |
-#|   Aggregated density plot of lengths measured in centimeters of each gear within the diving gear group of Stoplight Parrotfish in St. Croix.
+#|   Aggregated density plot of lengths measured in centimeters of each gear within the "diving" gear group of Stoplight Parrotfish in St. Croix.
 #| fig-width: 6
 #| fig-height: 3
 
-abc2
-abc3
+abc5
+
+```
+
+```{r}
+#| echo: false
+#| label: fig-abc6
+#| fig-cap: |
+#|   Aggregated density plot of lengths measured in centimeters of each gear within the "trap" gear group of Stoplight Parrotfish in St. Croix.
+#| fig-width: 6
+#| fig-height: 3
+
+abc6
+
+```
+
+```{r}
+#| echo: false
+#| label: fig-abc7, fig-abc8
+#| fig-cap: |
+#|   Aggregated density plot of lengths measured in centimeters of each gear within the "net" gear group of Stoplight Parrotfish in St. Croix. The top pot uses the LAND_STANDARD_GEAR_NAME variable, as did all previous plots. The second plot uses the LAND_GEAR_NAME variable, i.e. the gear name specific to the island. This variable shows the different mesh sizes used in the net gear grouping.  
+#| fig-width: 6
+#| fig-height: 3
+
+abc7
+abc8
+
+```
+
+```{r}
+#| echo: false
+#| label: fig-abc9
+#| fig-cap: |
+#|   Aggregated density plot of lengths measured in centimeters of each gear within the "other" gear group of Stoplight Parrotfish in St. Croix.
+#| fig-width: 6
+#| fig-height: 3
+
+abc9
 
 ```
 
@@ -69,7 +105,7 @@ abc3
 #| label: fig-abc4
 #| fig-cap: |
 #|   Plot of all lengths measured in centimeters of Stoplight Parrotfish in St. Croix across time collected. Trend line is mapped across data, each point is color and shape specific to the gear it represents. 
-#| fig-width: 6
+#| fig-width: 8
 #| fig-height: 3
 
 abc4
@@ -85,5 +121,54 @@ abc4
 #|   This shows the results of glm analysis on the full TIP data set of Stoplight Parrotfish lengths in St. Croix. The column titled "group" indicates the group (1 or 2 or both) that the gear can statistically be included in, and thus be statistically similar to the other gears grouped similarly. The "n_fish" column indicates the number of unique lengths recorded for each gear. The "n_distinct_ID" column indicates the number of distinct trip ID's associated with each gear. The "Percentage" column inticates the percent(n_fish) of the total recorded fish lengths that are included within each gear. 
 
 tbl1
+
+```
+
+
+```{r}
+#| echo: false
+#| label: fig-abc10
+#| fig-cap: |
+#|   Plot of "diving" gear group lengths measured in centimeters of Stoplight Parrotfish in St. Croix across time collected. Trend line is mapped across data, each point is color and shape specific to the gear it represents. No significant p values for time period or gears, further comparisons not needed.
+#| fig-width: 6
+#| fig-height: 3
+
+abc10
+
+```
+
+```{r}
+#| echo: false
+#| label: fig-abc13
+#| fig-cap: |
+#|   Plot of "trap" gear group lengths measured in centimeters of Stoplight Parrotfish in St. Croix across time collected. Trend line is mapped across data, each point is color and shape specific to the gear it represents. 
+#| fig-width: 6
+#| fig-height: 3
+
+abc13
+
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| label: tbl-tbl2
+#| tbl-cap: |
+#|   This shows the results of glm analysis of the "trap" gear group of Stoplight Parrotfish lengths in St. Croix. The column titled "group" indicates the group (1 or 2 or both) that the gear can statistically be included in, and thus be statistically similar to the other gears grouped similarly. The "n" column indicates the number of unique lengths recorded for each gear. The "Percentage" column inticates the percent of the total(n) recorded fish lengths that are included within each gear. 
+
+tbl2
+
+```
+
+```{r}
+#| echo: false
+#| label: fig-abc11, fig-abc12
+#| fig-cap: |
+#|   Plot of "net" gear group lengths measured in centimeters of Stoplight Parrotfish in St. Croix across time collected. Trend line is mapped across data, each point is color and shape specific to the gear it represents. The top pot uses the LAND_STANDARD_GEAR_NAME variable, as did all previous plots. The second plot uses the LAND_GEAR_NAME variable, i.e. the gear name specific to the island. This variable shows the different mesh sizes used in the net gear grouping. No significant p values for time period or gears, further comparisons not needed.
+#| fig-width: 6
+#| fig-height: 3
+
+abc11
+abc12
 
 ```

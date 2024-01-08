@@ -548,18 +548,21 @@ allgears_multcompcld <- multcomp::cld(object = mod_contr$emmeans)
 
 length_data_fishcount <- length_data_final |> 
   group_by(LAND_STANDARD_GEAR_NAME) |>
-  summarise(n_fish = n()) 
-length_data_tripcount <- length_data_final |> 
-  group_by(LAND_STANDARD_GEAR_NAME) |>
-  summarise(n_distinct(ID)) 
+  tally()
+# length_data_tripcount <- length_data_final |> 
+#   group_by(LAND_STANDARD_GEAR_NAME) |>
+#   summarise(n_distinct(ID)) 
+
+length_data_tripcount <- aggregate(data = length_data_final,                # Applying aggregate
+                          ID ~ LAND_STANDARD_GEAR_NAME,
+                          function(ID) length(unique(ID)))
 
 allgears_multcompcld_fish <- full_join(allgears_multcompcld, length_data_fishcount, by = "LAND_STANDARD_GEAR_NAME")
 allgears_multcompcld_trip <- full_join(allgears_multcompcld_fish, length_data_tripcount, by = "LAND_STANDARD_GEAR_NAME")
 
 allgears_multcompcld_final <- allgears_multcompcld_trip |> 
-  dplyr::rename("group" = ".group",
-                "n_distinct_ID" = "n_distinct(ID)") |> 
-  mutate(Percentage = (n_fish/sum(n_fish))*100) |> 
+  dplyr::rename("group" = ".group") |> 
+  mutate(Percentage = (n/sum(n))*100) |> 
   arrange(desc(Percentage)) 
   
 allgears_multcompcld_final$Percentage<-format(round(allgears_multcompcld_final$Percentage,2),nsmall=2)
@@ -751,7 +754,7 @@ density_plot
 
 # plot data
 library(ggplot2)
-ggplot(use_gear_dv, aes(x = as.Date(FINAL_DATE), y = FL_CM)) +
+abc10 = ggplot(use_gear_dv, aes(x = as.Date(FINAL_DATE), y = FL_CM)) +
   geom_point(aes(colour = LAND_STANDARD_GEAR_NAME, shape = LAND_STANDARD_GEAR_NAME), size = 1, alpha = 0.5) +
   geom_smooth(method = "lm", formula = "y ~ x", col = "black") +
   # facet_wrap(~ COUNTY_LANDED) +
@@ -820,7 +823,7 @@ density_plot
 
 # plot data
 library(ggplot2)
-ggplot(use_gear_nsg, aes(x = as.Date(FINAL_DATE), y = FL_CM)) +
+abc11 = ggplot(use_gear_nsg, aes(x = as.Date(FINAL_DATE), y = FL_CM)) +
   geom_point(aes(colour = LAND_STANDARD_GEAR_NAME, shape = LAND_STANDARD_GEAR_NAME), size = 1, alpha = 0.5) +
   geom_smooth(method = "lm", formula = "y ~ x", col = "black") +
   # facet_wrap(~ COUNTY_LANDED) +
@@ -889,7 +892,7 @@ density_plot
 
 # plot data
 library(ggplot2)
-ggplot(use_gear_nlg, aes(x = as.Date(FINAL_DATE), y = FL_CM)) +
+abc12 = ggplot(use_gear_nlg, aes(x = as.Date(FINAL_DATE), y = FL_CM)) +
   geom_point(aes(colour = LAND_GEAR_NAME, shape = LAND_GEAR_NAME), size = 1, alpha = 0.5) +
   geom_smooth(method = "lm", formula = "y ~ x", col = "black") +
   # facet_wrap(~ COUNTY_LANDED) +
@@ -956,7 +959,7 @@ density_plot
 
 # plot data
 library(ggplot2)
-ggplot(use_gear_tr, aes(x = as.Date(FINAL_DATE), y = FL_CM)) +
+abc13 = ggplot(use_gear_tr, aes(x = as.Date(FINAL_DATE), y = FL_CM)) +
   geom_point(aes(colour = LAND_STANDARD_GEAR_NAME, shape = LAND_STANDARD_GEAR_NAME), size = 1, alpha = 0.5) +
   geom_smooth(method = "lm", formula = "y ~ x", col = "black") +
   # facet_wrap(~ COUNTY_LANDED) +
@@ -1006,6 +1009,30 @@ mod_contr
 multcomp::cld(object = mod_contr$emmeans)
 
 # I took out box traps to confirm difference between fish trap and cmb traps and difference is still present 
+
+trap_multcompcld <- multcomp::cld(object = mod_contr$emmeans)
+
+use_gear_tr_fishcount <- use_gear_tr |> 
+  group_by(LAND_STANDARD_GEAR_NAME) |> 
+  tally()
+# use_gear_tr_tripcount <- use_gear_tr |> 
+#   group_by(LAND_STANDARD_GEAR_NAME) |>
+#   summarise(n_distinct(ID))
+use_gear_tr_tripcount <- aggregate(data = use_gear_tr,                # Applying aggregate
+                                   ID ~ LAND_STANDARD_GEAR_NAME,
+                                   function(ID) length(unique(ID)))
+
+trap_multcompcld_fish <- full_join(trap_multcompcld, use_gear_tr_fishcount, by = "LAND_STANDARD_GEAR_NAME")
+trap_multcompcld_trip <- full_join(trap_multcompcld_fish, use_gear_tr_tripcount, by = "LAND_STANDARD_GEAR_NAME")
+
+trap_multcompcld_final <- trap_multcompcld_trip |> 
+  dplyr::rename("group" = ".group") |> 
+  mutate(Percentage = (n/sum(n))*100) |> 
+  arrange(desc(Percentage)) 
+
+trap_multcompcld_final$Percentage<-format(round(trap_multcompcld_final$Percentage,2),nsmall=2)
+
+tbl2 = flextable(trap_multcompcld_final) |> autofit()
 
 
 # Gear Density Plots ####
@@ -1119,7 +1146,7 @@ mudv <- ddply(dv, "LAND_STANDARD_GEAR_NAME", summarise, grp.mean=mean(FL_CM))
 head(mudv)
 
 
-dv %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
+agr_den_dv <- dv %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
   ggplot(aes(FL_CM, color = LAND_STANDARD_GEAR_NAME))+
   geom_density(size = 0.75)+
   # scale_color_manual( values = gearcols, labels = counts$n_labels)+
@@ -1131,7 +1158,7 @@ dv %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
         legend.text = element_text(size=12))+
   geom_vline(data=mudv, aes(xintercept=grp.mean, color=LAND_STANDARD_GEAR_NAME),
              linetype="dashed")
-abc5 = dv
+abc5 = agr_den_dv
 
 
 ### Traps ####
@@ -1140,7 +1167,11 @@ counts = trap %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
   tabyl(LAND_STANDARD_GEAR_NAME) %>%
   mutate(n_labels = paste0(LAND_STANDARD_GEAR_NAME, " (n= ", n, ")" ))
 
-trap %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
+trap2 <- trap %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup
+mutrap <- ddply(trap2, "LAND_STANDARD_GEAR_NAME", summarise, grp.mean=mean(FL_CM))
+head(mutrap)
+
+agr_den_trap <- trap %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
   ggplot(aes(FL_CM, color = LAND_STANDARD_GEAR_NAME))+
   geom_density(size = 0.75)+
   # scale_color_manual( values = gearcols, labels = counts$n_labels)+
@@ -1149,7 +1180,10 @@ trap %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
   # facet_wrap(~ISLAND,ncol=1) +
   # theme_minimal()
   theme(legend.title = element_text(size=14),
-        legend.text = element_text(size=12))
+        legend.text = element_text(size=12))+
+  geom_vline(data=mutrap, aes(xintercept=grp.mean, color=LAND_STANDARD_GEAR_NAME),
+             linetype="dashed")
+abc6 = agr_den_trap
 
 ### Nets ####
 net <- length_data_final[length_data_final$gear_short=='NT',]
@@ -1157,7 +1191,11 @@ counts = net %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
   tabyl(LAND_STANDARD_GEAR_NAME) %>%
   mutate(n_labels = paste0(LAND_STANDARD_GEAR_NAME, " (n= ", n, ")" ))
 
-net %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
+# trap2 <- trap %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup
+munet <- ddply(net, "LAND_STANDARD_GEAR_NAME", summarise, grp.mean=mean(FL_CM))
+head(munet)
+
+agr_den_net <- net %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
   ggplot(aes(FL_CM,color = LAND_STANDARD_GEAR_NAME))+
   geom_density(size = 0.75)+
   # scale_color_manual( values = gearcols, labels = counts$n_labels)+
@@ -1166,7 +1204,10 @@ net %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
   # facet_wrap(~ISLAND,ncol=1) +
   # theme_minimal()
   theme(legend.title = element_text(size=14), 
-        legend.text = element_text(size=12))
+        legend.text = element_text(size=12))+
+  geom_vline(data=munet, aes(xintercept=grp.mean, color=LAND_STANDARD_GEAR_NAME),
+             linetype="dashed")
+abc7 = agr_den_net
 
 
 net_LANDGEAR <- length_data_final[length_data_final$gear_short=='NT',]
@@ -1174,7 +1215,11 @@ counts = net_LANDGEAR %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
   tabyl(LAND_GEAR_NAME) %>%
   mutate(n_labels = paste0(LAND_GEAR_NAME, " (n= ", n, ")" ))
 
-net_LANDGEAR %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
+# trap2 <- trap %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup
+munetLG <- ddply(net_LANDGEAR, "LAND_GEAR_NAME", summarise, grp.mean=mean(FL_CM))
+head(munetLG)
+
+agr_den_netLG <- net_LANDGEAR %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
   ggplot(aes(FL_CM,color = LAND_GEAR_NAME))+
   geom_density(size = 0.75)+
   # scale_color_manual( values = gearcols, labels = counts$n_labels)+
@@ -1183,7 +1228,10 @@ net_LANDGEAR %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
   # facet_wrap(~ISLAND,ncol=1) +
   # theme_minimal()
   theme(legend.title = element_text(size=14), 
-        legend.text = element_text(size=12))
+        legend.text = element_text(size=12))+
+  geom_vline(data=munetLG, aes(xintercept=grp.mean, color=LAND_GEAR_NAME),
+             linetype="dashed")
+abc8 = agr_den_netLG
 
 ### Other ####
 ot<- length_data_final[length_data_final$gear_short=='OT',]
@@ -1191,7 +1239,11 @@ counts = ot %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
   tabyl(LAND_STANDARD_GEAR_NAME) %>%
   mutate(n_labels = paste0(LAND_STANDARD_GEAR_NAME, " (n= ", n, ")" ))
 
-ot %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
+ot2 <- ot %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup
+muot <- ddply(ot2, "LAND_STANDARD_GEAR_NAME", summarise, grp.mean=mean(FL_CM))
+head(muot)
+
+agr_den_ot <- ot %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
   ggplot(aes(FL_CM, color = LAND_STANDARD_GEAR_NAME))+
   geom_density(size = 0.75)+
   # scale_color_manual( values = gearcols, labels = counts$n_labels)+
@@ -1200,7 +1252,10 @@ ot %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
   # facet_wrap(~ISLAND,ncol=1) +
   # theme_minimal()
   theme(legend.title = element_text(size=14), 
-        legend.text = element_text(size=12))
+        legend.text = element_text(size=12))+
+  geom_vline(data=muot, aes(xintercept=grp.mean, color=LAND_STANDARD_GEAR_NAME),
+             linetype="dashed")
+abc9 = agr_den_ot
 
 
 ## Break at 2005 ####
