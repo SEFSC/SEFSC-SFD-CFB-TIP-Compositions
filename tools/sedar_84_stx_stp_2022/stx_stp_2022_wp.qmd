@@ -33,7 +33,7 @@ This report provides a summary of the procedures used to complete the size compo
 
 \
 
-## Aggregated Gear Density 
+## Aggregated Gear Density
 
 ```{r}
 #| echo: false
@@ -123,7 +123,6 @@ abc4
 tbl1
 
 ```
-
 
 ```{r}
 #| echo: false
