@@ -19,17 +19,32 @@ load(file = "data/dataframes/com_tip_PR_2004_ORGANIZED.Rda")
 
 com_tip_PR_2004_unique_SPC <- com_tip_PR_2004_ORGANIZED %>% 
   group_by(OBS_STANDARD_SPECIES_NAME) %>% 
-  summarize(count=n())
+  tally()
+
+com_tip_PR_04_spc_name <- com_tip_PR_2004_unique_SPC |> 
+  dplyr::rename(n_tip = n) |> 
+  mutate(spc_name = )
+com_tip_PR_04_spc_name$spc_name <- tolower(com_tip_PR_04_spc_name$spc_name)
 
 pr_04_unique_spc <- pr_04 %>% 
   group_by(SPECIES_B) %>% 
-  summarize(count=n())
+  tally()
+pr_04_unique_spc_renamed <- pr_04_unique_spc |> 
+  dplyr::rename(n_hist = n)
 
 # load historic species codes
 pr_species_codes_historic <- read_csv("tools/flagging_historical/lookup_tables/pr_species_codes_historic.csv")
 
+pr_species_codes_historic$sp_dner = str_remove(pr_species_codes_historic$sp_dner, "^0+")
+
+# add species names to list of historic codes
+pr_04_unique_spc_name <- pr_04_unique_spc_renamed %>%
+  mutate(spc_name = pr_species_codes_historic$common[match(pr_04_unique_spc$SPECIES_B, pr_species_codes_historic$sp_dner)])
+
+pr_04_unique_spc_name$spc_name <- tolower(pr_04_unique_spc_name$spc_name)
 
 
-pr_04_unique_spc_name <- pr_04_unique_spc %>%
-  mutate(spc_name = pr_species_codes_historic$CNTY_NAME[match(pr_04_unique_spc$place_id_HISTORICAL, pr_species_codes_historic$place_id_HISTORICAL)])
+# compare species names
+unique_species_merge_PR <- merge(com_tip_PR_04_spc_name,pr_04_unique_spc_name, by = 'spc_name', all = TRUE)
+
 
