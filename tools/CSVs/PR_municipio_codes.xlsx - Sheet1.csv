@@ -1,0 +1,79 @@
+muni_nr,muni_name,muni_zip,muni_cd,region
+1,Adjuntas,-9,AJ,U
+3,Aguada,41,AD,W
+5,Aguadilla,42,AL,W
+7,Aguas Buenas,-9,AB,U
+9,Aibonito,-9,AI,U
+11,Anasco,39,AN,W
+13,Arecibo,05,AC,N
+15,Arroyo,27,AY,S
+17,Barceloneta,06,BC,N
+19,Barranquitas,-9,BQ,U
+21,Bayamon,-9,BY,U
+23,Cabo Rojo,37,CJ,W
+25,Caguas,-9,CG,U
+27,Camuy,03,CY,N
+29,Canovanas,-9,CV,U
+31,Carolina,14,CN,N
+33,Catano,12,CT,N
+35,Cayey,-9,YY,U
+37,Ceiba,19,CE,E
+39,Ciales,-9,CL,U
+41,Cidra,-9,CD,U
+43,Coamo,-9,CM,U
+45,Comerio,-9,CR,U
+47,Corozal,-9,CZ,U
+49,Culebra,24,CU,E
+51,Dorado,10,DO,N
+53,Fajardo,18,FJ,E
+54,Florida,-9,FL,U
+55,Guanica,35,GC,S
+57,Guayama,28,GM,S
+59,Guayanilla,34,GL,S
+61,Guaynabo,-9,GB,U
+63,Gurabo,-9,GR,U
+65,Hatillo,04,HA,N
+67,Hormigueros,-9,HO,U
+69,Humacao,21,HU,E
+71,Isabela,01,IS,N
+73,Jayuya,-9,JY,U
+75,Juana Diaz,31,JD,S
+77,Juncos,-9,JC,U
+79,Lajas,36,LJ,S
+81,Lares,-9,LR,U
+83,Las Marias,-9,LM,U
+85,Las Piedras,-9,LP,U
+87,Loiza,15,LZ,N
+89,Luquillo,17,LQ,N
+91,Manati,07,MT,N
+93,Maricao,-9,MR,U
+95,Maunabo,23,MB,E
+97,Mayaguez,38,MG,W
+99,Moca,-9,MC,U
+101,Morovis,-9,MV,U
+103,Naguabo,20,NG,E
+105,Naranjito,-9,NJ,U
+107,Orocovis,-9,OR,U
+109,Patillas,26,PA,S
+111,Penuelas,33,PE,S
+113,Ponce,32,PO,S
+115,Quebradillas,02,QB,N
+117,Rincon,40,RC,W
+119,Rio Grande,16,RG,N
+121,Sabana Grande,-9,SB,U
+123,Salinas,29,SN,S
+125,San German,-9,SG,U
+127,San Juan,13,SJ,N
+129,San Lorenzo,-9,SL,U
+131,San Sebastian,-9,SS,U
+133,Santa Isabel,30,SI,S
+135,Toa Alta,-9,TA,U
+137,Toa Baja,11,TB,N
+139,Trujillo Alto,-9,TR,U
+141,Utuado,-9,UT,U
+143,Vega Alta,09,VA,N
+145,Vega Baja,08,VB,N
+147,Vieques,25,VQ,E
+149,Villalba,-9,VL,U
+151,Yabucoa,22,YB,E
+153,Yauco,-9,YC,U

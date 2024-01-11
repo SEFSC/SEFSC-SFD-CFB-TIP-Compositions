@@ -1,0 +1,64 @@
+MRIP_Site_ID,MRIP_Site_Name,MRIP_Street Adreess,MRIP_City,MRIP_County_Code,MRIP_County,MRIP_Zip,MRIP_State,MRIP_Latitude,MRIP_Longitude,MRIP_Directions:,MRIP_DMS_LAT,MRIP_DMS_LONG
+2235,Desembocadura Rio Espinal,PR-442,Aguada,3,Aguada,602,PR,18.4056978,-67.176086,"PR-442, Bo. Espinal",,
+2262,Guanquilla Coast,PR-441,Aguada,3,Aguada,602,PR,18.3942825,-67.1924549,"PR-441, Bo. Guaniquilla",,
+2031,Aguadilla Park Ramp,PR-442,Aguadilla,5,Aguadilla,603,PR,18.419175,-67.1565508,"Paseo Real Marina, Rampa Pública, PR-442",,
+2295,Rompeolas Aguadilla Pueblo,PR-111,Aguadilla,5,Aguadilla,603,PR,18.4337036,-67.1564348,"Playa Rompeolas, PR-111",,
+2297,Parque Colon Aguadilla,PR-442,Aguadilla/Aguada,5,Aguadilla,603,PR,18.4131255,-67.1622891,"Paseo Parque Colon, Bo. Espinar",,
+,Playa Crash Boat,PR-458,Aguadilla,5,Aguadilla,603,PR,18.4587557,-67.1639648,"Playa Crash Boat, Bo. Borinquen, PR-458",,
+,Playa PeNa Blanca,Wishing Well St,Aguadilla,5,Aguadilla,603,PR,18.4721766,-67.168419,"Playa PeNa Blanca, calle Wishing Well, Sector Playuelas, Bo. Borinquen",,
+,Punta Borinquen,Villa del Golf St.,Aguadilla,5,Aguadilla,603,PR,18.4905151,-67.1558562,"Playa Punta Borinquen, Villa del Golf St., Bo. Borinquen",,
+2225,Asoc. Pescadores Tres Hermanos,PR-401,ANasco,11,ANasco,610,PR,18.2833793,-67.1903923,"Rampa Pública, Sector La Playa",,
+1603,Rampa de Arecibo,PR-681,Arecibo,13,Arecibo,612,PR,18.4779879,-66.6998508,"Playa El Faro, Rampa CaNo Tiburones, Bo. Islote, Sector El Muelle, PR-681",,
+1603,RAMPA ROMPEOLAS,CARR. 681,ARECIBO,13,ARECIBO,,PR,18.477951,-66.699873,"LUEGO DEL PUENTE , ANTES DEL FARO",,
+2001,CLUB NAUTICO DE ARECIBO,CARR. 681,ARECIBO,13,ARECIBO,,PR,18.475693,-66.697506,CARR. 681 ANTES DEL ROMPEOLAS,,
+5000,CaNo Tiburones (Muellecito),Calle Vertedero,Arecibo,13,Arecibo,612,PR,18.4671753,-66.6335312,"Muelle CaNo Tiburones, Calle Verterero, Sector San Luis, Bo. Garrochales",,
+5655,Malecon Arroyo,,Arroyo,,Arroyo,714,PR,17.961111,-66.064167,2–98 Calle Esperanza ,17°57?40? N ,66°3?51? W
+5656,Balneario Punta Guilarte,directions and coordinates do not match. Using coordinates of directions because dms given are outside of parameters,Arroyo,,Arroyo,714,PR,17.963805,-66.037867,PR-3 Parque Nacional Punta Guilarte Arroyo PR,"17°96'38"" N","66°03'78"" W"
+2003,Isla Roque,PR-681,Barceloneta,17,Barceloneta,617,PR,18.4882022,-66.562234,"Muelle Isla Roque, Bo. Palmas Altas, PR-681",,
+2228,Rampa Palmas Altas,PR-681,Barceloneta,17,Barceloneta,617,PR,18.4882727,-66.5605781,"Rampa Palmas Altas, Bo. Palmas Altas, PR-681",,
+2020,Marina Pescaderia,PR-308,Cabo Rojo,23,Cabo Rojo,623,PR,18.0751187,-67.188389,"Marina Puerto Real, Bo. Puerto Real, PR-308",,
+2233,Rampa El Combate,Calle 2,Cabo Rojo,23,Cabo Rojo,623,PR,17.9809205,-67.2139639,"Rampa Pública Combate, Bo. Boqueron, El Combate, calle 2",,
+2294,Ostiones,"Hacienda Belvedere - updated lat,long. Original was in the middle of caribbean sea",Cabo Rojo,23,Cabo Rojo,623,PR,18.094672,-67.194902,"Playa Ostiones, Hacienda Belvedere, Puerto Real",18.948285,-67.1949286
+,Marina 9 Barrios,PR-308,Cabo Rojo,23,Cabo Rojo,623,PR,18.0748264,-67.1873346,"Marina 9 Barrios, Bo. Puerto Real, PR-308",,
+2270,El Membrillo,Amador Brall St.,Camuy,27,Camuy,627,PR,18.4899071,-66.8579774,"El Membrillo, Amador Brall St. Bo. Membrillo, Near PeNon Brusi",,
+2500,PeNon Amador,PR-485,Camuy,27,Camuy,627,PR,18.4903767,-66.8674379,"Playa PeNon Amador, Bo. Membrillo, PR-485",,
+2401,Asociacion de Pescadores ,,Canovanas ,,Canovanas ,729,PR,18.390278,-65.911667,PR-951 Canovanas,18°23?25? N ,65°54?42? W
+2009,CANGREJOS YACHT CLUB,CARR.187 KM.3.8,CAROLINA,31,CAROLINA,,PR,18.45571,-65.991892,ANTES DEL PTE DE PINONES,,
+2011,BAY VIEW RAMP,CARR. 888,CATANO,33,CATANO,,PR,18.443265,-66.129359,URBANIZACION BAY VIEW,,
+2012,PALO SECO SHORE,CARR. 870,CATANO,33,CATANO,,PR,18.455385,-66.151412,DETRAS DE TERMOELECTRICA PALO SECO,,
+2014,RAMPA ISLA DE CABRAS,CARRETERA 870 FINAL,CATANO,33,CATANO,,PR,18.471847,-66.137204,ISLA DE CABRAS PARK FINAL,,
+2286,LOS MACHOS,"no coordinates provided, used closest to site name and directions",CEIBA,37,CEIBA,,PR,18.262657,-65.630048,CALLE ISABEL ROGADO ANTES DE ROOSEVELT ROADS,,
+2313,ROOSEVELT ROADS,"no coordinates provided, used closest to site name and directions",CEIBA,37,CEIBA,,PR,18.270279,-65.630709,CALLE ISABEL ROGADO FINAL,,
+2016,ASOCIACION PESCA DEPORTIVA,CARR. 698 FINAL,DORADO,51,DORADO,,PR,18.476216,-66.277476,AL LADO BALNEARIO DE DORADO,,
+2019,MARINA PUERTO DEL REY,CARR. 03 HACIA CEIBA,FAJARDO,53,FAJARDO,,PR,18.285973,-65.636535,FRENTE URBANIZACION LAS GAVIOTAS,,
+2024,SEA LOVERS MARINA,"CARR.987 - no coordinates provided, used closest to address",FAJARDO,53,FAJARDO,,PR,18.347613,-65.636307,CARR 987 AL LADO DE PUERTO CHICO,,
+2028,VILLA MARINA,"CARR. 983 - no coordinates provided, used closest to address",FAJARDO,53,FAJARDO,,PR,18.340416,-65.639813,CARR.987 AL LADO DE VILLA PESQUERA,,
+2092,LAS CROABAS PARK & RAMP,CARR. 987 FINAL,FAJARDO,53,FAJARDO,,PR,18.363126,-65.62489,CARR. 987 FINAL,,
+2267,SEVEN SEAS BEACH,CARR. 987 FINAL,FAJARDO,53,FAJARDO,,PR,18.369811,-65.634275,,,
+2306,SUN BAY MARINA,"BO. SARDINERA - no coordinates provided, used closest to site name and directions",FAJARDO,53,FAJARDO,,PR,18.33834,-65.634289,AL LADO DE LAS PARCELAS BELTRAN,,
+2310,Playa Jobos Isabela,PR-466,Isabela,71,Isabela,662,PR,18.5128687,-67.0771521,"Rampa de las Yolas, Playa Jobos Isabela, Bo. Bajuras",,
+2501,Rampa Villa Pesquera,Francisco Camacho St.,Isabela,71,Isabela,662,PR,18.5097393,-67.0208193,"Rampa Villa Pesquera, Playa Sardineras, Bo. Guayabos",,
+,Playa Shacks,PR-4466,Isabela,71,Isabela,662,PR,18.5148029,-67.100665,"Playa Shacks, Bo. Bajura, PR-4466",,
+2053,PUNTA VACIA TALEGA,CARR.187,LOIZA,87,LOIZA,,PR,18.45189,-65.905998,CARRETERA 187 LUEGO DE PLAYA PINONES,,
+2096,COOPERATIVA DE TORRECILLAS,CARR. 187,LOIZA,87,LOIZA,,PR,18.453682,-65.983932,CARR.187 ENTRANDO POR EL CUARTEL DE LA POLICIA ESTATAL,,
+2266,RAMPA POZITA,CARR. 03,LUQUILLO,89,LUQUILLO,,PR,18.381105,-65.736258,DETRAS DE LOS KIOSKOS DE LUQUILLO,,
+NO CODE,PUNTA EMBARCADERO,CARR. 3 DENTRO DE BALNEARIO ,LUQUILLO,89,LUQUILLO,,PR,18.387633,-65.727731,CARR. 3 DENTRO DE BALNEARIO LA MONSERRATE,,
+2281,Barrio El Faro,,Maunabo,95,Maunabo,707,PR,17.974722,-65.888889,Carr 901 Int 760 Km 3.3 Maunabo PR,"17°59'29"" N","65°53'20"" W"
+2261,Rampa Sector El Seco,Blvd. del Carmen,Mayaguez,97,Mayaguez,680,PR,18.2120823,-67.1581927,"Rampa Pública, 90 Boulevard del Carmen, Sector El Seco",,
+2265,Twin Bridges & Shore,,Naguabo,103,Naguabo,718,PR,18.187222,-65.726667,PR- 3 Km 69.1 Naguabo PR,"18°11'14"" N","65°43'36"" W"
+2288,Playa El Corcho,,Naguabo,103,Naguabo,718,PR,18.203333,-65.668889,,"18°12'12"" N","65°40'8"" W"
+,Playa La Fanduca,"coordinates provided are inaccurate, used coordinates closest to directions",Naguabo ,,Naguabo ,718,PR,18.184177,-65.707816,Playa Húcares Sector La Fanduca Parc138 ,"18°18'7"" N","65°71'8"" W"
+2277,Balneario de Patillas,,Patillas,109,Patillas,723,PR,17.974167,-65.988056,,"17°58'27"" N","65°59'17"" W"
+2278,Comunidad Guardarraya,,Patillas,109,Patillas,723,PR,17.973056,-65.946111,Carr 3 Km 115.3 Patillas PR,"17°58'23"" N","65°56'46"" W"
+,Water & Sport,,Patillas,109,Patillas,,PR,17.974167,-65.988056,,"17°58'27"" N","65°59'17"" W"
+2063,Rincon's Public Ramp,Black Eagle Rd,Rincon,117,Rincon,677,PR,18.3444135,-67.2599212,"Rampa Pública, Black Eagle Marina, Bo. Ensenada",,
+1637,SAN JUAN BAY MARINA,CARR. 01 SALIENDO DE LA ISLETA DE SJ,SAN JUAN,127,SAN JUAN,,PR,18.458217,-66.087443,FRENTE PUENTE SAN ANTONIO Y SIZZLER,,
+2072,CLUB NAUTICO DE SAN JUAN,AVE. FERNANDEZ JUNCOS (CARR. 01),SAN JUAN,127,SAN JUAN,,PR,18.46016,-66.088508,ANTES DEL PUENTE SAN ANTONIO,,
+,Playa Jauca ,,Santa Isabel ,133,Santa Isabel,757,PR,17.965278,-66.365278,PR- 1 Calle 3 Santa Isabel ,"17 °57'55"" N","66 °21'55"" W"
+2067,Club Nautico Santa Isabel ,,Santa Isabel,133,Santa Isabel ,757,PR,17.953056,-66.404444,2-6 Calle Villa Del Mar Santa Isabel,"17 °57'11"" N","66 °24'16"" W"
+NO CODE,LAGUNA LEVITOWN,CARR. 165,TOA BAJA,137,TOA BAJA,,PR,18.459457,-66.193958,"CARR. 165, LUEGO CALLE 1 FINAL URB. CAMINO DEL MAR",,
+1640,CLUB NAUTICO DE VEGA BAJA,CARR. 686 FINAL,VEGA BAJA,145,VEGA BAJA,,PR,18.484824,-66.384591,CARRETERA 686 FINAL,,
+2075,LAGUNA TORTUGUERO,CARRETERA 686,VEGA BAJA,145,VEGA BAJA,,PR,18.460316,-66.42547,CARRETERA 687,,
+2282,Puerto Sun Oil,,Yabucoa,151,Yabucoa,767,PR,18.048333,-65.832778,PR-9914 Yabucoa PR,"18°2'54""N","65°49'58""W"
+2283,Playa Lucia,,Yabucoa,151,Yabucoa,767,PR,18.040278,-65.834444,Carr 901 Bo. Camino Nuevo Sector Playa Lucia Yabucoa PR,"18°2'25"" N","65°50'4""W"
+2284,Muelle Playa Guayanes,had to guess because of 60 sec degree,Yabucoa,151,Yabucoa,767,PR,18.063611,-65.816639,PR-906 Yabucoa,"18°3'49"" N","65°48'60"" W"

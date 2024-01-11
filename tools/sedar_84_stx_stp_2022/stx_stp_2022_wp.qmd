@@ -30,15 +30,18 @@ source(here::here('tools','sedar_84_stx_stp_2022','stx_stp_2022_figures.R'))
 
 ```
 
-In early (what month?) 2023, the Caribbean Fishery Management Council (CFMC) requested the assistance of the National Marine Fisheries Service (NOAA Fisheries), Southeast Fisheries Science Center (SEFSC) to conduct Stoplight Parrotfish assessment updates outside the SouthEast Data, Assessment, and Review (SEDAR) process. The request was to provide size composition analysis of the Trip Interview Program (TIP) data available for the St. Croix region utilizing methods established previously in SEDAR 80 (is this the origination??). This document provides size composition analysis for Stoplight Parrotfish in St. Croix using TIP data for the years 1988 to 2022. This work was conducted by the Southeast Fisheries Science Center, Sustainable Fisheries Division, Caribbean Fisheries Branch.
+In preparation for SouthEast Data, Assessment, and Review (SEDAR) 84, size composition analysis of the Trip Interview Program (TIP) data available for the St. Croix region was conducted. The results in this document provide span data collected from 1988 to 2022. This work was conducted by the Southeast Fisheries Science Center, Sustainable Fisheries Division, Caribbean Fisheries Branch.
 
-There are two main portions of this document. First, gear groupings were established based on a general linear model (GLM) analysis. The GLM analysis used a gamma-distributed dependent variable. Second, the size composition of each gear grouping was assessed.
+There are two main portions of this document. First, gear groupings were established based on a general linear model (GLM) analysis. The GLM analysis used a gamma-distributed dependent variable. Second, the size composition of each gear grouping was determined.
 
 \newpage
 
 ## Generalized Linear Model (GLM) Analysis
 
-The GLM analysis was first conducted on the time series as a whole (1988-2022), then on a truncated time series to best reflect the available commercial landings data (2012-2022), and finally on the individual gear groupings. The analysis of the full and truncated time series display the statistical similarity of all available gears to one another, regardless of gear groupings, in respect to the size of fish caught throughout. The individual gear groupings were created and analyzed based on their similar uses in the field. The gears within these groupings were compared to one another within their same group to determine if the gears perceived to be similar were statistically similar in regard to the size of fish caught throughout time. To analyze the gears, the gear name variable was used for all analysis.
+The GLM analysis was first conducted on the time series as a whole (1988-2022), and then on a truncated time series to best reflect the available commercial landings data (2012-2022). The analysis of the full and truncated time series display the statistical similarity of all available gears to one another in respect to the size of fish caught throughout the time series. To analyze the gears, the gear name variable was used for all analysis.
+
+The GLM analysis of the full time series reported a statistical difference between the SPEAR and POTS AND TRAPS;FISH gears. However, the truncated time series investigation showed no statistical significance between available gears. Thus all available gears were grouped into "DIVING" or "OTHER" according to their relative similarity in use to those of SPEAR and POTS AND TRAPS;FISH.
+
 
 ```{r all lengths GLM}
 #| echo: false
