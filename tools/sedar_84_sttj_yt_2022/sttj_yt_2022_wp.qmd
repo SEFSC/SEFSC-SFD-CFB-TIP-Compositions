@@ -1,5 +1,5 @@
 ---
-title: "SEDAR 84 Trip Interview Program (TIP) Size Composition Analysis of Stoplight Parrotfish (Sparisoma viride) in St. Croix, US Caribbean, 1983-2022"
+title: "SEDAR 84 Trip Interview Program (TIP) Size Composition Analysis of Yellowtail Snapper (Ocyurus chrysurus) in St. Croix, US Caribbean, 1983-2022"
 format: docx
 editor: visual
 output-file: test.docx
