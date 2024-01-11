@@ -38,7 +38,7 @@ There are two main portions of this document. First, gear groupings were establi
 
 ## Generalized Linear Model (GLM) Analysis
 
-The GLM analysis was first conducted on the time series as a whole (1988-2022), then on a truncated time series to best reflect the available commercial landings data (2012-2022), and finally on the individual gear groupings. The analysis of the full and truncated time series display the statistical similarity of all available gears to one another, regardless of gear groupings, in respect to the size of fish caught throughout. The individual gear groupings were created and analyzed based on their similar uses in the field. The gears within these groupings were compared to one another within their same group to determine if the gears perceived to be similar were statistically similar in regard to the size of fish caught throughout time. To analyze the gears, the variable LAND_STANDARD_GEAR_NAME was used for all analysis except for that of @fig-abc6 and @fig-abc11 and @tbl-tbl6.
+The GLM analysis was first conducted on the time series as a whole (1988-2022), then on a truncated time series to best reflect the available commercial landings data (2012-2022), and finally on the individual gear groupings. The analysis of the full and truncated time series display the statistical similarity of all available gears to one another, regardless of gear groupings, in respect to the size of fish caught throughout. The individual gear groupings were created and analyzed based on their similar uses in the field. The gears within these groupings were compared to one another within their same group to determine if the gears perceived to be similar were statistically similar in regard to the size of fish caught throughout time. To analyze the gears, the gear name variable was used for all analysis.
 
 ```{r all lengths GLM}
 #| echo: false
@@ -222,41 +222,6 @@ abc8
 
 ```
 
-```{r trap agd}
-#| echo: false
-#| label: fig-abc9
-#| fig-cap: |
-#|   Aggregated density plot of lengths measured in centimeters of each gear within the "trap" gear group of Stoplight Parrotfish in St. Croix.
-#| fig-width: 11
-#| fig-height: 6
-
-abc9
-
-```
-
-```{r netst agd}
-#| echo: false
-#| label: fig-abc10
-#| fig-cap: |
-#|   Aggregated density plot of lengths measured in centimeters of each gear within the "net" gear group of Stoplight Parrotfish in St. Croix. 
-#| fig-width: 11
-#| fig-height: 6
-
-abc10
-
-```
-
-```{r netl agd}
-#| echo: false
-#| label: fig-abc11
-#| fig-cap: |
-#|   Aggregated density plot of lengths measured in centimeters of each gear within the "net" gear group of Stoplight Parrotfish in St. Croix. This plot uses the LAND_GEAR_NAME variable, i.e. the gear name specific to the island. This variable shows the different mesh sizes used in the net gear grouping.  
-#| fig-width: 11
-#| fig-height: 6
-
-abc11
-
-```
 
 ```{r other agd}
 #| echo: false
@@ -272,4 +237,4 @@ abc12
 
 \newpage
 
-Example of how to cite sedar papers Donaldson, D.M. 2004. Overview of the State Trip Tickets Programs in the Gulf of Mexico. SEDAR7-DW-20. SEDAR, North Charleston, SC. 11pp. Poffenberger, J. 2003. Description of the Southeast Fisheries Science Center's Logbook Program for Coastal Fisheries. SEDAR-DW-29. SEDAR, North Charleston, SC. 9pp. Poffenberger, J. 2004. Commercial landings Statistics -- Red Snapper in the Gulf of Mexico. SEDAR7-DW-23. SEDAR, North Charleston, SC. 13pp. Porch, C.E., S.C. Turner, M.J. Schirripa. 2004. The Comme
+Example of how to cite sedar papers Donaldson, D.M. 2004. Overview of the State Trip Tickets Programs in the Gulf of Mexico. SEDAR7-DW-20. SEDAR, North Charleston, SC. 11pp. Poffenberger, J. 2003. Description of the Southeast Fisheries Science Center's Logbook Program for Coastal Fisheries. SEDAR-DW-29. SEDAR, North Charleston, SC. 9pp.

@@ -253,8 +253,8 @@ length_data_glm <- length_data_final |>
 # filtered to gears with 30 or more occurances for the purposes of plotting visibility
 abc1 = allgears_glm_plot <- length_data_glm %>% group_by(LAND_STANDARD_GEAR_NAME) %>% filter(n() >= 30) %>% ungroup |> 
   ggplot(aes(x = as.Date(FINAL_DATE), y = FL_CM)) +
-  geom_point(aes(colour = LAND_STANDARD_GEAR_NAME, shape = LAND_STANDARD_GEAR_NAME), size = 1, alpha = 0.5) +
-  scale_shape_manual(values=c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14))+
+  geom_point(aes(colour = LAND_STANDARD_GEAR_NAME), size = 1, alpha = 0.5) +
+  # scale_shape_manual(values=c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14))+
   geom_smooth(method = "lm", formula = "y ~ x", col = "black") +
   # facet_wrap(~ COUNTY_LANDED) +
   labs(x = "", y = "Length (cm)", colour = "", shape = "") +
@@ -292,9 +292,24 @@ allgears_multcompcld_fish <- full_join(allgears_multcompcld, length_data_fishcou
 allgears_multcompcld_trip <- full_join(allgears_multcompcld_fish, length_data_tripcount, by = "LAND_STANDARD_GEAR_NAME")
 
 allgears_multcompcld_final <- allgears_multcompcld_trip |> 
-  dplyr::rename("group" = ".group")
+  mutate(Percentage = round(n/sum(n)*100, 2), 
+         emmean = round(emmean, 2),
+         asymp.LCL = round(asymp.LCL, 2),
+         asymp.UCL = round(asymp.UCL, 2)) |> 
+  dplyr::rename("Group" = ".group",
+                "Gear" = "LAND_STANDARD_GEAR_NAME",
+                "Mean Size" = "emmean",
+                "LCL" = "asymp.LCL",
+                "UCL" = "asymp.UCL") |> 
+  filter(ID >= 3) |> 
+  select(Gear, "Mean Size", LCL, UCL,  Group, n, Percentage ) |> 
+  arrange(desc(Percentage)) 
 
-tbl1 = flextable(allgears_multcompcld_final) |> autofit()
+tbl1 = flextable(allgears_multcompcld_final) |> 
+  theme_box() %>%
+  align(align = "center", part = "all") %>%
+  fontsize(size=8, part="all") %>%
+  autofit() 
 
 
 
@@ -337,7 +352,7 @@ allgears_multcompcld_2012 <- multcomp::cld(object = mod_contr$emmeans)
 
 length_data_fishcount_12 <- length_data_glm_2012 |> 
   group_by(LAND_STANDARD_GEAR_NAME) |>
-  summarise(n_fish = n()) 
+  tally()
 length_data_tripcount_12 <- aggregate(data = length_data_glm_2012,                # Applying aggregate
                                       ID ~ LAND_STANDARD_GEAR_NAME,
                                       function(ID) length(unique(ID)))

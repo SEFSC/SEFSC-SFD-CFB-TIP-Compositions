@@ -25,7 +25,7 @@ execute:
 #| message: false
 
 library(here)
-source(here::here('tools','sedar_84_stx_stp_2022','stx_stp_2022_figures.R'))
+source(here::here('tools','sedar_84_sttj_yt_2022','sttj_yt_2022_figures.R'))
 
 
 ```
