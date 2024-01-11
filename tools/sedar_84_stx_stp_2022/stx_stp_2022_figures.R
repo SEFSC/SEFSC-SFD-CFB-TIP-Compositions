@@ -315,8 +315,15 @@ tbl1 = flextable(allgears_multcompcld_final) |>
 ### summary stats of pots and traps; fish and spears
 
 length_data_glm_ptf <- length_data_glm |> 
-  filter(LAND_STANDARD_GEAR_NAME == c("POTS AND TRAPS; FISH", "SPEARS")) 
-
+  filter(LAND_STANDARD_GEAR_NAME == c("POTS AND TRAPS; FISH", "SPEARS")) |> 
+  group_by(LAND_STANDARD_GEAR_NAME) %>%
+  tally |> 
+  summarise(
+    mean = mean(FL_CM, na.rm = TRUE),
+    sd = sd(FL_CM, na.rm = TRUE),
+    median = median(FL_CM, na.rm = TRUE),
+    IQR = IQR(FL_CM, na.rm = TRUE)
+  )
 
 ## All Gears 2012 and after ####
 
