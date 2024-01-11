@@ -313,11 +313,11 @@ tbl1 = flextable(allgears_multcompcld_final) |>
   autofit() 
 
 ### summary stats of pots and traps; fish and spears
+# why isnt it grouping properly for the summary stats?????
 
 length_data_glm_ptf <- length_data_glm |> 
   filter(LAND_STANDARD_GEAR_NAME == c("POTS AND TRAPS; FISH", "SPEARS")) |> 
-  group_by(LAND_STANDARD_GEAR_NAME) %>%
-  tally |> 
+  group_by(LAND_STANDARD_GEAR_NAME)  |> 
   summarise(
     mean = mean(FL_CM, na.rm = TRUE),
     sd = sd(FL_CM, na.rm = TRUE),

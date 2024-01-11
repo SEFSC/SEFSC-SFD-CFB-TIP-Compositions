@@ -1,5 +1,5 @@
 ---
-title: "SEDAR 84 Trip Interview Program (TIP) Size Composition Analysis of Yellowtail Snapper (Ocyurus chrysurus) in St. Croix, US Caribbean, 1983-2022"
+title: "SEDAR 84 Trip Interview Program (TIP) Size Composition Analysis of Yellowtail Snapper (Ocyurus chrysurus) in St. Thomas/St. John, US Caribbean, 1983-2022"
 format: docx
 editor: visual
 output-file: test.docx
@@ -30,7 +30,7 @@ source(here::here('tools','sedar_84_stx_stp_2022','stx_stp_2022_figures.R'))
 
 ```
 
-In early (what month?) 2023, the Caribbean Fishery Management Council (CFMC) requested the assistance of the National Marine Fisheries Service (NOAA Fisheries), Southeast Fisheries Science Center (SEFSC) to conduct Stoplight Parrotfish assessment updates outside the SouthEast Data, Assessment, and Review (SEDAR) process. The request was to provide size composition analysis of the Trip Interview Program (TIP) data available for the St. Croix region utilizing methods established previously in SEDAR 80 (is this the origination??). This document provides size composition analysis for Stoplight Parrotfish in St. Croix using TIP data for the years 1988 to 2022. This work was conducted by the Southeast Fisheries Science Center, Sustainable Fisheries Division, Caribbean Fisheries Branch.
+In early (what month?) 2023, the Caribbean Fishery Management Council (CFMC) requested the assistance of the National Marine Fisheries Service (NOAA Fisheries), Southeast Fisheries Science Center (SEFSC) to conduct Yellowtail Snapper assessment updates outside the SouthEast Data, Assessment, and Review (SEDAR) process. The request was to provide size composition analysis of the Trip Interview Program (TIP) data available for the St. Thomas/St. John region utilizing methods established previously in SEDAR 80 (is this the origination??). This document provides size composition analysis for Yellowtail Snaper in St. Thomas/St. John using TIP data for the years 1988 to 2022. This work was conducted by the Southeast Fisheries Science Center, Sustainable Fisheries Division, Caribbean Fisheries Branch.
 
 There are two main portions of this document. First, gear groupings were established based on a general linear model (GLM) analysis. The GLM analysis used a gamma-distributed dependent variable. Second, the size composition of each gear grouping was assessed.
 
@@ -38,13 +38,13 @@ There are two main portions of this document. First, gear groupings were establi
 
 ## Generalized Linear Model (GLM) Analysis
 
-The GLM analysis was first conducted on the time series as a whole (1988-2022), then on a truncated time series to best reflect the available commercial landings data (2012-2022), and finally on the individual gear groupings. The analysis of the full and truncated time series display the statistical similarity of all available gears to one another, regardless of gear groupings, in respect to the size of fish caught throughout. The individual gear groupings were created and analyzed based on their similar uses in the field. The gears within these groupings were compared to one another within their same group to determine if the gears perceived to be similar were statistically similar in regard to the size of fish caught throughout time. To analyze the gears, the variable LAND_STANDARD_GEAR_NAME was used for all analysis except for that of @fig-abc6 and @fig-abc11 and @tbl-tbl6.
+The GLM analysis was first conducted on the time series as a whole (1988-2022), then on a truncated time series to best reflect the available commercial landings data (2012-2022), and finally on the individual gear groupings. The analysis of the full and truncated time series display the statistical similarity of all available gears to one another, regardless of gear groupings, in respect to the size of fish caught throughout. The individual gear groupings were created and analyzed based on their similar uses in the field. The gears within these groupings were compared to one another within their same group to determine if the gears perceived to be similar were statistically similar in regard to the size of fish caught throughout time. The variable LAND_STANDARD_GEAR_NAME was used as the gear indicator for analysis.
 
 ```{r all lengths GLM}
 #| echo: false
 #| label: fig-abc1
 #| fig-cap: |
-#|   Plot of all lengths measured in centimeters of Stoplight Parrotfish in St. Croix across time collected. Trend line is mapped across data, each point is color and shape specific to the gear it represents. 
+#|   Plot of all lengths measured in centimeters of Yellowtail Snapper in St. Thomas/St. John across time collected. Trend line is mapped across data, each point is color and shape specific to the gear it represents. 
 #| fig-width: 11
 #| fig-height: 6
 
@@ -59,7 +59,7 @@ abc1
 #| warning: false
 #| label: tbl-tbl1
 #| tbl-cap: |
-#|   This shows the results of GLM analysis on the full TIP data set of Stoplight Parrotfish lengths in St. Croix. The column titled "group" indicates the group(s) that the gear can statistically be included in, and thus be statistically similar to the other gears grouped similarly. The "n" column indicates the number of unique lengths recorded for each gear. The "ID" column indicates the number of distinct trip ID's associated with each gear. The "Percentage" column inticates the percent(n_fish) of the total recorded fish lengths that are included within each gear. 
+#|   This shows the results of GLM analysis on the full TIP data set of Yellowtail Snapper lengths in St. Thomas/St. John. The column titled "group" indicates the group(s) that the gear can statistically be included in, and thus be statistically similar to the other gears grouped similarly. The "n" column indicates the number of unique lengths recorded for each gear. The "ID" column indicates the number of distinct trip ID's associated with each gear. The "Percentage" column inticates the percent(n_fish) of the total recorded fish lengths that are included within each gear. 
 library(knitr)
 kable("")
 tbl1
@@ -75,7 +75,7 @@ add summary of statistically significant gears?
 #| echo: false
 #| label: fig-abc2
 #| fig-cap: |
-#|   Plot of all lengths measured in centimeters of Stoplight Parrotfish in St. Croix from 2012 to 2022. Trend line is mapped across data, each point is color and shape specific to the gear it represents. 
+#|   Plot of all lengths measured in centimeters of Yellowtail Snapper in St. Thomas/St. John from 2012 to 2022. Trend line is mapped across data, each point is color and shape specific to the gear it represents. 
 #| fig-width: 11
 #| fig-height: 6
 
@@ -88,7 +88,7 @@ abc2
 #| warning: false
 #| label: tbl-tbl2
 #| tbl-cap: |
-#|   This shows the results of GLM analysis on the TIP data set of Stoplight Parrotfish lengths in St. Croix from 2012 to 2022. The column titled "group" indicates the group(s) that the gear can statistically be included in, and thus be statistically similar to the other gears grouped similarly. The "n" column indicates the number of unique lengths recorded for each gear. The "ID" column indicates the number of distinct trip ID's associated with each gear. The "Percentage" column inticates the percent(n_fish) of the total recorded fish lengths that are included within each gear. 
+#|   This shows the results of GLM analysis on the TIP data set of Yellowtail Snapper lengths in St. Thomas/St. John from 2012 to 2022. The column titled "group" indicates the group(s) that the gear can statistically be included in, and thus be statistically similar to the other gears grouped similarly. The "n" column indicates the number of unique lengths recorded for each gear. The "Percentage" column inticates the percent of the total recorded fish lengths that are included within each gear. 
 kable("")
 tbl2
 
@@ -100,7 +100,7 @@ tbl2
 #| echo: false
 #| label: fig-abc3
 #| fig-cap: |
-#|   Plot of "diving" gear group lengths measured in centimeters of Stoplight Parrotfish in St. Croix across time collected. Trend line is mapped across data, each point is color and shape specific to the gear it represents. No significant p values for time period or gears, further comparisons not needed.
+#|   Plot of "hook and line" gear group lengths measured in centimeters of Yellowtail Snapper in St. Thomas/St. John across time collected. Trend line is mapped across data, each point is color and shape specific to the gear it represents. No significant p values for time period or gears, further comparisons not needed.
 #| fig-width: 11
 #| fig-height: 6
 
@@ -113,7 +113,7 @@ abc3
 #| warning: false
 #| label: tbl-tbl3
 #| tbl-cap: |
-#|   This shows the results of GLM analysis of the "diving" gear group of Stoplight Parrotfish lengths in St. Croix. The column titled "group" indicates the group(s) that the gear can statistically be included in, and thus be statistically similar to the other gears grouped similarly. The "n" column indicates the number of unique lengths recorded for each gear. The "ID" column indicates the number of distinct trip ID's associated with each gear. The "Percentage" column inticates the percent(n_fish) of the total recorded fish lengths that are included within each gear. 
+#|   This shows the results of GLM analysis of the "hook and line" gear group of Yellowtail Snapper lengths in St. Thomas/St. John. The column titled "group" indicates the group(s) that the gear can statistically be included in, and thus be statistically similar to the other gears grouped similarly. The "n" column indicates the number of unique lengths recorded for each gear. The "Percentage" column inticates the percent of the total recorded fish lengths that are included within each gear. 
 kable("")
 tbl3
 
@@ -125,7 +125,7 @@ tbl3
 #| echo: false
 #| label: fig-abc4
 #| fig-cap: |
-#|   Plot of "trap" gear group lengths measured in centimeters of Stoplight Parrotfish in St. Croix across time collected. Trend line is mapped across data, each point is color and shape specific to the gear it represents. 
+#|   Plot of "net" gear group lengths measured in centimeters of Yellowtail Snapper in St. Thomas/St. John across time collected. Trend line is mapped across data, each point is color and shape specific to the gear it represents. 
 #| fig-width: 11
 #| fig-height: 6
 
@@ -138,35 +138,24 @@ abc4
 #| warning: false
 #| label: tbl-tbl4
 #| tbl-cap: |
-#|   This shows the results of GLM analysis of the "trap" gear group of Stoplight Parrotfish lengths in St. Croix. The column titled "group" indicates the group(s) that the gear can statistically be included in, and thus be statistically similar to the other gears grouped similarly. The "n" column indicates the number of unique lengths recorded for each gear. The "Percentage" column inticates the percent of the total(n) recorded fish lengths that are included within each gear. 
+#|   This shows the results of GLM analysis of the "net" gear group of Yellowtail Snapper lengths in St. Thomas/St. John. The column titled "group" indicates the group(s) that the gear can statistically be included in, and thus be statistically similar to the other gears grouped similarly. The "n" column indicates the number of unique lengths recorded for each gear. The "Percentage" column inticates the percent of the total recorded fish lengths that are included within each gear. 
 kable("")
 tbl4
 
 ```
 
-add summary of differences between trap gears? \newpage
+add summary of differences between trap gears?
+\newpage
 
 ```{r netst GLM}
 #| echo: false
 #| label: fig-abc5
 #| fig-cap: |
-#|   Plot of "net" gear group lengths measured in centimeters of Stoplight Parrotfish in St. Croix across time collected. Trend line is mapped across data, each point is color and shape specific to the gear it represents.  
+#|   Plot of "trap" gear group lengths measured in centimeters of Yellowtail Snapper in St. Thomas/St. John across time collected. Trend line is mapped across data, each point is color and shape specific to the gear it represents.  
 #| fig-width: 11
 #| fig-height: 6
 
 abc5
-
-```
-
-```{r netl GLM}
-#| echo: false
-#| label: fig-abc6
-#| fig-cap: |
-#|   Plot of "net" gear group lengths measured in centimeters of Stoplight Parrotfish in St. Croix across time collected. Trend line is mapped across data, each point is color and shape specific to the gear it represents. This plot uses the LAND_GEAR_NAME variable, i.e. the gear name specific to the island. This variable shows the different mesh sizes used in the net gear grouping. No significant p values for time period or gears, further comparisons not needed.
-#| fig-width: 11
-#| fig-height: 6
-
-abc6
 
 ```
 
@@ -175,22 +164,12 @@ abc6
 #| warning: false
 #| label: tbl-tbl5
 #| tbl-cap: |
-#|   This shows the results of GLM analysis of the "net" gear group of Stoplight Parrotfish lengths in St. Croix. The column titled "group" indicates the group(s) that the gear can statistically be included in, and thus be statistically similar to the other gears grouped similarly. The "n" column indicates the number of unique lengths recorded for each gear. The "Percentage" column inticates the percent of the total(n) recorded fish lengths that are included within each gear. 
+#|   This shows the results of GLM analysis of the "trap" gear group of Yellowtail Snapper lengths in St. Thomas/St. John. The column titled "group" indicates the group(s) that the gear can statistically be included in, and thus be statistically similar to the other gears grouped similarly. The "n" column indicates the number of unique lengths recorded for each gear. The "Percentage" column inticates the percent of the total recorded fish lengths that are included within each gear. 
 kable("")
 tbl5
 
 ```
 
-```{r netl GLM tbl}
-#| echo: false
-#| warning: false
-#| label: tbl-tbl6
-#| tbl-cap: |
-#|   This shows the results of GLM analysis of the "net" gear group of Stoplight Parrotfish lengths in St. Croix. The column titled "group" indicates the group(s) that the gear can statistically be included in, and thus be statistically similar to the other gears grouped similarly. The "n" column indicates the number of unique lengths recorded for each gear. The "Percentage" column inticates the percent of the total(n) recorded fish lengths that are included within each gear. This table uses the LAND_GEAR_NAME variable, i.e. the gear name specific to the island. This variable shows the different mesh sizes used in the net gear grouping.
-kable("")
-tbl6
-
-```
 
 \newpage
 
@@ -200,13 +179,13 @@ The aggregated gear density was plotted for all time periods and gear groupings 
 
 ```{r all lengths agd}
 #| echo: false
-#| label: fig-abc7
+#| label: fig-abc6
 #| fig-cap: |
-#|   Aggregated density plots of lengths measured in centimeters of Stoplight Parrotfish in St. Croix grouped by assigned gear groupings. 
+#|   Aggregated density plots of lengths measured in centimeters of Yellowtail Snapper in St. Thomas/St. John grouped by assigned gear groupings. 
 #| fig-width: 11
 #| fig-height: 6
 
-abc7
+abc6
 
 ```
 
@@ -214,7 +193,7 @@ abc7
 #| echo: false
 #| label: fig-abc8
 #| fig-cap: |
-#|   Aggregated density plot of lengths measured in centimeters of each gear within the "diving" gear group of Stoplight Parrotfish in St. Croix.
+#|   Aggregated density plot of lengths measured in centimeters of each gear within the "hook and line" gear group of Yellowtail Snapper in St. Thomas/St. John.
 #| fig-width: 11
 #| fig-height: 6
 
@@ -226,7 +205,7 @@ abc8
 #| echo: false
 #| label: fig-abc9
 #| fig-cap: |
-#|   Aggregated density plot of lengths measured in centimeters of each gear within the "trap" gear group of Stoplight Parrotfish in St. Croix.
+#|   Aggregated density plot of lengths measured in centimeters of each gear within the "net" gear group of Yellowtail Snapper in St. Thomas/St. John.
 #| fig-width: 11
 #| fig-height: 6
 
@@ -236,21 +215,9 @@ abc9
 
 ```{r netst agd}
 #| echo: false
-#| label: fig-abc10
-#| fig-cap: |
-#|   Aggregated density plot of lengths measured in centimeters of each gear within the "net" gear group of Stoplight Parrotfish in St. Croix. 
-#| fig-width: 11
-#| fig-height: 6
-
-abc10
-
-```
-
-```{r netl agd}
-#| echo: false
 #| label: fig-abc11
 #| fig-cap: |
-#|   Aggregated density plot of lengths measured in centimeters of each gear within the "net" gear group of Stoplight Parrotfish in St. Croix. This plot uses the LAND_GEAR_NAME variable, i.e. the gear name specific to the island. This variable shows the different mesh sizes used in the net gear grouping.  
+#|   Aggregated density plot of lengths measured in centimeters of each gear within the "trap" gear group of Yellowtail Snapper in St. Thomas/St. John. 
 #| fig-width: 11
 #| fig-height: 6
 
@@ -262,7 +229,7 @@ abc11
 #| echo: false
 #| label: fig-abc12
 #| fig-cap: |
-#|   Aggregated density plot of lengths measured in centimeters of each gear within the "other" gear group of Stoplight Parrotfish in St. Croix.
+#|   Aggregated density plot of lengths measured in centimeters of each gear within the "other" gear group of Yellowtail Snapper in St. Thomas/St. John.
 #| fig-width: 11
 #| fig-height: 6
 
