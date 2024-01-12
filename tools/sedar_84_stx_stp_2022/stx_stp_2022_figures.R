@@ -22,7 +22,12 @@ librarian::shelf(here, tidyverse, ROracle, keyring, dotenv, reshape, openxlsx, j
 # # Find out the name of the most recent extraction
 # tip_file <- list.files(here("data", "raw"),
 #                        pattern = paste0("^com_tip_PR_VI_+", tip_date))
-# 
+
+# Example of how to cite sedar papers Donaldson, D.M. 2004. Overview of the State Trip 
+# Tickets Programs in the Gulf of Mexico. SEDAR7-DW-20. SEDAR, North Charleston, SC. 11pp. 
+# Poffenberger, J. 2003. Description of the Southeast Fisheries Science Center's Logbook 
+# Program for Coastal Fisheries. SEDAR-DW-29. SEDAR, North Charleston, SC. 9pp.
+# # 
 
 # Read in the most recent extraction
 # tip <- readRDS(file = here("data", "raw", tip_file))
@@ -303,7 +308,7 @@ abc1 <- gant_data |>
   geom_point()  +
   labs(x = "Year", y = "", colour = "", shape = "") +
   theme_bw() + 
-  theme(legend.position="null")
+  theme(legend.position="null", text = element_text(size = 15))
   
 # + guides(fill=guide_legend(nrow=2,byrow=TRUE))
 
@@ -405,7 +410,7 @@ abc2 <- gant_data |>
   geom_point()  +
   labs(x = "Year", y = "", colour = "", shape = "") +
   theme_bw() + 
-  theme(legend.position="null")
+  theme(legend.position="null", text = element_text(size = 15))
 # fit models
 
 # comparing length to date and gear in a gamma full model
@@ -756,7 +761,7 @@ agr_den_NOgears <- length_data_final %>% group_by(YEAR) %>% filter(n() >= 30) %>
   labs(x = "Fork Length (cm)", title = paste0(county,  "\n (N = ", sum(ycounts$n), ")"))+
   # theme_minimal()
   theme(legend.title = element_text(size=14), 
-        legend.text = element_text(size=12))+
+        legend.text = element_text(size=15))+
   geom_vline(aes(xintercept=mean(FL_CM)),
               linetype="dashed", linewidth=1)
 
@@ -782,7 +787,7 @@ agr_den_v <- length_data_final %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungr
   labs(color = "Gear Group" , x = "Fork Length (cm)", title = paste0(county,  "\n (N = ", sum(ycounts$n), ")"))+
   # theme_minimal()
   theme(legend.title = element_text(size=14), 
-        legend.text = element_text(size=12))+
+        legend.text = element_text(size=15))+
   geom_vline(data=muv, aes(xintercept=grp.mean, color=GEAR_GROUP),
                      linetype="dashed")
 
