@@ -67,8 +67,24 @@ bin_size <- 1
 
 len_type <- "FORK LENGTH"
 
+
+# Calculate data available ####
 flextable(as.data.frame(table(stx_slp$LENGTH_TYPE1, useNA='always')))%>%
   autofit()
+
+# len_types <- as.data.frame(table(stx_slp$LENGTH_TYPE1, useNA='always'))
+# 
+# total_len_count <- len_types |> 
+#   mutate(Percent = round((Freq/total_length*100), 2))
+# non_fork =
+
+n_fork_len = sum(stx_slp$LENGTH_TYPE1 == "FORK LENGTH")
+n_all_len = length(stx_slp$LENGTH_TYPE1)
+p_fork_len = round(n_fork_len/n_all_len, 4)*100
+
+trip_id_unique <- as.data.frame(table(stx_slp$ID, useNA='always'))
+total_trip_id_unique = nrow(trip_id_unique)
+
 
 ##range currently set to not drop any obs (centimeters)
 
@@ -92,12 +108,13 @@ break_year <- 2005 # this is an optional value to denote a change in management.
 ## FILTER OUT COMMERCIAL SAMPLES
 ## replace species 3 letter code and itis number in code
 
+
 tip2 <- #readRDS('./data_clean/tip_GOM.Rdata') %>%
   stx_slp %>%
   filter( #MULT_TRIP == '0')%>%  ##no mult_trip in Caribbean TIP --> ALL full catch samples
     FISHING_MODE=='COMMERCIAL',
     LENGTH_TYPE1!='NO LENGTH',
-    YEAR <= 2023
+    YEAR < 2023
   ) %>%
   type_convert() %>%
   mutate(REGION_NAME = region,
@@ -260,7 +277,6 @@ comp_names = c("YEAR", "ln_fish", "ln_trips", "ln_dealers","ln_vessels", names(f
 
 unique(length_data_final$gear) # "Hook and Line", "Trap", "Other", "Net"
 
-
 ## All Gears ####
 
 
@@ -284,20 +300,14 @@ length_data_glm <- length_data_final |>
 #         legend.box.spacing = unit(0, "npc"), panel.grid = element_blank()) +
 #   guides(colour = guide_legend(override.aes = list(size = 2)))
 
-########### to do ################
+#------------# to do #--------------#
 # Review summary, add sentence of final grouping recommendation (together)
-# Change to bubble plot (Adyan)
-# Update table with group recommendation (Katherine)
 # Check the figure and table text (together)
-# 1 density plot of overall (Katherine)
-# 1 density plot comparing the resulting groups (Katherine)
-# Take out and turn off inner gear analyses; save for further automation internal work (Katherine)
-# 
 # Say how much data there are and in what measurements
-# 
+
 # Other
 # Check if quarto table text is working with flex t
-
+#-----------------------------------#
 gant_data <- length_data_final %>% group_by(ID) %>% filter(n() >= 3) %>% ungroup %>%
   # filter(ID >= 3) |>
   group_by(YEAR, LAND_STANDARD_GEAR_NAME) |>
@@ -384,7 +394,7 @@ tbl1 = flextable(allgears_multcompcld_final) |>
 
 length_data_glm_2012 <- length_data_final |>
   filter(YEAR >= 2012) |>
-  select(YEAR, FINAL_DATE, ID, COUNTY, FL_CM, LAND_STANDARD_GEAR_NAME, gear) |>
+  select(YEAR, FINAL_DATE, ID, COUNTY, FL_CM, LAND_STANDARD_GEAR_NAME, gear, GEAR_GROUP) |>
   mutate(ID = as.character(ID)) |>
   select(-gear)
 # 
@@ -400,17 +410,22 @@ length_data_glm_2012 <- length_data_final |>
 #   guides(colour = guide_legend(override.aes = list(size = 2)))
 
 # n() doesnt work in my code, what is an alternative for what we're trying to do
-gant_data <- length_data_glm_2012 %>% group_by(ID) %>% filter(n() >= 3) %>% ungroup %>%
+gant_data_12 <- length_data_glm_2012 %>% group_by(ID) %>% dplyr::filter(n() >= 3) %>% ungroup %>%
   # filter(ID >= 3) |>
   group_by(YEAR, LAND_STANDARD_GEAR_NAME) |>
-  summarize(n = n(), .groups = "drop") 
+  dplyr::summarize(n = n(), .groups = "drop") |> 
+  mutate(YEAR = as.integer(YEAR))
 
-abc2 <- gant_data |>
+# library(scales)
+
+abc2 <- gant_data_12 |>
   ggplot(aes(x = YEAR, y = LAND_STANDARD_GEAR_NAME, color = LAND_STANDARD_GEAR_NAME, size = n)) +
   geom_point()  +
   labs(x = "Year", y = "", colour = "", shape = "") +
   theme_bw() + 
-  theme(legend.position="null", text = element_text(size = 15))
+  theme(legend.position="null", text = element_text(size = 15))+
+  xlim(2012,2022)
+
 # fit models
 
 # comparing length to date and gear in a gamma full model
@@ -767,6 +782,28 @@ agr_den_NOgears <- length_data_final %>% group_by(YEAR) %>% filter(n() >= 30) %>
 
 abc14 = agr_den_NOgears
 
+# after 2012
+ycounts =length_data_glm_2012 %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
+  tabyl(GEAR_GROUP) %>%
+  mutate(n_labels = paste0(GEAR_GROUP, " (n= ", n, ")" ))
+
+
+agr_den_NOgears_12 <- length_data_glm_2012 %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
+  ggplot(aes(FL_CM))+
+  # geom_density( aes(color = "Combined"),lwd=1.5)+
+  geom_density(linewidth = 0.75)+
+  # scale_color_hue(labels=ycounts$n_labels)+
+  # scale_color_hue(labels=c("Combined",ycounts$n_labels))+
+  #scale_color_manual(values = gearcols, labels = c("Combined", counts$n_labels))+
+  labs(x = "Fork Length (cm)", title = paste0(county,  "\n (N = ", sum(ycounts$n), ")"))+
+  # theme_minimal()
+  theme(legend.title = element_text(size=14), 
+        legend.text = element_text(size=15))+
+  geom_vline(aes(xintercept=mean(FL_CM)),
+             linetype="dashed", linewidth=1)
+
+abc16 = agr_den_NOgears_12
+
 ### spear vs pots and traps;fish ####
 
 ycounts =length_data_final %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
@@ -793,6 +830,13 @@ agr_den_v <- length_data_final %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungr
 
 
 abc15 = agr_den_v
+
+# SAVE WORKSPACE
+save.image(
+  file = here::here('tools',
+                    "sedar_84_stx_stp_2022",
+                    "stx_stp_2022_figures.RData") 
+)
 
 ## Gear Groupings
 # Filtered to minimum 30 fish per year
