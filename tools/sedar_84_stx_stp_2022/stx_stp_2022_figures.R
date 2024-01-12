@@ -186,8 +186,23 @@ join_length_dat <- tip4 %>% #bind_rows(tip3 , gfin2) %>%
 length_data_final <- join_length_dat %>%
   select(YEAR, INTERVIEW_DATE, FINAL_DATE, ID, OBS_ID, STATE = STATE_LANDED, COUNTY=COUNTY_LANDED, COUNTY_CODE, FL_CM, lbin, source, gear, gear_short, LAND_STANDARD_GEAR_NAME, LAND_GEAR_NAME, mgt_period, ISLAND, INT_TYPE, fleet, DEALER_CODE, VESSEL_ID, LICENSE) %>%  #STAT_AREA
   filter(between(FL_CM , min_size, max_size),
-         ISLAND != 'NOT CODED')
+         ISLAND != 'NOT CODED')|> 
+  mutate(GEAR_GROUP = case_when(LAND_STANDARD_GEAR_NAME == "POTS AND TRAPS; FISH" ~ "OTHER",
+                                  LAND_STANDARD_GEAR_NAME == "POTS AND TRAPS; CMB" ~ "OTHER",
+                                  LAND_STANDARD_GEAR_NAME == "POTS AND TRAPS; BOX TRAP" ~ "OTHER",
+                                  LAND_STANDARD_GEAR_NAME == "ENTANGLING NETS (GILL) UNSPC" ~ "OTHER",
+                                  LAND_STANDARD_GEAR_NAME == "SPEARS" ~ "DIVING",
+                                  LAND_STANDARD_GEAR_NAME == "SPEARS; DIVING" ~ "DIVING",
+                                  LAND_STANDARD_GEAR_NAME == "BY HAND; DIVING GEAR" ~ "DIVING",
+                                  LAND_STANDARD_GEAR_NAME == "GILL NETS; OTHER" ~ "OTHER",
+                                  LAND_STANDARD_GEAR_NAME == "LINES HAND" ~ "OTHER",
+                                  LAND_STANDARD_GEAR_NAME == "LINES LONG; REEF FISH"~ "OTHER",
+                                  LAND_STANDARD_GEAR_NAME == "NOT CODED" ~ "OTHER",
+                                  LAND_STANDARD_GEAR_NAME == "STOP SEINES" ~ "OTHER",
+                                  LAND_STANDARD_GEAR_NAME == "TRAMMEL NETS" ~ "OTHER"))
     #,
+
+unique(length_data_final$LAND_STANDARD_GEAR_NAME)
     #INT_TYPE != 'USVI MARFIN REEFFISH SAMPLING') 
     
     # Analyst have asked for a record of dropped observations
@@ -247,24 +262,48 @@ unique(length_data_final$gear) # "Hook and Line", "Trap", "Other", "Net"
 # str(length_data_final)
 library(ggplot2)
 length_data_glm <- length_data_final |>
-  select(YEAR, FINAL_DATE, ID, COUNTY, FL_CM, LAND_STANDARD_GEAR_NAME, gear) |> 
-  # filter(gear == "Hook and Line") |> 
+  select(YEAR, FINAL_DATE, ID, COUNTY, FL_CM, LAND_STANDARD_GEAR_NAME, gear, GEAR_GROUP) |> 
   mutate(ID = as.character(ID)) |> 
   select(-gear)
 
 # plot data
+# 
+# abc1 = length_data_glm |> 
+#   ggplot(aes(x = as.Date(FINAL_DATE), y = FL_CM)) +
+#   geom_point(aes(colour = LAND_STANDARD_GEAR_NAME, shape=LAND_STANDARD_GEAR_NAME), size = 1, alpha = 0.5) +
+#   scale_shape_manual(values=c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14))+
+#   geom_smooth(method = "lm", formula = "y ~ x", col = "black") +
+#   labs(x = "", y = "Length (cm)", colour = "", shape = "") +
+#   theme_bw() +
+#   theme(legend.position = "bottom", text = element_text(size = 15),
+#         legend.box.spacing = unit(0, "npc"), panel.grid = element_blank()) +
+#   guides(colour = guide_legend(override.aes = list(size = 2)))
 
-abc1 = length_data_glm |> 
-  ggplot(aes(x = as.Date(FINAL_DATE), y = FL_CM)) +
-  geom_point(aes(colour = LAND_STANDARD_GEAR_NAME, shape=LAND_STANDARD_GEAR_NAME), size = 1, alpha = 0.5) +
-  scale_shape_manual(values=c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14))+
-  geom_smooth(method = "lm", formula = "y ~ x", col = "black") +
-  # facet_wrap(~ COUNTY_LANDED) +
-  labs(x = "", y = "Length (cm)", colour = "", shape = "") +
-  theme_bw() +
-  theme(legend.position = "bottom", text = element_text(size = 15),
-        legend.box.spacing = unit(0, "npc"), panel.grid = element_blank()) +
-  guides(colour = guide_legend(override.aes = list(size = 2)))
+########### to do ################
+# Review summary, add sentence of final grouping recommendation (together)
+# Change to bubble plot (Adyan)
+# Update table with group recommendation (Katherine)
+# Check the figure and table text (together)
+# 1 density plot of overall (Katherine)
+# 1 density plot comparing the resulting groups (Katherine)
+# Take out and turn off inner gear analyses; save for further automation internal work (Katherine)
+# 
+# Say how much data there are and in what measurements
+# 
+# Other
+# Check if quarto table text is working with flex t
+
+gant_data <- length_data_final %>% group_by(ID) %>% filter(n() >= 3) %>% ungroup %>%
+  # filter(ID >= 3) |>
+  group_by(YEAR, LAND_STANDARD_GEAR_NAME) |>
+  summarize(n = n(), .groups = "drop") 
+
+abc1 <- gant_data |>
+  ggplot(aes(x = YEAR, y = LAND_STANDARD_GEAR_NAME, color = LAND_STANDARD_GEAR_NAME, size = n)) +
+  geom_point()  +
+  labs(x = "Year", y = "", colour = "", shape = "") +
+  theme_bw() + 
+  theme(legend.position="null")
   
 # + guides(fill=guide_legend(nrow=2,byrow=TRUE))
 
@@ -303,16 +342,17 @@ allgears_multcompcld_final <- allgears_multcompcld_trip |>
                 "UCL" = "asymp.UCL") |> 
   filter(ID >= 3) |> 
   select(Gear, "Mean Size", LCL, UCL,  Group, n, Percentage )  |> 
-  mutate("Gear Grouping" = case_when(Gear == "POTS AND TRAPS; FISH" ~ "OTHER",
+  mutate("Gear Group" = case_when(Gear == "POTS AND TRAPS; FISH" ~ "OTHER",
                                      Gear == "POTS AND TRAPS; CMB" ~ "OTHER",
                                      Gear == "ENTANGLING NETS (GILL) UNSPC" ~ "OTHER",
                                      Gear == "SPEARS" ~ "DIVING",
-                                     Gear == "SPEARS;DIVING" ~ "DIVING",
+                                     Gear == "SPEARS; DIVING" ~ "DIVING",
                                      Gear == "BY HAND; DIVING GEAR" ~ "DIVING",
                                      Gear == "GILL NETS; OTHER" ~ "OTHER",
                                      Gear == "LINES HAND" ~ "OTHER",
                                      Gear == "NOT CODED" ~ "OTHER",
                                      Gear == "TRAMMEL NETS" ~ "OTHER"))|> 
+  # order(allgears_multcompcld_final$`Gear Group`) |> cant figure out how to alphabatize groups
   arrange(desc(Percentage)) 
 
 
@@ -325,39 +365,48 @@ tbl1 = flextable(allgears_multcompcld_final) |>
 ### summary stats of pots and traps; fish and spears
 # why isnt it grouping properly for the summary stats?????
 
-length_data_glm_ptf <- length_data_glm |> 
-  filter(LAND_STANDARD_GEAR_NAME == c("POTS AND TRAPS; FISH", "SPEARS")) |> 
-  group_by(LAND_STANDARD_GEAR_NAME)  |> 
-  summarise(
-    mean = mean(FL_CM, na.rm = TRUE),
-    sd = sd(FL_CM, na.rm = TRUE),
-    median = median(FL_CM, na.rm = TRUE),
-    IQR = IQR(FL_CM, na.rm = TRUE)
-  )
+# length_data_glm_ptf <- length_data_glm |> 
+#   filter(LAND_STANDARD_GEAR_NAME == c("POTS AND TRAPS; FISH", "SPEARS")) |> 
+#   group_by(LAND_STANDARD_GEAR_NAME)  |> 
+#   summarise(
+#     mean = mean(FL_CM, na.rm = TRUE),
+#     sd = sd(FL_CM, na.rm = TRUE),
+#     median = median(FL_CM, na.rm = TRUE),
+#     IQR = IQR(FL_CM, na.rm = TRUE)
+#   )
 
 ## All Gears 2012 and after ####
 
 length_data_glm_2012 <- length_data_final |>
-  filter(YEAR >= 2012) |> 
-  select(YEAR, FINAL_DATE, ID, COUNTY, FL_CM, LAND_STANDARD_GEAR_NAME, gear) |> 
-  # filter(gear == "Hook and Line") |> 
-  mutate(ID = as.character(ID)) |> 
+  filter(YEAR >= 2012) |>
+  select(YEAR, FINAL_DATE, ID, COUNTY, FL_CM, LAND_STANDARD_GEAR_NAME, gear) |>
+  mutate(ID = as.character(ID)) |>
   select(-gear)
+# 
+# abc2 = length_data_glm_2012 |> 
+#   ggplot(aes(x = as.Date(FINAL_DATE), y = FL_CM)) +
+#   geom_point(aes(colour = LAND_STANDARD_GEAR_NAME, shape = LAND_STANDARD_GEAR_NAME), size = 1, alpha = 0.5) +
+#   geom_smooth(method = "lm", formula = "y ~ x", col = "black") +
+#   # facet_wrap(~ COUNTY_LANDED) +
+#   labs(x = "", y = "Length (cm)", colour = "", shape = "") +
+#   theme_bw() +
+#   theme(legend.position = "bottom", legend.text = element_text(size = 15),
+#         legend.box.spacing = unit(0, "npc"), panel.grid = element_blank()) +
+#   guides(colour = guide_legend(override.aes = list(size = 2)))
 
-abc2 = length_data_glm_2012 |> 
-  ggplot(aes(x = as.Date(FINAL_DATE), y = FL_CM)) +
-  geom_point(aes(colour = LAND_STANDARD_GEAR_NAME, shape = LAND_STANDARD_GEAR_NAME), size = 1, alpha = 0.5) +
-  geom_smooth(method = "lm", formula = "y ~ x", col = "black") +
-  # facet_wrap(~ COUNTY_LANDED) +
-  labs(x = "", y = "Length (cm)", colour = "", shape = "") +
-  theme_bw() +
-  theme(legend.position = "bottom", legend.text = element_text(size = 15),
-        legend.box.spacing = unit(0, "npc"), panel.grid = element_blank()) +
-  guides(colour = guide_legend(override.aes = list(size = 2)))
+# n() doesnt work in my code, what is an alternative for what we're trying to do
+gant_data <- length_data_glm_2012 %>% group_by(ID) %>% filter(n() >= 3) %>% ungroup %>%
+  # filter(ID >= 3) |>
+  group_by(YEAR, LAND_STANDARD_GEAR_NAME) |>
+  summarize(n = n(), .groups = "drop") 
 
-
+abc2 <- gant_data |>
+  ggplot(aes(x = YEAR, y = LAND_STANDARD_GEAR_NAME, color = LAND_STANDARD_GEAR_NAME, size = n)) +
+  geom_point()  +
+  labs(x = "Year", y = "", colour = "", shape = "") +
+  theme_bw() + 
+  theme(legend.position="null")
 # fit models
-library(lmerTest)
 
 # comparing length to date and gear in a gamma full model
 mod2 = glmer(FL_CM ~ scale(FINAL_DATE) + LAND_STANDARD_GEAR_NAME + (1 | YEAR) + (1 | ID),
@@ -390,18 +439,9 @@ allgears_multcompcld_finaL_2012 <- allgears_multcompcld_trip_2012  |>
                 "UCL" = "asymp.UCL") |> 
   filter(ID >= 3) |> 
   select(Gear, "Mean Size", LCL, UCL,  Group, n, Percentage ) |> 
-  mutate("Gear Group" = case_when(Gear = "POTS AND TRAPS; FISH" ~ 'OTHER',
-                                  TRUE ~ Gear),
-         "Gear Group" = case_when(Gear = "POTS AND TRAPS; FISH" ~ 'OTHER',
-                                  TRUE ~ Gear),
-         "Gear Group" = case_when(Gear = "POTS AND TRAPS; FISH" ~ 'OTHER',
-                                  TRUE ~ Gear),
-         "Gear Group" = case_when(Gear = "POTS AND TRAPS; FISH" ~ 'OTHER',
-                                  TRUE ~ Gear),
-         "Gear Group" = case_when(Gear = "POTS AND TRAPS; FISH" ~ 'OTHER',
-                                  TRUE ~ Gear),
-         "Gear Group" = case_when(Gear = "POTS AND TRAPS; FISH" ~ 'OTHER',
-                                  TRUE ~ Gear),)
+  mutate("Gear Group" = case_when(Gear == "BY HAND; DIVING GEAR" ~ 'DIVING',
+                                  Gear == "POTS AND TRAPS; FISH" ~ 'OTHER',
+                                  Gear == "SPEARS; DIVING" ~ 'DIVING')) |> 
   arrange(desc(Percentage)) 
 
 
@@ -675,58 +715,81 @@ tbl2 = flextable(allgears_multcompcld_finaL_2012) |>
 
 ## Aggregated density plots ####
 
+# ycounts =length_data_final %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
+#   tabyl(gear) %>%
+#   mutate(n_labels = paste0(gear, " (n= ", n, ")" ))
+# 
+# library(plyr)
+# mu <- ddply(length_data_final, "gear", summarise, grp.mean=mean(FL_CM))
+# head(mu)
+# 
+# agr_den_allgears <- length_data_final %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
+#   ggplot(aes(FL_CM))+
+#   # geom_density( aes(color = "Combined"),lwd=1.5)+
+#   geom_density(aes(color = gear), linewidth = 0.75)+
+#   scale_color_hue(labels=ycounts$n_labels)+
+#   # scale_color_hue(labels=c("Combined",ycounts$n_labels))+
+#   #scale_color_manual(values = gearcols, labels = c("Combined", counts$n_labels))+
+#   labs(color = "Gear Type", x = "Fork Length (cm)", title = paste0(county,  "\n (N = ", sum(ycounts$n), ")"))+
+#   # theme_minimal()
+#   theme(legend.title = element_text(size=14), 
+#         legend.text = element_text(size=12))+
+#   geom_vline(data=mu, aes(xintercept=grp.mean, color=gear),
+#                    linetype="dashed")
+# 
+# abc7 = agr_den_allgears
+
+### no gear groupings ####
 ycounts =length_data_final %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
-  tabyl(gear) %>%
-  mutate(n_labels = paste0(gear, " (n= ", n, ")" ))
+  tabyl(GEAR_GROUP) %>%
+  mutate(n_labels = paste0(GEAR_GROUP, " (n= ", n, ")" ))
 
 library(plyr)
-mu <- ddply(length_data_final, "gear", summarise, grp.mean=mean(FL_CM))
-head(mu)
 
-agr_den_allgears <- length_data_final %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
+agr_den_NOgears <- length_data_final %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
   ggplot(aes(FL_CM))+
   # geom_density( aes(color = "Combined"),lwd=1.5)+
-  geom_density(aes(color = gear), linewidth = 0.75)+
-  scale_color_hue(labels=ycounts$n_labels)+
+  geom_density(linewidth = 0.75)+
+  # scale_color_hue(labels=ycounts$n_labels)+
   # scale_color_hue(labels=c("Combined",ycounts$n_labels))+
   #scale_color_manual(values = gearcols, labels = c("Combined", counts$n_labels))+
-  labs(color = "Gear Type", x = "Fork Length (cm)", title = paste0(county,  "\n (N = ", sum(ycounts$n), ")"))+
+  labs(x = "Fork Length (cm)", title = paste0(county,  "\n (N = ", sum(ycounts$n), ")"))+
   # theme_minimal()
   theme(legend.title = element_text(size=14), 
         legend.text = element_text(size=12))+
-  geom_vline(data=mu, aes(xintercept=grp.mean, color=gear),
-                   linetype="dashed")
+  geom_vline(aes(xintercept=mean(FL_CM)),
+              linetype="dashed", linewidth=1)
 
-abc7 = agr_den_allgears
-
-
-## Gear Groupings
+abc14 = agr_den_NOgears
 
 ### spear vs pots and traps;fish ####
 
-spvtr<- length_data_final[length_data_final$LAND_STANDARD_GEAR_NAME==c("SPEAR", "POTS AND TRAPS;FISH"),]
-counts = spvtr %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
-  tabyl(LAND_STANDARD_GEAR_NAME) %>%
-  mutate(n_labels = paste0(LAND_STANDARD_GEAR_NAME, " (n= ", n, ")" ))
+ycounts =length_data_final %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
+  tabyl("GEAR_GROUP") %>%
+  mutate(n_labels = paste0(GEAR_GROUP, " (n= ", n, ")" ))
 
-muspvtr <- ddply(spvtr, "LAND_STANDARD_GEAR_NAME", summarise, grp.mean=mean(FL_CM))
-head(mudv)
+library(plyr)
+muv <- ddply(length_data_final, "GEAR_GROUP", summarise, grp.mean=mean(FL_CM))
+head(muv)
 
-
-agr_den_spvtr <- spvtr %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
-  ggplot(aes(FL_CM, color = LAND_STANDARD_GEAR_NAME))+
-  geom_density(size = 0.75)+
-  # scale_color_manual( values = gearcols, labels = counts$n_labels)+
-  scale_color_hue(labels = counts$n_labels)+
-  labs(color = "Gear Type", x = "Fork Length (cm)", title = paste0(county,  "\n (N = ", sum(counts$n), ")"))+
-  # facet_wrap(~ISLAND,ncol=1) +
+agr_den_v <- length_data_final %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
+  ggplot(aes(FL_CM))+
+  # geom_density( aes(color = "Combined"),lwd=1.5)+
+  geom_density(aes(color = GEAR_GROUP),linewidth = 0.75)+
+  scale_color_hue(labels=ycounts$n_labels)+
+  # scale_color_hue(labels=c("Combined",ycounts$n_labels))+
+  #scale_color_manual(values = gearcols, labels = c("Combined", counts$n_labels))+
+  labs(color = "Gear Group" , x = "Fork Length (cm)", title = paste0(county,  "\n (N = ", sum(ycounts$n), ")"))+
   # theme_minimal()
-  theme(legend.title = element_text(size=14),
+  theme(legend.title = element_text(size=14), 
         legend.text = element_text(size=12))+
-  geom_vline(data=muspvtr, aes(xintercept=grp.mean, color=LAND_STANDARD_GEAR_NAME),
-             linetype="dashed")
-abc13 = agr_den_spvtr
+  geom_vline(data=muv, aes(xintercept=grp.mean, color=GEAR_GROUP),
+                     linetype="dashed")
 
+
+abc15 = agr_den_v
+
+## Gear Groupings
 # Filtered to minimum 30 fish per year
 
 ### Diving ####

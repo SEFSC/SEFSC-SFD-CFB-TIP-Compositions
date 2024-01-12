@@ -24,7 +24,7 @@ execute:
 #| warning: false
 #| message: false
 
-library(here)
+library(here, knitr)
 source(here::here('tools','sedar_84_stx_stp_2022','stx_stp_2022_figures.R'))
 
 
@@ -41,7 +41,6 @@ There are two main portions of this document. First, gear groupings were establi
 The GLM analysis was first conducted on the time series as a whole (1988-2022), and then on a truncated time series to best reflect the available commercial landings data (2012-2022). The analysis of the full and truncated time series display the statistical similarity of all available gears to one another in respect to the size of fish caught throughout the time series. To analyze the gears, the gear name variable was used for all analysis.
 
 The GLM analysis of the full time series reported a statistical difference between the SPEAR and POTS AND TRAPS;FISH gears. However, the truncated time series investigation showed no statistical significance between available gears. Thus all available gears were grouped into "DIVING" or "OTHER" according to their relative similarity in use to those of SPEAR and POTS AND TRAPS;FISH.
-
 
 ```{r all lengths GLM}
 #| echo: false
@@ -62,8 +61,8 @@ abc1
 #| warning: false
 #| label: tbl-tbl1
 #| tbl-cap: |
-#|   This shows the results of GLM analysis on the full TIP data set of Stoplight Parrotfish lengths in St. Croix. The column titled "group" indicates the group(s) that the gear can statistically be included in, and thus be statistically similar to the other gears grouped similarly. The "n" column indicates the number of unique lengths recorded for each gear. The "ID" column indicates the number of distinct trip ID's associated with each gear. The "Percentage" column inticates the percent(n_fish) of the total recorded fish lengths that are included within each gear. 
-library(knitr)
+#|   This shows the results of GLM analysis on the full TIP data set of Stoplight Parrotfish lengths in St. Croix. The column titled "group" indicates the group(s) that the gear can statistically be included in, and thus be statistically similar to the other gears grouped similarly. The "n" column indicates the number of unique lengths recorded for each gear. The "Percentage" column inticates the percent of the total recorded fish lengths that are included within each gear. 
+
 kable("")
 tbl1
 
@@ -99,142 +98,32 @@ tbl2
 
 \newpage
 
-```{r diving GLM}
-#| echo: false
-#| label: fig-abc3
-#| fig-cap: |
-#|   Plot of "diving" gear group lengths measured in centimeters of Stoplight Parrotfish in St. Croix across time collected. Trend line is mapped across data, each point is color and shape specific to the gear it represents. No significant p values for time period or gears, further comparisons not needed.
-#| fig-width: 11
-#| fig-height: 6
-
-abc3
-
-```
-
-```{r diving GLM tbl}
-#| echo: false
-#| warning: false
-#| label: tbl-tbl3
-#| tbl-cap: |
-#|   This shows the results of GLM analysis of the "diving" gear group of Stoplight Parrotfish lengths in St. Croix. The column titled "group" indicates the group(s) that the gear can statistically be included in, and thus be statistically similar to the other gears grouped similarly. The "n" column indicates the number of unique lengths recorded for each gear. The "ID" column indicates the number of distinct trip ID's associated with each gear. The "Percentage" column inticates the percent(n_fish) of the total recorded fish lengths that are included within each gear. 
-kable("")
-tbl3
-
-```
-
-\newpage
-
-```{r trap GLM}
-#| echo: false
-#| label: fig-abc4
-#| fig-cap: |
-#|   Plot of "trap" gear group lengths measured in centimeters of Stoplight Parrotfish in St. Croix across time collected. Trend line is mapped across data, each point is color and shape specific to the gear it represents. 
-#| fig-width: 11
-#| fig-height: 6
-
-abc4
-
-```
-
-```{r trap GLM tbl}
-#| echo: false
-#| warning: false
-#| label: tbl-tbl4
-#| tbl-cap: |
-#|   This shows the results of GLM analysis of the "trap" gear group of Stoplight Parrotfish lengths in St. Croix. The column titled "group" indicates the group(s) that the gear can statistically be included in, and thus be statistically similar to the other gears grouped similarly. The "n" column indicates the number of unique lengths recorded for each gear. The "Percentage" column inticates the percent of the total(n) recorded fish lengths that are included within each gear. 
-kable("")
-tbl4
-
-```
-
-add summary of differences between trap gears? \newpage
-
-```{r netst GLM}
-#| echo: false
-#| label: fig-abc5
-#| fig-cap: |
-#|   Plot of "net" gear group lengths measured in centimeters of Stoplight Parrotfish in St. Croix across time collected. Trend line is mapped across data, each point is color and shape specific to the gear it represents.  
-#| fig-width: 11
-#| fig-height: 6
-
-abc5
-
-```
-
-```{r netl GLM}
-#| echo: false
-#| label: fig-abc6
-#| fig-cap: |
-#|   Plot of "net" gear group lengths measured in centimeters of Stoplight Parrotfish in St. Croix across time collected. Trend line is mapped across data, each point is color and shape specific to the gear it represents. This plot uses the LAND_GEAR_NAME variable, i.e. the gear name specific to the island. This variable shows the different mesh sizes used in the net gear grouping. No significant p values for time period or gears, further comparisons not needed.
-#| fig-width: 11
-#| fig-height: 6
-
-abc6
-
-```
-
-```{r netst GLM tbl}
-#| echo: false
-#| warning: false
-#| label: tbl-tbl5
-#| tbl-cap: |
-#|   This shows the results of GLM analysis of the "net" gear group of Stoplight Parrotfish lengths in St. Croix. The column titled "group" indicates the group(s) that the gear can statistically be included in, and thus be statistically similar to the other gears grouped similarly. The "n" column indicates the number of unique lengths recorded for each gear. The "Percentage" column inticates the percent of the total(n) recorded fish lengths that are included within each gear. 
-kable("")
-tbl5
-
-```
-
-```{r netl GLM tbl}
-#| echo: false
-#| warning: false
-#| label: tbl-tbl6
-#| tbl-cap: |
-#|   This shows the results of GLM analysis of the "net" gear group of Stoplight Parrotfish lengths in St. Croix. The column titled "group" indicates the group(s) that the gear can statistically be included in, and thus be statistically similar to the other gears grouped similarly. The "n" column indicates the number of unique lengths recorded for each gear. The "Percentage" column inticates the percent of the total(n) recorded fish lengths that are included within each gear. This table uses the LAND_GEAR_NAME variable, i.e. the gear name specific to the island. This variable shows the different mesh sizes used in the net gear grouping.
-kable("")
-tbl6
-
-```
-
-\newpage
-
 ## Aggregated Gear Density
 
 The aggregated gear density was plotted for all time periods and gear groupings for which GLM analysis was conducted. Each plot includes mean lines for each gear or gear grouping where applicable. N equals the number of individual lengths recorded for each gear or gear grouping respectively.
 
 ```{r all lengths agd}
 #| echo: false
-#| label: fig-abc7
+#| label: fig-abc14
 #| fig-cap: |
-#|   Aggregated density plots of lengths measured in centimeters of Stoplight Parrotfish in St. Croix grouped by assigned gear groupings. 
+#|   Aggregated density plot of lengths measured in centimeters of Stoplight Parrotfish in St. Croix. Dotted line represents mean length. 
 #| fig-width: 11
 #| fig-height: 6
 
-abc7
+abc14
 
 ```
 
+\newpage
 ```{r diving agd}
 #| echo: false
-#| label: fig-abc8
+#| label: fig-abc13
 #| fig-cap: |
-#|   Aggregated density plot of lengths measured in centimeters of each gear within the "diving" gear group of Stoplight Parrotfish in St. Croix.
+#|   Aggregated density plot of lengths measured in centimeters of the gear groupings for Stoplight Parrotfish in St. Croix.
 #| fig-width: 11
 #| fig-height: 6
 
-abc8
-
-```
-
-
-```{r other agd}
-#| echo: false
-#| label: fig-abc12
-#| fig-cap: |
-#|   Aggregated density plot of lengths measured in centimeters of each gear within the "other" gear group of Stoplight Parrotfish in St. Croix.
-#| fig-width: 11
-#| fig-height: 6
-
-abc12
+abc15
 
 ```
 
