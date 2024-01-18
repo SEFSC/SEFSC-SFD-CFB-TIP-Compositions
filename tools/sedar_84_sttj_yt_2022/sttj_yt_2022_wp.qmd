@@ -1,5 +1,5 @@
 ---
-title: "SEDAR 84 Trip Interview Program (TIP) Size Composition Analysis of Yellowtail Snapper (Ocyurus chrysurus) in St. Thomas/St. John, US Caribbean, 1983-2022"
+title: "SEDAR 84 Trip Interview Program (TIP) Size Composition Analysis of Yellowtail Snapper (Ocyurus chrysurus) in St. Thomas/St. John, U.S. Caribbean, 1983-2022"
 format: docx
 editor: visual
 output-file: sedar_84_sttj_yt_2022.docx
@@ -7,7 +7,7 @@ execute:
   cache: true
 ---
 
-#### Katherine Godwin^1^, Adyan Rios^2^, Kyle Dettloff^2^
+#### Katherine Godwin^1^, Adyan Rios^2^, Kyle Dettloff^3^
 
 #### January 9, 2024
 
@@ -31,23 +31,23 @@ load(here::here('tools','sedar_84_sttj_yt_2022','sttj_yt_2022_figures.RData'))
 
 ```
 
-In preparation for SouthEast Data, Assessment, and Review (SEDAR) 84 Benchmark assessment of Caribbean Yellowtail Snapper in St. Thomas/St. John, Southeast Fisheries Science Center, Sustainable Fisheries Division (SEFSC), Caribbean Fisheries Branch conducted a size composition analysis of the Trip Interview Program (TIP) data. This document summarizes data collected from 1988 to 2022.
+In preparation for SouthEast Data, Assessment, and Review (SEDAR) 84 Benchmark assessment of Caribbean Yellowtail Snapper in St. Thomas/St. John, Southeast Fisheries Science Center, Sustainable Fisheries Division (SEFSC), Caribbean Fisheries Branch conducted a size composition analysis of the Trip Interview Program (TIP) data. This document summarizes data collected from 1983 to 2022.
 
-The TIP data pertaining to Yellowtail Snapper in St. Thomas/St. John is comprised of `r n_all_len` length observations across `r total_trip_id_unique` unique port sampling interviews. There are `r n_fork_len` fork length observations (`r p_fork_len`%). There are two parts to this document. First, gear groupings were established based on a general linear model (GLM) analysis. The GLM analysis used a gamma-distributed dependent variable. Second, the size composition of each gear grouping was determined.The GLM analysis of the full time series reported a statistical difference between the "SPEAR" and "POTS AND TRAPS;FISH" gears.
+The TIP data pertaining to Yellowtail Snapper in St. Thomas/St. John is comprised of `r n_all_len` length observations across `r total_trip_id_unique` unique port sampling interviews, of which `r n_fork_len` are fork lengths (`r p_fork_len`%). There are two parts to this document. First, gear groupings were established based on a generalized linear model (GLM) analysis using a gamma-distributed dependent variable and a covariate to account for changes in mean size over time. Second, the size composition of each gear grouping was determined. The GLM analyses of the full time series and truncated time series reported a statistical difference between the "LINES HAND", "POTS AND TRAPS; FISH", AND "ROD AND REEL" gears.
 
 \newpage
 
 ## Generalized Linear Model (GLM) Analysis
 
-The GLM analysis was first conducted on the time series as a whole (1983-2022), and then on a truncated time series that best reflects the available species-specific commercial landings data (2012-2022). The analyses of the full and truncated time series display the statistical similarity of all available gears to one another with respect to the size of fish caught throughout the time series. To analyze the gears, the gear name variable was used for all analyses.
+The GLM analysis was first conducted on the time series as a whole (1983-2022) (@fig-abc1), and then on a truncated time series that best reflects the available species-specific commercial landings data (2012-2022) (@fig-abc2). The analyses of the full and truncated time series display the statistical similarity of all available gears with respect to the mean size of fish caught throughout the time series.
 
-The GLM analyses of the full time series and truncated time series reported a statistical difference between the "LINES HAND", "POTS AND TRAPS; FISH", AND "ROD AND REEL" gears. Thus all available gears were grouped into "HAND LINE", "TRAPS/HAUL SEINE", or "OTHER" according to their relative similarity in use to those of "LINES HAND","POTS AND TRAPS; FISH", and "ROD AND REEL".
+The GLM analyses of the full time series (@tbl-tbl1) and truncated time series(@tbl-tbl2) reported a statistical difference between the "LINES HAND", "POTS AND TRAPS; FISH", AND "ROD AND REEL" gears. Thus, all available gears were grouped into "HAND LINE", "TRAPS/HAUL SEINE", or "OTHER" according to their relative similarity in usage to those of "LINES HAND","POTS AND TRAPS; FISH", and "ROD AND REEL".
 
 ```{r all lengths GLM}
 #| echo: false
 #| label: fig-abc1
 #| fig-cap: |
-#|   Plot of all lengths measured in centimeters of Yellowtail Snapper in St. Thomas/St. John across time collected. Trend line is mapped across data, each point is color and shape specific to the gear it represents. 
+#|   Plot Plot showing relative number of Yellowtail Snapper in St. Thomas/St. John over time. Each point is color specific to the gear it represents.
 #| fig-width: 12
 #| fig-height: 8
 
@@ -62,7 +62,7 @@ abc1
 #| warning: false
 #| label: tbl-tbl1
 #| tbl-cap: |
-#|   GLM analysis summary results for St. Thomas/St. John TIP Yellowtail Snapper fork lengths from 1983 to 2022. The column titled "group" indicates the group(s) that the gear can statistically be included in, and thus be statistically similar to the other gears grouped similarly. The "n" column indicates the number of unique lengths recorded for each gear. The "Percentage" column indicates the percent of the total recorded lengths that are included within each gear. 
+#|   GLM analysis summary results for St. Thomas/St. John TIP Yellowtail Snapper fork lengths(cm) from 1983 to 2022. The column titled "group" indicates the group(s) where mean lengths are not statistically different from other gears with matching group number(s). The "n" column indicates the number of unique lengths recorded for each gear. The "Percentage" column indicates the percent of the total recorded lengths for each gear. 
 library(knitr)
 kable("")
 
@@ -81,9 +81,10 @@ tbl1
 
 ```{r all lengths GLM 2012}
 #| echo: false
+#| warning: false
 #| label: fig-abc2
 #| fig-cap: |
-#|   Plot of all lengths measured in centimeters of Yellowtail Snapper in St. Thomas/St. John from 2012 to 2022. Trend line is mapped across data, each point is color and shape specific to the gear it represents. 
+#|   Plot showing relative number of Yellowtail Snapper in St. Thomas/St. John from 2012 to 2022. Each point is color specific to the gear it represents.
 #| fig-width: 12
 #| fig-height: 7
 
@@ -96,7 +97,7 @@ abc2
 #| warning: false
 #| label: tbl-tbl2
 #| tbl-cap: |
-#|   GLM analysis summary results for the TIP data of Yellowtail Snapper lengths in St. Thomas/St. John from 2012 to 2022. The column titled "group" indicates the group(s) that the gear can statistically be included in, and thus be statistically similar to the other gears grouped similarly. The "n" column indicates the number of unique lengths recorded for each gear. The "Percentage" column indicates the percent of the total recorded lengths that are included within each gear. 
+#|   GLM analysis summary results for the TIP data of Yellowtail Snapper fork lengths in St. Thomas/St. John from 2012 to 2022. The column titled "group" indicates the group(s) where mean lengths are not statistically different from other gears with matching group number(s). The "n" column indicates the number of unique lengths recorded for each gear. The "Percentage" column indicates the percent of the total recorded lengths for each gear. 
 library(knitr)
 kable("")
 
@@ -115,13 +116,13 @@ tbl2
 
 ## Aggregated Gear Density
 
-The aggregated gear density of lengths measured in centimeters of Yellowtail Snapper in St. Thomas/St. John are plotted across the full time period and gear groupings for which GLM analyses were conducted (@fig-abc14, and @fig-abc15). Each plot includes a vertical line associated with the respective mean length. N equals the number of individuals displayed by category.
+The aggregated densities of Yellowtail Snapper lengths(cm) in St. Thomas/St. John are plotted across the full time period and by gear groupings for which GLM analyses were conducted, respectively (@fig-abc14, and @fig-abc15). Each plot includes a vertical line associated with the respective mean length. N equals the number of individuals displayed by category.
 
 ```{r all lengths agd}
 #| echo: false
 #| label: fig-abc14
 #| fig-cap: |
-#|   Aggregated density plot of lengths measured in centimeters of Yellowtail Snapper in St. Thomas/St. John from 1983 to 2022. Dotted line represents mean length. 
+#|   Aggregated density plot of lengths(cm) of Yellowtail Snapper in St. Thomas/St. John from 1983 to 2022. Dotted line represents mean length. 
 #| fig-width: 12
 #| fig-height: 8
 
@@ -155,7 +156,7 @@ abc14
 #| echo: false
 #| label: fig-abc15
 #| fig-cap: |
-#|   Aggregated density plot of lengths measured in centimeters of the gear groupings for Yellowtail Snapper in St. Thomas/St. John from 1983 to 2022. Dotted line represents mean length.
+#|   Aggregated density plot of lengths(cm) of the gear groupings for Yellowtail Snapper in St. Thomas/St. John from 1983 to 2022. Dotted line represents mean length.
 #| fig-width: 12
 #| fig-height: 8
 

@@ -93,6 +93,15 @@ tip_range$LENGTH1_MM[1:25]
 tip_range2 <- pr_yt[with(pr_yt,order(LENGTH1_MM)),]
 tip_range2$LENGTH1_MM[1:25]
 
+tip_range  <- length_data_final[with(length_data_final,order(-FL_CM)),]
+tip_range$FL_CM[1:25]
+
+tip_range2 <- length_data_final[with(length_data_final,order(FL_CM)),]
+tip_range2$FL_CM[1:25]
+
+small_len <- length_data_final |> 
+  filter(FL_CM < 5)
+
 ##range currently set to not drop any obs (centimeters)
 
 min_size <- 0 

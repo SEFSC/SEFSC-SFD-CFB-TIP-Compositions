@@ -69,7 +69,7 @@ flextable(as.data.frame(table(sttj_yt$LAND_STANDARD_GEAR_NAME, useNA='always')))
 
 n_fork_len = sum(sttj_yt$LENGTH_TYPE1 == "FORK LENGTH")
 n_all_len = length(sttj_yt$LENGTH_TYPE1)
-p_fork_len = round(n_fork_len/n_all_len, 4)*100
+p_fork_len = round(n_fork_len/n_all_len, 3)*100
 
 trip_id_unique <- as.data.frame(table(sttj_yt$ID, useNA='always'))
 total_trip_id_unique = nrow(trip_id_unique)
@@ -276,10 +276,18 @@ length_data_glm <- length_data_final |>
 #         legend.box.spacing = unit(0, "npc"), panel.grid = element_blank()) +
 #   guides(colour = guide_legend(override.aes = list(size = 2)))
 
-gant_data <- length_data_final %>% group_by(ID) %>% filter(n() >= 3) %>% ungroup %>%
-  # filter(ID >= 3) |>
+# gant_data <- length_data_final %>% group_by(ID) %>% filter(n() >= 3) %>% ungroup %>%
+#   # filter(ID >= 3) |>
+#   group_by(YEAR, LAND_STANDARD_GEAR_NAME) |>
+#   summarize(n = n(), .groups = "drop") 
+
+gant_data <- length_data_final %>% 
+  group_by(LAND_STANDARD_GEAR_NAME) %>% 
+  dplyr::mutate(n_ID = n_distinct(ID)) |> 
+  dplyr::filter(n_ID >= 3) %>% ungroup %>%
   group_by(YEAR, LAND_STANDARD_GEAR_NAME) |>
-  summarize(n = n(), .groups = "drop") 
+  dplyr::summarize(n = n(), .groups = "drop") |> 
+  mutate(YEAR = as.integer(YEAR))
 
 abc1 <- gant_data |>
   ggplot(aes(x = YEAR, y = LAND_STANDARD_GEAR_NAME, color = LAND_STANDARD_GEAR_NAME, size = n)) +
@@ -328,10 +336,10 @@ allgears_multcompcld_final <- allgears_multcompcld_trip |>
   filter(ID >= 3) |> 
   select(Gear, "Mean Size", LCL, UCL,  Group, n, Percentage ) |>
   mutate("Gear Group" = case_when(Gear == "LINES HAND" ~ "HAND LINE",
-                                  Gear == 'POTS AND TRAPS; FISH'~ "TRAPS_HAULSEINE",
-                                  Gear == "HAUL SEINES"~ "TRAPS_HAULSEINE",
-                                  Gear == "POTS AND TRAPS; CMB"~ "TRAPS_HAULSEINE",
-                                  Gear == "POTS AND TRAPS;SPINY LOBSTER" ~ "TRAPS_HAULSEINE",
+                                  Gear == 'POTS AND TRAPS; FISH'~ "TRAPS/HAULSEINE",
+                                  Gear == "HAUL SEINES"~ "TRAPS/HAULSEINE",
+                                  Gear == "POTS AND TRAPS; CMB"~ "TRAPS/HAULSEINE",
+                                  Gear == "POTS AND TRAPS;SPINY LOBSTER" ~ "TRAPS/HAULSEINE",
                                   TRUE ~ "OTHER")) |> 
   arrange(desc(Percentage)) 
 
@@ -364,19 +372,26 @@ length_data_glm_2012 <- length_data_final |>
 #         legend.box.spacing = unit(0, "npc"), panel.grid = element_blank()) +
 #   guides(colour = guide_legend(override.aes = list(size = 2)))
 
-gant_data_12 <- length_data_glm_2012 %>% group_by(ID) %>% dplyr::filter(n() >= 3) %>% ungroup %>%
-  # filter(ID >= 3) |>
+# gant_data_12 <- length_data_glm_2012 %>% group_by(ID) %>% dplyr::filter(n() >= 3) %>% ungroup %>%
+#   # filter(ID >= 3) |>
+#   group_by(YEAR, LAND_STANDARD_GEAR_NAME) |>
+#   dplyr::summarize(n = n(), .groups = "drop") |> 
+#   mutate(YEAR = as.integer(YEAR))
+
+gant_data_12 <- length_data_glm_2012 %>% 
+  group_by(LAND_STANDARD_GEAR_NAME) %>% 
+  dplyr::mutate(n_ID = n_distinct(ID)) |> 
+  dplyr::filter(n_ID >= 3) %>% ungroup %>%
   group_by(YEAR, LAND_STANDARD_GEAR_NAME) |>
   dplyr::summarize(n = n(), .groups = "drop") |> 
   mutate(YEAR = as.integer(YEAR))
-# library(scales)
+
 abc2 <- gant_data_12 |>
   ggplot(aes(x = YEAR, y = LAND_STANDARD_GEAR_NAME, color = LAND_STANDARD_GEAR_NAME, size = n)) +
   geom_point()  +
   labs(x = "Year", y = "", colour = "", shape = "") +
   theme_bw() + 
-  theme(legend.position="null", text = element_text(size = 15))#+
-  # scale_y_continuous(breaks = pretty_breaks(n=2))+
+  theme(legend.position="null", text = element_text(size = 15)) +
   xlim(2012,2022)
 
 # fit models
@@ -415,9 +430,9 @@ allgears_multcompcld_finaL_2012 <- allgears_multcompcld_trip_2012 |>
   filter(ID >= 3) |> 
   select(Gear, "Mean Size", LCL, UCL,  Group, n, Percentage ) |> 
   mutate("Gear Group" = case_when(Gear == "LINES HAND" ~ "HAND LINE",
-                                  Gear == 'POTS AND TRAPS; FISH'~ "TRAPS_HAULSEINE",
-                                  Gear == "HAUL SEINES"~ "TRAPS_HAULSEINE",
-                                  Gear == "POTS AND TRAPS;SPINY LOBSTER" ~ "TRAPS_HAULSEINE",
+                                  Gear == 'POTS AND TRAPS; FISH'~ "TRAPS/HAULSEINE",
+                                  Gear == "HAUL SEINES"~ "TRAPS/HAULSEINE",
+                                  Gear == "POTS AND TRAPS;SPINY LOBSTER" ~ "TRAPS/HAULSEINE",
                                   TRUE ~ "OTHER")) |>
   arrange(desc(Percentage)) 
 
