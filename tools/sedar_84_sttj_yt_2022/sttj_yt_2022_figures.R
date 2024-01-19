@@ -290,11 +290,17 @@ gant_data <- length_data_final %>%
   mutate(YEAR = as.integer(YEAR))
 
 abc1 <- gant_data |>
+  group_by(LAND_STANDARD_GEAR_NAME) |>
+  dplyr::mutate(total_n = sum(n)) |> 
+  ungroup() |>   
+  dplyr::mutate(LAND_STANDARD_GEAR_NAME = fct_reorder(LAND_STANDARD_GEAR_NAME, total_n)) %>%
   ggplot(aes(x = YEAR, y = LAND_STANDARD_GEAR_NAME, color = LAND_STANDARD_GEAR_NAME, size = n)) +
   geom_point()  +
   labs(x = "Year", y = "", colour = "", shape = "") +
   theme_bw() + 
-  theme(legend.position="null", text = element_text(size = 15))
+  theme(legend.position="null", text = element_text(size = 15))+
+  geom_vline(xintercept = 2011.5,  
+             color = "darkgrey", size=1.5)
 
 # fit models
 library(lmerTest)
@@ -335,12 +341,13 @@ allgears_multcompcld_final <- allgears_multcompcld_trip |>
                 "UCL" = "asymp.UCL") |> 
   filter(ID >= 3) |> 
   select(Gear, "Mean Size", LCL, UCL,  Group, n, Percentage ) |>
-  mutate("Gear Group" = case_when(Gear == "LINES HAND" ~ "HAND LINE",
-                                  Gear == 'POTS AND TRAPS; FISH'~ "TRAPS/HAULSEINE",
-                                  Gear == "HAUL SEINES"~ "TRAPS/HAULSEINE",
-                                  Gear == "POTS AND TRAPS; CMB"~ "TRAPS/HAULSEINE",
-                                  Gear == "POTS AND TRAPS;SPINY LOBSTER" ~ "TRAPS/HAULSEINE",
-                                  TRUE ~ "OTHER")) |> 
+  mutate("Gear Group" = case_when(Gear == "LINES HAND" ~ "Hand Line",
+                                  Gear == 'POTS AND TRAPS; FISH'~ "Traps",
+                                  Gear == "HAUL SEINES"~ "Hand Line or Traps",
+                                  Gear == "POTS AND TRAPS; CMB"~ "Hand Line or Traps",
+                                  Gear == "POTS AND TRAPS;SPINY LOBSTER" ~ "Hand Line or Traps",
+                                  Gear == "ROD AND REEL" ~ "Rod and Reel",
+                                  TRUE ~ "Hand Line, Traps, or Rod and Reel")) |> 
   arrange(desc(Percentage)) 
 
 tbl1 = flextable(allgears_multcompcld_final) |> 
@@ -378,21 +385,21 @@ length_data_glm_2012 <- length_data_final |>
 #   dplyr::summarize(n = n(), .groups = "drop") |> 
 #   mutate(YEAR = as.integer(YEAR))
 
-gant_data_12 <- length_data_glm_2012 %>% 
-  group_by(LAND_STANDARD_GEAR_NAME) %>% 
-  dplyr::mutate(n_ID = n_distinct(ID)) |> 
-  dplyr::filter(n_ID >= 3) %>% ungroup %>%
-  group_by(YEAR, LAND_STANDARD_GEAR_NAME) |>
-  dplyr::summarize(n = n(), .groups = "drop") |> 
-  mutate(YEAR = as.integer(YEAR))
-
-abc2 <- gant_data_12 |>
-  ggplot(aes(x = YEAR, y = LAND_STANDARD_GEAR_NAME, color = LAND_STANDARD_GEAR_NAME, size = n)) +
-  geom_point()  +
-  labs(x = "Year", y = "", colour = "", shape = "") +
-  theme_bw() + 
-  theme(legend.position="null", text = element_text(size = 15)) +
-  xlim(2012,2022)
+# gant_data_12 <- length_data_glm_2012 %>% 
+#   group_by(LAND_STANDARD_GEAR_NAME) %>% 
+#   dplyr::mutate(n_ID = n_distinct(ID)) |> 
+#   dplyr::filter(n_ID >= 3) %>% ungroup %>%
+#   group_by(YEAR, LAND_STANDARD_GEAR_NAME) |>
+#   dplyr::summarize(n = n(), .groups = "drop") |> 
+#   mutate(YEAR = as.integer(YEAR))
+# 
+# abc2 <- gant_data_12 |>
+#   ggplot(aes(x = YEAR, y = LAND_STANDARD_GEAR_NAME, color = LAND_STANDARD_GEAR_NAME, size = n)) +
+#   geom_point()  +
+#   labs(x = "Year", y = "", colour = "", shape = "") +
+#   theme_bw() + 
+#   theme(legend.position="null", text = element_text(size = 15)) +
+#   xlim(2012,2022)
 
 # fit models
 
@@ -428,12 +435,14 @@ allgears_multcompcld_finaL_2012 <- allgears_multcompcld_trip_2012 |>
                 "LCL" = "asymp.LCL",
                 "UCL" = "asymp.UCL") |> 
   filter(ID >= 3) |> 
-  select(Gear, "Mean Size", LCL, UCL,  Group, n, Percentage ) |> 
-  mutate("Gear Group" = case_when(Gear == "LINES HAND" ~ "HAND LINE",
-                                  Gear == 'POTS AND TRAPS; FISH'~ "TRAPS/HAULSEINE",
-                                  Gear == "HAUL SEINES"~ "TRAPS/HAULSEINE",
-                                  Gear == "POTS AND TRAPS;SPINY LOBSTER" ~ "TRAPS/HAULSEINE",
-                                  TRUE ~ "OTHER")) |>
+  select(Gear, "Mean Size", LCL, UCL,  Group, n, Percentage ) |>
+  mutate("Gear Group" = case_when(Gear == "LINES HAND" ~ "Hand Line",
+                                  Gear == 'POTS AND TRAPS; FISH'~ "Traps",
+                                  Gear == "HAUL SEINES"~ "Hand Line or Traps",
+                                  Gear == "POTS AND TRAPS; CMB"~ "Hand Line or Traps",
+                                  Gear == "POTS AND TRAPS;SPINY LOBSTER" ~ "Hand Line or Traps",
+                                  Gear == "ROD AND REEL" ~ "Rod and Reel",
+                                  TRUE ~ "Hand Line, Traps, or Rod and Reel")) |> 
   arrange(desc(Percentage)) 
 
 
@@ -444,523 +453,212 @@ tbl2 = flextable(allgears_multcompcld_finaL_2012) |>
   autofit() 
 
 
-## Hook and Line ####
-
-# use_gear_hl <- length_data_final |>
-#   select(YEAR, FINAL_DATE, ID, COUNTY, FL_CM, LAND_STANDARD_GEAR_NAME, gear) |> 
-#   filter(gear == "Hook and Line") |> 
-#   mutate(ID = as.character(ID)) |> 
-#   select(-gear)
-# 
-# # plot data
-# 
-# abc3 = ggplot(use_gear_hl, aes(x = as.Date(FINAL_DATE), y = FL_CM)) +
-#   geom_point(aes(colour = LAND_STANDARD_GEAR_NAME, shape = LAND_STANDARD_GEAR_NAME), size = 1, alpha = 0.5) +
-#   geom_smooth(method = "lm", formula = "y ~ x", col = "black") +
-#   # facet_wrap(~ COUNTY_LANDED) +
-#   labs(x = "", y = "Length (cm)", colour = "", shape = "") +
-#   theme_bw() +
-#   theme(legend.position = "bottom", legend.text = element_text(size = 15),
-#         legend.box.spacing = unit(0, "npc"), panel.grid = element_blank()) +
-#   guides(colour = guide_legend(override.aes = list(size = 2)))
-# 
-# 
-# # fit models
-# 
-# # comparing length to date and gear in a gamma full model
-# mod2 = glmer(FL_CM ~ scale(FINAL_DATE) + LAND_STANDARD_GEAR_NAME + (1 | YEAR) + (1 | ID),
-#              data = use_gear_hl, family = Gamma(link=log))
-# 
-# 
-# # pairwise comparisons (if needed)(needed for Hook and Line)
-# mod_contr = emmeans::emmeans(object = mod2, pairwise ~ "LAND_STANDARD_GEAR_NAME", adjust = "tukey")
-# 
-# hl_multcompcld <- multcomp::cld(object = mod_contr$emmeans)
-# 
-# hl_fishcount <- use_gear_hl |> 
-#   group_by(LAND_STANDARD_GEAR_NAME) |>
-#   tally()
-# 
-# hl_tripcount <- aggregate(data = use_gear_hl,                # Applying aggregate
-#                           ID ~ LAND_STANDARD_GEAR_NAME,
-#                           function(ID) length(unique(ID)))
-# 
-# hl_multcompcld_fish <- full_join(hl_multcompcld, hl_fishcount, by = "LAND_STANDARD_GEAR_NAME")
-# hl_multcompcld_trip <- full_join(hl_multcompcld_fish, hl_tripcount, by = "LAND_STANDARD_GEAR_NAME")
-# 
-# hl_multcompcld_final <- hl_multcompcld_trip |> 
-#   mutate(Percentage = round(n/sum(n)*100, 2), 
-#          emmean = round(emmean, 2),
-#          asymp.LCL = round(asymp.LCL, 2),
-#          asymp.UCL = round(asymp.UCL, 2))|>
-#   dplyr::rename("Group" = ".group",
-#                 "Gear" = "LAND_STANDARD_GEAR_NAME",
-#                 "Mean Size" = "emmean",
-#                 "LCL" = "asymp.LCL",
-#                 "UCL" = "asymp.UCL") |> 
-#   filter(ID >= 3) |> 
-#   select(Gear, "Mean Size", LCL, UCL,  Group, n, Percentage ) |> 
-#   arrange(desc(Percentage))
-# 
-# 
-# tbl3 = flextable(hl_multcompcld_final) |> 
-#   theme_box() %>%
-#   align(align = "center", part = "all") %>%
-#   fontsize(size=8, part="all") %>%
-#   autofit() 
-
-## Net ####
-
-# net land_standard_gear_name
-# use_gear_nlsg <- length_data_final |>
-#   select(YEAR, FINAL_DATE, ID, COUNTY, FL_CM, LAND_STANDARD_GEAR_NAME, gear) |> 
-#   filter(gear == "Net") |> 
-#   mutate(ID = as.character(ID)) |> 
-#   select(-gear)
-# 
-# 
-# # plot data
-# 
-# abc4 = ggplot(use_gear_nlsg, aes(x = as.Date(FINAL_DATE), y = FL_CM)) +
-#   geom_point(aes(colour = LAND_STANDARD_GEAR_NAME, shape = LAND_STANDARD_GEAR_NAME), size = 1, alpha = 0.5) +
-#   geom_smooth(method = "lm", formula = "y ~ x", col = "black") +
-#   # facet_wrap(~ COUNTY_LANDED) +
-#   labs(x = "", y = "Length (cm)", colour = "", shape = "") +
-#   theme_bw() +
-#   theme(legend.position = "bottom", legend.text = element_text(size = 15),
-#         legend.box.spacing = unit(0, "npc"), panel.grid = element_blank()) +
-#   guides(colour = guide_legend(override.aes = list(size = 2)))
-# 
-#  
-# # fit models
-# 
-# # comparing length to date and gear in a gamma full model
-# mod2 = glmer(FL_CM ~ scale(FINAL_DATE) + LAND_STANDARD_GEAR_NAME + (1 | YEAR) + (1 | ID),
-#              data = use_gear_nlsg, family = Gamma(link=log)) 
-# 
-# 
-# ### no significant p values for time period or gears, further comparisons not needed 
-#  
-# mod_contr = emmeans::emmeans(object = mod2, pairwise ~ "LAND_STANDARD_GEAR_NAME", adjust = "tukey")
-# 
-# nt_multcompcld <- multcomp::cld(object = mod_contr$emmeans)
-# 
-# nt_fishcount <- use_gear_nlsg |> 
-#   group_by(LAND_STANDARD_GEAR_NAME) |>
-#   tally()
-# 
-# nt_tripcount <- aggregate(data = use_gear_nlsg,                # Applying aggregate
-#                           ID ~ LAND_STANDARD_GEAR_NAME,
-#                           function(ID) length(unique(ID)))
-# 
-# nt_multcompcld_fish <- full_join(nt_multcompcld, nt_fishcount, by = "LAND_STANDARD_GEAR_NAME")
-# nt_multcompcld_trip <- full_join(nt_multcompcld_fish, nt_tripcount, by = "LAND_STANDARD_GEAR_NAME")
-# 
-# nt_multcompcld_final <- nt_multcompcld_trip |> 
-#   mutate(Percentage = round(n/sum(n)*100, 2), 
-#          emmean = round(emmean, 2),
-#          asymp.LCL = round(asymp.LCL, 2),
-#          asymp.UCL = round(asymp.UCL, 2))|>
-#   dplyr::rename("Group" = ".group",
-#                 "Gear" = "LAND_STANDARD_GEAR_NAME",
-#                 "Mean Size" = "emmean",
-#                 "LCL" = "asymp.LCL",
-#                 "UCL" = "asymp.UCL") |> 
-#   filter(ID >= 3) |> 
-#   select(Gear, "Mean Size", LCL, UCL,  Group, n, Percentage ) |> 
-#   arrange(desc(Percentage))
-# 
-# tbl4 = flextable(nt_multcompcld_final) |> 
-#   theme_box() %>%
-#   align(align = "center", part = "all") %>%
-#   fontsize(size=8, part="all") %>%
-#   autofit()
-
-## Trap ####
-# 
-# use_gear_tr <- length_data_final |>
-#   select(YEAR, FINAL_DATE, ID, COUNTY, FL_CM, LAND_STANDARD_GEAR_NAME, gear) |> 
-#   filter(gear == "Trap") |> 
-#   mutate(ID = as.character(ID)) |> 
-#   select(-gear)
-# 
-# 
-# # plot data
-# 
-# abc5 = ggplot(use_gear_tr, aes(x = as.Date(FINAL_DATE), y = FL_CM)) +
-#   geom_point(aes(colour = LAND_STANDARD_GEAR_NAME, shape = LAND_STANDARD_GEAR_NAME), size = 1, alpha = 0.5) +
-#   geom_smooth(method = "lm", formula = "y ~ x", col = "black") +
-#   # facet_wrap(~ COUNTY_LANDED) +
-#   labs(x = "", y = "Length (cm)", colour = "", shape = "") +
-#   theme_bw() +
-#   theme(legend.position = "bottom", legend.text = element_text(size = 15),
-#         legend.box.spacing = unit(0, "npc"), panel.grid = element_blank()) +
-#   guides(colour = guide_legend(override.aes = list(size = 2)))
-# 
-# 
-# # fit models
-# 
-# # comparing length to date and gear in a gamma full model
-# mod2 = glmer(FL_CM ~ scale(FINAL_DATE) + LAND_STANDARD_GEAR_NAME + (1 | YEAR) + (1 | ID),
-#              data = use_gear_tr, family = Gamma(link=log))
-# 
-# 
-# # No significant p values for time period or gears, further comparisons not needed 
-#  
-# # pairwise comparisons (if needed)(needed for Hook and Line)
-# mod_contr = emmeans::emmeans(object = mod2, pairwise ~ "LAND_STANDARD_GEAR_NAME", adjust = "tukey")
-# 
-# trap_multcompcld <- multcomp::cld(object = mod_contr$emmeans)
-# 
-# use_gear_tr_fishcount <- use_gear_tr |> 
-#   group_by(LAND_STANDARD_GEAR_NAME) |> 
-#   tally()
-# use_gear_tr_tripcount <- aggregate(data = use_gear_tr,                # Applying aggregate
-#                                    ID ~ LAND_STANDARD_GEAR_NAME,
-#                                    function(ID) length(unique(ID)))
-# 
-# trap_multcompcld_fish <- full_join(trap_multcompcld, use_gear_tr_fishcount, by = "LAND_STANDARD_GEAR_NAME")
-# trap_multcompcld_trip <- full_join(trap_multcompcld_fish, use_gear_tr_tripcount, by = "LAND_STANDARD_GEAR_NAME")
-# 
-# trap_multcompcld_final <- trap_multcompcld_trip  |> 
-#   mutate(Percentage = round(n/sum(n)*100, 2), 
-#          emmean = round(emmean, 2),
-#          asymp.LCL = round(asymp.LCL, 2),
-#          asymp.UCL = round(asymp.UCL, 2))|>
-#   dplyr::rename("Group" = ".group",
-#                 "Gear" = "LAND_STANDARD_GEAR_NAME",
-#                 "Mean Size" = "emmean",
-#                 "LCL" = "asymp.LCL",
-#                 "UCL" = "asymp.UCL") |> 
-#   filter(ID >= 3) |> 
-#   select(Gear, "Mean Size", LCL, UCL,  Group, n, Percentage ) |> 
-#   arrange(desc(Percentage))
-# 
-# tbl5 = flextable(trap_multcompcld_final) |> 
-#   theme_box() %>%
-#   align(align = "center", part = "all") %>%
-#   fontsize(size=8, part="all") %>%
-#   autofit()
-
 # Gear Density Plots ####
 
 # Filtered to years with 30 or more length records (regardless of gear) per year. STT and STJ records are grouped together.
 
 ## Aggregated density plots ####
 
-# ycounts =length_data_final %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
-#   tabyl(gear) %>%
-#   mutate(n_labels = paste0(gear, " (n= ", n, ")" ))
-# 
-# library(plyr)
-# mu <- ddply(length_data_final, "gear", summarise, grp.mean=mean(FL_CM))
-# head(mu)
-# 
-# agr_den_allgears <- length_data_final %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
-#   ggplot(aes(FL_CM))+
-#   # geom_density( aes(color = "Combined"),lwd=1.5)+
-#   geom_density(aes(color = gear), size = 0.75)+
-#   scale_color_hue(labels=ycounts$n_labels)+
-#   # scale_color_hue(labels=c("Combined",ycounts$n_labels))+
-#   #scale_color_manual(values = gearcols, labels = c("Combined", counts$n_labels))+
-#   labs(color = "Gear Type", x = "Fork Length (cm)", title = paste0(region,  "\n (N = ", sum(ycounts$n), ")"))+
-#   # theme_minimal()
-#   theme(legend.title = element_text(size=14), 
-#         legend.text = element_text(size=12))+
-#   geom_vline(data=mu, aes(xintercept=grp.mean, color=gear),
-#              linetype="dashed")
-# 
-# 
-# abc6 = agr_den_allgears
+### overlay time periods ####
 
-### no gear groupings ####
-ycounts =length_data_final %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
-  tabyl(GEAR_GROUP) %>%
-  mutate(n_labels = paste0(GEAR_GROUP, " (n= ", n, ")" ))
+
+length_data_1983_2022 <- length_data_final %>% 
+  group_by(LAND_STANDARD_GEAR_NAME) %>% 
+  dplyr::mutate(n_ID = n_distinct(ID)) |> 
+  dplyr::filter(n_ID >= 3) %>% #ungroup %>%
+  # group_by(YEAR) %>% 
+  # filter(n() >= 30) %>% 
+  ungroup() 
+
+length_data_2012_2022 <- length_data_final |>
+  filter(YEAR >= 2012) |>
+  group_by(LAND_STANDARD_GEAR_NAME) %>% 
+  dplyr::mutate(n_ID = n_distinct(ID)) |> 
+  dplyr::filter(n_ID >= 3) %>% #ungroup %>%
+  # group_by(YEAR) %>% 
+  # filter(n() >= 30) %>% 
+  ungroup()
 
 library(plyr)
 
-agr_den_NOgears <- length_data_final %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
-  ggplot(aes(FL_CM))+
-  # geom_density( aes(color = "Combined"),lwd=1.5)+
-  geom_density(linewidth = 0.75)+
-  # scale_color_hue(labels=ycounts$n_labels)+
-  # scale_color_hue(labels=c("Combined",ycounts$n_labels))+
-  #scale_color_manual(values = gearcols, labels = c("Combined", counts$n_labels))+
-  labs(x = "Fork Length (cm)", title = paste0(county,  "\n (N = ", sum(ycounts$n), ")"))+
-  # theme_minimal()
+agr_den_NOgears <- 
+  ggplot() +
+  geom_density(aes(FL_CM, color = "length_data_1983_2022"),linewidth = 0.75, alpha = .2, data = length_data_1983_2022) +
+  geom_density(aes(FL_CM, color = "length_data_2012_2022"),linewidth = 0.75, alpha = .2, data = length_data_2012_2022) +
+  geom_vline(data = length_data_1983_2022, aes(xintercept=mean(FL_CM), color = "length_data_1983_2022"),
+             linetype="dashed", linewidth=1) +
+  geom_vline(data=length_data_2012_2022, aes(xintercept=mean(FL_CM), color = "length_data_2012_2022"),
+             linetype="dashed", linewidth=1) +
+  labs(x = "Fork Length (cm)", title = county)+
+  # scale_fill_discrete(name = "Time Series", labels = c("1983-2022", "2012-2022"))
+  guides(color=guide_legend(title="Time Series"))+
+  scale_color_discrete(labels=c('1983-2022', '2012-2022'))+
   theme(legend.title = element_text(size=14), 
-        legend.text = element_text(size=15))+
-  geom_vline(aes(xintercept=mean(FL_CM)),
-             linetype="dashed", linewidth=1)
-
+        legend.text = element_text(size=14),
+        legend.position = "bottom",
+        axis.text.x=element_text(size=14),
+        axis.text.y=element_text(size=14),
+        axis.title.x = element_text( size = 14),
+        axis.title.y = element_text( size = 14))
+  # scale_fill_manual(name = "dataset", values = c(length_data_1983_2022 = "red", length_data_2012_2022 = "green"))
 abc14 = agr_den_NOgears
 
-# after 2012
-ycounts =length_data_glm_2012 %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
-  tabyl(GEAR_GROUP) %>%
-  mutate(n_labels = paste0(GEAR_GROUP, " (n= ", n, ")" ))
+### GEAR INDIVIDUALS ####
 
+length_data_gears <- length_data_final %>% 
+  group_by(LAND_STANDARD_GEAR_NAME) %>% 
+  dplyr::mutate(n_ID = n_distinct(ID)) |> 
+  dplyr::filter(n_ID >= 3) %>% #ungroup %>%
+  # group_by(YEAR) %>% 
+  # filter(n() >= 30) %>% 
+  ungroup() |> 
+  filter(LAND_STANDARD_GEAR_NAME %in% c("LINES HAND", "POTS AND TRAPS; FISH",
+                                    "HAUL SEINES", "LINES POWER TROLL OTHER")) 
 
-agr_den_NOgears_12 <- length_data_glm_2012 %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
-  ggplot(aes(FL_CM))+
-  # geom_density( aes(color = "Combined"),lwd=1.5)+
-  geom_density(linewidth = 0.75)+
-  # scale_color_hue(labels=ycounts$n_labels)+
-  # scale_color_hue(labels=c("Combined",ycounts$n_labels))+
-  #scale_color_manual(values = gearcols, labels = c("Combined", counts$n_labels))+
-  labs(x = "Fork Length (cm)", title = paste0(county,  "\n (N = ", sum(ycounts$n), ")"))+
-  # theme_minimal()
-  theme(legend.title = element_text(size=14), 
-        legend.text = element_text(size=15))+
-  geom_vline(aes(xintercept=mean(FL_CM)),
-             linetype="dashed", linewidth=1)
-
-abc16 = agr_den_NOgears_12
-
-### GEAR GROUPS ####
-
-ycounts =length_data_final %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
-  tabyl("GEAR_GROUP") %>%
-  mutate(n_labels = paste0(GEAR_GROUP, " (n= ", n, ")" ))
+ycounts =length_data_gears %>% #group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
+  tabyl("LAND_STANDARD_GEAR_NAME") %>%
+  mutate(n_labels = paste0(LAND_STANDARD_GEAR_NAME, " (n= ", n, ")" ))
 
 library(plyr)
-muv <- ddply(length_data_final, "GEAR_GROUP", summarise, grp.mean=mean(FL_CM))
+muv <- ddply(length_data_gears, "LAND_STANDARD_GEAR_NAME", summarise, grp.mean=mean(FL_CM))
 head(muv)
 
-agr_den_v <- length_data_final %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
+agr_den_v <- length_data_gears %>% 
+  # group_by(LAND_STANDARD_GEAR_NAME) %>% 
+  # dplyr::mutate(n_ID = n_distinct(ID)) |> 
+  # dplyr::filter(n_ID >= 3) %>% ungroup %>%
+  # group_by(YEAR) %>% 
+  # filter(n() >= 30) %>% ungroup %>%
   ggplot(aes(FL_CM))+
   # geom_density( aes(color = "Combined"),lwd=1.5)+
-  geom_density(aes(color = GEAR_GROUP),linewidth = 0.75)+
+  geom_density(aes(color = LAND_STANDARD_GEAR_NAME),linewidth = 0.75)+
   scale_color_hue(labels=ycounts$n_labels)+
   # scale_color_hue(labels=c("Combined",ycounts$n_labels))+
   #scale_color_manual(values = gearcols, labels = c("Combined", counts$n_labels))+
-  labs(color = "Gear Group" , x = "Fork Length (cm)", title = paste0(county,  "\n (N = ", sum(ycounts$n), ")"))+
+  labs(color = "Gear" , x = "Fork Length (cm)", title = county)+ #title = paste0(county,  "\n (N = ", sum(ycounts$n), ")"))+
   # theme_minimal()
   theme(legend.title = element_text(size=14), 
-        legend.text = element_text(size=15))+
-  geom_vline(data=muv, aes(xintercept=grp.mean, color=GEAR_GROUP),
+        legend.text = element_text(size=14),
+        legend.position = "bottom",
+        axis.text.x=element_text(size=14),
+        axis.text.y=element_text(size=14),
+        axis.title.x = element_text( size = 14),
+        axis.title.y = element_text( size = 14))+
+  guides(color=guide_legend(ncol = 2))+
+  geom_vline(data=muv, aes(xintercept=grp.mean, color=LAND_STANDARD_GEAR_NAME),
              linetype="dashed")
 
 
 abc15 = agr_den_v
 
-# SAVE WORKSPACE
+
+### top gears individuals #### 
+
+length_data_gears_2012 <- length_data_glm_2012 %>% 
+  group_by(LAND_STANDARD_GEAR_NAME) %>% 
+  dplyr::mutate(n_ID = n_distinct(ID)) |> 
+  dplyr::filter(n_ID >= 3) %>% #ungroup %>%
+  # group_by(YEAR) %>% 
+  # filter(n() >= 30) %>% 
+  ungroup() |> 
+  filter(LAND_STANDARD_GEAR_NAME %in% c("LINES HAND", "POTS AND TRAPS; FISH",
+                                        "ROD AND REEL")) 
+
+ycounts =length_data_gears_2012 %>% #group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
+  tabyl("LAND_STANDARD_GEAR_NAME") %>%
+  mutate(n_labels = paste0(LAND_STANDARD_GEAR_NAME, " (n= ", n, ")" ))
+
+library(plyr)
+muv12 <- ddply(length_data_gears_2012, "LAND_STANDARD_GEAR_NAME", summarise, grp.mean=mean(FL_CM))
+head(muv12)
+
+agr_den_v12 <- length_data_gears_2012 %>% 
+  # group_by(LAND_STANDARD_GEAR_NAME) %>% 
+  # dplyr::mutate(n_ID = n_distinct(ID)) |> 
+  # dplyr::filter(n_ID >= 3) %>% ungroup %>%
+  # group_by(YEAR) %>% 
+  # filter(n() >= 30) %>% ungroup %>%
+  ggplot(aes(FL_CM))+
+  # geom_density( aes(color = "Combined"),lwd=1.5)+
+  geom_density(aes(color = LAND_STANDARD_GEAR_NAME),linewidth = 0.75)+
+  scale_color_hue(labels=ycounts$n_labels)+
+  # scale_color_hue(labels=c("Combined",ycounts$n_labels))+
+  #scale_color_manual(values = gearcols, labels = c("Combined", counts$n_labels))+
+  labs(color = "Gear" , x = "Fork Length (cm)", title = county)+ #title = paste0(county,  "\n (N = ", sum(ycounts$n), ")"))+
+  # theme_minimal()
+  theme(legend.title = element_text(size=14), 
+        legend.text = element_text(size=14),
+        legend.position = "bottom",
+        axis.text.x=element_text(size=14),
+        axis.text.y=element_text(size=14),
+        axis.title.x = element_text( size = 14),
+        axis.title.y = element_text( size = 14))+
+  guides(color=guide_legend(ncol = 2))+
+  geom_vline(data=muv12, aes(xintercept=grp.mean, color=LAND_STANDARD_GEAR_NAME),
+             linetype="dashed")
+
+
+abc19 = agr_den_v12
+
+## Annual Density plots ####
+### ALL GEARS ####
+fleet_final <- length_data_1983_2022[length_data_1983_2022$fleet==1,]
+
+fcounts = fleet_final %>%  group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
+  tabyl(gear) %>%
+  mutate(n_labels = paste0(gear, " (n= ", n, ")" ))
+
+all_carSTTJ <-
+  fleet_final %>%  group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
+  group_by(YEAR) %>%
+  dplyr::mutate(year_labs = paste0(YEAR, "\n n = ", n())) %>%
+  ggplot(aes(FL_CM))+
+  geom_density(size = 0.75)+
+  # geom_vline(data = fleet_final, aes(xintercept=mean(FL_CM)),
+  # linetype="dashed", linewidth=1)+
+  #scale_color_manual(values = gearcols, labels = counts$n_labels)+
+  # scale_color_hue(labels=fcounts$n_labels)+
+  labs(x = "Fork Length (cm)", title = paste0(county,  "\n (N = ", sum(fcounts$n), ")"))+
+  facet_wrap(~year_labs)
+# theme_minimal()
+# theme(legend.title = element_text(linewidth=14), 
+# legend.text = element_text(linewidth=12))+
+
+export_fig_page(all_carSTTJ) 
+abc17 = all_carSTTJ
+
+### TOP GEARS ####
+fleet_final_gears <- length_data_gears[length_data_gears$fleet==1,]
+
+fcounts = fleet_final_gears %>%  group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
+  tabyl(LAND_STANDARD_GEAR_NAME) %>%
+  mutate(n_labels = paste0(LAND_STANDARD_GEAR_NAME, " (n= ", n, ")" ))
+
+all_car_gearsSTTJ <-
+  fleet_final_gears %>%  group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
+  group_by(YEAR) %>%
+  dplyr::mutate(year_labs = paste0(YEAR, "\n n = ", n())) %>%
+  ggplot(aes(FL_CM, color = LAND_STANDARD_GEAR_NAME))+
+  geom_density(size = 0.75)+
+  #scale_color_manual(values = gearcols, labels = counts$n_labels)+
+  scale_color_hue(labels=fcounts$n_labels)+
+  labs(color = "Gear Type", x = "Fork Length (cm)", title = paste0(county,  "\n (N = ", sum(fcounts$n), ")"))+
+  facet_wrap(~year_labs)+
+  # theme_minimal()
+  guides(color=guide_legend(ncol = 2))+
+  theme(legend.title = element_text(size=14), 
+        legend.text = element_text(size=12),
+        legend.position = "bottom")
+
+export_fig_page(all_car_gearsSTTJ) 
+
+abc18 = all_car_gearsSTTJ
+
+
+# SAVE WORKSPACE ####
 save.image(
   file = here::here('tools',
                     "sedar_84_sttj_yt_2022",
                     "sttj_yt_2022_figures.RData") 
 )
 
-
-## Gear grouping investigation ####
-
-# Filtered to minimum 30 fish per year
-
- 
-### hook and line ####
-# 
-# hl<- length_data_final[length_data_final$gear_short=='HL',]
-# counts = hl %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
-#   tabyl(LAND_STANDARD_GEAR_NAME) %>%
-#   mutate(n_labels = paste0(LAND_STANDARD_GEAR_NAME, " (n= ", n, ")" ))
-# 
-# hl2 <- hl %>% group_by(LAND_STANDARD_GEAR_NAME) %>% filter(n() >= 2) %>% ungroup
-# muhl <- ddply(hl2, "LAND_STANDARD_GEAR_NAME", summarise, grp.mean=mean(FL_CM))
-# head(muhl)
-# 
-# agr_den_hl <-hl %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
-#   ggplot(aes(FL_CM, color = LAND_STANDARD_GEAR_NAME))+
-#   geom_density(size = 0.75)+
-#   # scale_color_manual( values = gearcols, labels = counts$n_labels)+
-#   scale_color_hue(labels = counts$n_labels)+
-#   labs(color = "Gear Type", x = "Fork Length (cm)", title = paste0(county,  "\n (N = ", sum(counts$n), ")"))+
-#   # facet_wrap(~ISLAND,ncol=1) +
-#   # theme_minimal()
-#   theme(legend.title = element_text(size=14), 
-#         legend.text = element_text(size=12))+
-#   geom_vline(data=muhl, aes(xintercept=grp.mean, color=LAND_STANDARD_GEAR_NAME),
-#              linetype="dashed")
-# 
-# abc8 = agr_den_hl
-# 
-#  
-### trap ####
-
-# trap <- length_data_final[length_data_final$gear_short=='TR',]
-# counts = trap %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
-#   tabyl(LAND_STANDARD_GEAR_NAME) %>%
-#   mutate(n_labels = paste0(LAND_STANDARD_GEAR_NAME, " (n= ", n, ")" ))
-# 
-# mutrap <- ddply(trap, "LAND_STANDARD_GEAR_NAME", summarise, grp.mean=mean(FL_CM))
-# head(mutrap)
-# 
-# agr_den_trap <- trap %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
-#   ggplot(aes(FL_CM, color = LAND_STANDARD_GEAR_NAME))+
-#   geom_density(size = 0.75)+
-#   # scale_color_manual( values = gearcols, labels = counts$n_labels)+
-#   scale_color_hue(labels = counts$n_labels)+
-#   labs(color = "Gear Type", x = "Fork Length (cm)", title = paste0(county,  "\n (N = ", sum(counts$n), ")"))+
-#   # facet_wrap(~ISLAND,ncol=1) +
-#   # theme_minimal()
-#   theme(legend.title = element_text(size=14), 
-#         legend.text = element_text(size=12))+
-#   geom_vline(data=mutrap, aes(xintercept=grp.mean, color=LAND_STANDARD_GEAR_NAME),
-#              linetype="dashed")
-# abc9 = agr_den_trap
-# 
-#  
-### net ####
-# 
-# #nets might need to be another category because haul seines, trammel, and entangling (gill unsp) have too many occurances to be in other 
-# 
-# net <- length_data_final[length_data_final$gear_short=='NT',]
-# counts = net %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
-#   tabyl(LAND_STANDARD_GEAR_NAME) %>%
-#   mutate(n_labels = paste0(LAND_STANDARD_GEAR_NAME, " (n= ", n, ")" ))
-# 
-# munet <- ddply(net, "LAND_GEAR_NAME", summarise, grp.mean=mean(FL_CM))
-# head(munet)
-# 
-# agr_den_net <- net %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
-#   ggplot(aes(FL_CM,color = LAND_STANDARD_GEAR_NAME))+
-#   geom_density(size = 0.75)+
-#   # scale_color_manual( values = gearcols, labels = counts$n_labels)+
-#   scale_color_hue(labels = counts$n_labels)+
-#   labs(color = "Gear Type", x = "Fork Length (cm)", title = paste0(county,  "\n (N = ", sum(counts$n), ")"))+
-#   # facet_wrap(~ISLAND,ncol=1) +
-#   # theme_minimal()
-#   theme(legend.title = element_text(size=14), 
-#         legend.text = element_text(size=12))+
-#   geom_vline(data=munet, aes(xintercept=grp.mean, color=LAND_GEAR_NAME),
-#              linetype="dashed")
-# abc11 = agr_den_net
-# 
-
- 
-### other ####
-# 
-# ot<- length_data_final[length_data_final$gear_short=='OT',]
-# counts = ot %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
-#   tabyl(LAND_STANDARD_GEAR_NAME) %>%
-#   mutate(n_labels = paste0(LAND_STANDARD_GEAR_NAME, " (n= ", n, ")" ))
-# 
-# ot2 <- ot %>% group_by(LAND_STANDARD_GEAR_NAME) %>% filter(n() >= 2) %>% ungroup
-# muot <- ddply(ot2, "LAND_STANDARD_GEAR_NAME", summarise, grp.mean=mean(FL_CM))
-# head(muot)
-# 
-# agr_den_ot <- ot %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
-#   ggplot(aes(FL_CM, color = LAND_STANDARD_GEAR_NAME))+
-#   geom_density(size = 0.75)+
-#   # scale_color_manual( values = gearcols, labels = counts$n_labels)+
-#   scale_color_hue(labels = counts$n_labels)+
-#   labs(color = "Gear Type", x = "Fork Length (cm)", title = paste0(county,  "\n (N = ", sum(counts$n), ")"))+
-#   # facet_wrap(~ISLAND,ncol=1) +
-#   # theme_minimal()
-#   theme(legend.title = element_text(size=14), 
-#         legend.text = element_text(size=12))+
-#   geom_vline(data=muot, aes(xintercept=grp.mean, color=LAND_STANDARD_GEAR_NAME),
-#              linetype="dashed")
-# abc12 = agr_den_ot
-# 
-#  
-
-## Break at 2005 ####
-# 
-# length_data_final %>%  group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>% # filter(YEAR > 2011) |> 
-#   ggplot(aes(FL_CM, color = gear))+
-#   geom_density(size = 0.75)+
-#   scale_color_hue(labels=ycounts$n_labels)+
-#   #  scale_color_manual(values = gearcols, labels = counts$n_labels)+
-#   labs(color = "Gear Type", x = "Fork Length (cm)", title = paste0(county,  "\n (N = ", sum(ycounts$n), ")"))+
-#   # facet_wrap(~ISLAND,ncol=1) +
-#   facet_wrap(~mgt_period) +
-#   # theme_minimal()
-#   theme(legend.title = element_text(size=14), 
-#         legend.text = element_text(size=12))
-# 
-# 
-#  
-# ### hook and line 
-# 
-# HL <- length_data_final[length_data_final$gear_short=='HL',]
-# counts = HL %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
-#   tabyl(LAND_STANDARD_GEAR_NAME) %>%
-#   mutate(n_labels = paste0(LAND_STANDARD_GEAR_NAME, " (n= ", n, ")" ))
-# 
-# HL %>%  group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
-#   ggplot(aes(FL_CM, color = LAND_STANDARD_GEAR_NAME))+
-#   geom_density(size = 0.75)+
-#   # scale_color_manual( values = gearcols, labels = counts$n_labels)+
-#   scale_color_hue(labels = counts$n_labels)+
-#   labs(color = "Gear Type", x = "Fork Length (cm)", title = paste0(county,  "\n (N = ", sum(counts$n), ")"))+
-#   # facet_wrap(~ISLAND,ncol=1) +
-#   facet_wrap(~mgt_period) +
-#   # theme_minimal()
-#   theme(legend.title = element_text(size=14), 
-#         legend.text = element_text(size=12))
-# 
-#  
-# ### net 
-# 
-# #nets might need to be another category because haul seines, trammel, and entangling (gill unsp) have too many occurances to be in other 
-# 
-# net <- length_data_final[length_data_final$gear_short=='NT',]
-# counts = net %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
-#   tabyl(LAND_STANDARD_GEAR_NAME) %>%
-#   mutate(n_labels = paste0(LAND_STANDARD_GEAR_NAME, " (n= ", n, ")" ))
-# 
-# net %>%  group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
-#   ggplot(aes(FL_CM,color = LAND_STANDARD_GEAR_NAME))+
-#   geom_density(size = 0.75)+
-#   # scale_color_manual( values = gearcols, labels = counts$n_labels)+
-#   scale_color_hue(labels = counts$n_labels)+
-#   labs(color = "Gear Type", x = "Fork Length (cm)", title = paste0(county,  "\n (N = ", sum(counts$n), ")"))+
-#   # facet_wrap(~ISLAND,ncol=1) +
-#   facet_wrap(~mgt_period) +
-#   # theme_minimal()
-#   theme(legend.title = element_text(size=14), 
-#         legend.text = element_text(size=12))
-# 
-# 
-# ### trap 
-# 
-# trap <- length_data_final[length_data_final$gear_short=='TR',]
-# counts = trap %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
-#   tabyl(LAND_STANDARD_GEAR_NAME) %>%
-#   mutate(n_labels = paste0(LAND_STANDARD_GEAR_NAME, " (n= ", n, ")" ))
-# 
-# trap %>%  group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
-#   ggplot(aes(FL_CM,color = LAND_STANDARD_GEAR_NAME))+
-#   geom_density(size = 0.75)+
-#   # scale_color_manual( values = gearcols, labels = counts$n_labels)+
-#   scale_color_hue(labels = counts$n_labels)+
-#   labs(color = "Gear Type", x = "Fork Length (cm)", title = paste0(county,  "\n (N = ", sum(counts$n), ")"))+
-#   # facet_wrap(~ISLAND,ncol=1) +
-#   facet_wrap(~mgt_period) +
-#   # theme_minimal()
-#   theme(legend.title = element_text(size=14), 
-#         legend.text = element_text(size=12))
-# 
-# 
-#  
-# ### other  
-# 
-# ot<- length_data_final[length_data_final$gear_short=='OT',]
-# counts = ot %>% group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
-#   tabyl(LAND_STANDARD_GEAR_NAME) %>%
-#   mutate(n_labels = paste0(LAND_STANDARD_GEAR_NAME, " (n= ", n, ")" ))
-# 
-# ot %>%  group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
-#   ggplot(aes(FL_CM, color = LAND_STANDARD_GEAR_NAME))+
-#   geom_density(size = 0.75)+
-#   # scale_color_manual( values = gearcols, labels = counts$n_labels)+
-#   scale_color_hue(labels = counts$n_labels)+
-#   labs(color = "Gear Type", x = "Fork Length (cm)", title = paste0(county,  "\n (N = ", sum(counts$n), ")"))+
-#   # facet_wrap(~ISLAND,ncol=1) +
-#   facet_wrap(~mgt_period) +
-#   # theme_minimal()
-#   theme(legend.title = element_text(size=14), 
-#         legend.text = element_text(size=12))
-# 
-#  
