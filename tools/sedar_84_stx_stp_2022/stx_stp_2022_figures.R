@@ -4,7 +4,9 @@
 
 # Set up library 
 
-librarian::shelf(here, tidyverse, ROracle, keyring, dotenv, reshape, openxlsx, janitor, DT, pander, knitr, flextable) #plyr
+librarian::shelf(here, tidyverse,  dotenv, reshape, openxlsx, janitor, DT, 
+                 pander, knitr, flextable, ggplot2, lmerTest, meantables) 
+# add ROracle, keyring when pulling new data from TIP database
 # if conflicts in pkgs arise, use the following:
 # library(conflicted)
 # conflicted::conflicts_prefer(here::here)
@@ -23,15 +25,12 @@ librarian::shelf(here, tidyverse, ROracle, keyring, dotenv, reshape, openxlsx, j
 # tip_file <- list.files(here("data", "raw"),
 #                        pattern = paste0("^com_tip_PR_VI_+", tip_date))
 
-# Example of how to cite sedar papers Donaldson, D.M. 2004. Overview of the State Trip 
-# Tickets Programs in the Gulf of Mexico. SEDAR7-DW-20. SEDAR, North Charleston, SC. 11pp. 
-# Poffenberger, J. 2003. Description of the Southeast Fisheries Science Center's Logbook 
-# Program for Coastal Fisheries. SEDAR-DW-29. SEDAR, North Charleston, SC. 9pp.
-# # 
 
 # Read in the most recent extraction
 # tip <- readRDS(file = here("data", "raw", tip_file))
-tip <- readRDS("~/SEFSC-SFD-CFB-TIP-Compositions/data/raw/com_tip_PR_VI_170867_20240109.RDS")
+# tip <- readRDS("~/SEFSC-SFD-CFB-TIP-Compositions/data/raw/com_tip_PR_VI_170867_20240109.RDS")
+
+tip <- readRDS(here::here("data", "raw", "com_tip_PR_VI_170867_20240109.RDS"))
 
 # Filter to STTJ and Yellowtail Snapper AND create new filterable date value 
 stx_slp <- tip |> 
@@ -71,6 +70,18 @@ len_type <- "FORK LENGTH"
 # Calculate data available ####
 flextable(as.data.frame(table(stx_slp$LENGTH_TYPE1, useNA='always')))%>%
   autofit()
+# QUICK LOOK INTO SEX
+# colnames(stx_slp)
+# unique(stx_slp$SEX_NAME)
+
+# stx_sex <- as.data.frame(table(stx_slp$SECONDARY_SEX, useNA='always'))
+# n_stx_sex = length(stx_slp$SEX_NAME)
+# sum_stx_sex <- stx_sex |> 
+#   mutate(Percent = round((Freq/n_stx_sex*100), 2))
+# 
+# stx_slp_2012 <- stx_slp |> 
+#   filter(YEAR>2011)
+# stx_sex2012 <- as.data.frame(table(stx_slp_2012$SEX_NAME, useNA='always'))
 
 # len_types <- as.data.frame(table(stx_slp$LENGTH_TYPE1, useNA='always'))
 # 
@@ -281,7 +292,7 @@ unique(length_data_final$gear) # "Hook and Line", "Trap", "Other", "Net"
 
 
 # str(length_data_final)
-library(ggplot2)
+
 length_data_glm <- length_data_final |>
   select(YEAR, FINAL_DATE, ID, COUNTY, FL_CM, LAND_STANDARD_GEAR_NAME, gear, GEAR_GROUP) |> 
   mutate(ID = as.character(ID)) |> 
@@ -333,12 +344,8 @@ abc1 <- gant_data |>
   geom_vline(xintercept = 2011.5,  
              color = "darkgrey", linewidth=1.5)
 
-  
-# + guides(fill=guide_legend(nrow=2,byrow=TRUE))
 
 # fit models
-library(lmerTest)
-   
 # comparing length to date and gear in a gamma full model
 mod2 = glmer(FL_CM ~ scale(FINAL_DATE) + LAND_STANDARD_GEAR_NAME + (1 | YEAR) + (1 | ID),
              data = length_data_glm, family = Gamma(link=log))
@@ -364,6 +371,8 @@ allgears_multcompcld_final <- allgears_multcompcld_trip |>
          emmean = round(emmean, 2),
          asymp.LCL = round(asymp.LCL, 2),
          asymp.UCL = round(asymp.UCL, 2))|>
+  # dplyr::filter(ID >= 3) |>
+  dplyr::filter(`Interview(n)` >= 3)|> 
   dplyr::rename("Group" = ".group",
                 "Gear" = "LAND_STANDARD_GEAR_NAME",
                 "Estimated Marginal Mean" = "emmean",
@@ -371,16 +380,16 @@ allgears_multcompcld_final <- allgears_multcompcld_trip |>
                 "UCL" = "asymp.UCL",
                 "Fish(n)" = "n",
                 "Interview(n)" = "ID") |> 
-  filter("Interview(n)" >= 3) |> 
   select(Gear, "Estimated Marginal Mean", LCL, UCL,  Group, "Fish(n)","Interview(n)", Percentage )  |> 
   mutate("Gear Group" = case_when(Gear == "POTS AND TRAPS; FISH" ~ "Fish Traps",
                                      Gear == "SPEARS" ~ "Spears",
                                   TRUE ~ "Spears or Fish Traps"))
 
 # create table of means for each gear
-library(meantables)
 mean_allgears <- length_data_glm %>%
   group_by(LAND_STANDARD_GEAR_NAME) %>%
+  dplyr::mutate(n_ID = n_distinct(ID)) |> 
+  dplyr::filter(n_ID >= 3) |>
   mean_table(FL_CM) |> 
   dplyr::rename("Gear" = "group_cat",
                 "Mean" = "mean") |> 
@@ -389,7 +398,8 @@ mean_allgears <- length_data_glm %>%
 allgears_multicom_mean <- full_join(mean_allgears, allgears_multcompcld_final, by = "Gear")
 
 allgears_multicom_mean_final <- allgears_multicom_mean |> 
-  arrange(desc(Percentage))
+  arrange(desc(Percentage)) #|> 
+  # dplyr::filter(`Interview(n)` >= 3)
 
 tbl1 = flextable(allgears_multicom_mean_final) |> 
   theme_box() %>%
@@ -510,7 +520,8 @@ allgears_multcompcld_finaL_2012 <- allgears_multcompcld_trip_2012  |>
                 "UCL" = "asymp.UCL",
                 "Fish(n)" = "n",
                 "Interview(n)" = "ID") |> 
-  filter("Interview(n)" >= 3) |> 
+  # filter("Interview(n)" >= 3) |> 
+  dplyr::filter(`Interview(n)` >= 3)|> 
   select(Gear, "Estimated Marginal Mean", LCL, UCL,  Group, "Fish(n)","Interview(n)", Percentage ) |>  
   mutate("Gear Group" = case_when(Gear == "POTS AND TRAPS; FISH" ~ "Spears or Fish Traps",
                                   Gear == "SPEARS" ~ "Spears or Fish Traps",
@@ -519,6 +530,8 @@ allgears_multcompcld_finaL_2012 <- allgears_multcompcld_trip_2012  |>
 # create table of means for each gear
 mean_allgears2012 <- length_data_glm_2012 %>%
   group_by(LAND_STANDARD_GEAR_NAME) %>%
+  dplyr::mutate(n_ID = n_distinct(ID)) |> 
+  dplyr::filter(n_ID >= 3) |>
   mean_table(FL_CM) |> 
   dplyr::rename("Gear" = "group_cat",
                 "Mean" = "mean") |> 
@@ -527,7 +540,8 @@ mean_allgears2012 <- length_data_glm_2012 %>%
 allgears_multicom_mean2012 <- full_join(mean_allgears2012, allgears_multcompcld_finaL_2012, by = "Gear")
 
 allgears_multicom_mean_final2012 <- allgears_multicom_mean2012 |> 
-  arrange(desc(Percentage))
+  arrange(desc(Percentage))#|> 
+  # dplyr::filter(`Interview(n)` >= 3)
 
 tbl2 = flextable(allgears_multicom_mean_final2012) |> 
   theme_box() %>%
@@ -559,8 +573,6 @@ length_data_2012_2022 <- length_data_final |>
 
 mean(length_data_2012_2022$FL_CM)
 
-
-library(plyr)
 
 agr_den_NOgears <- 
   ggplot() +
@@ -601,8 +613,7 @@ ycounts =length_data_gears %>% #group_by(YEAR) %>% filter(n() >= 30) %>% ungroup
   tabyl("LAND_STANDARD_GEAR_NAME") %>%
   mutate(n_labels = paste0(LAND_STANDARD_GEAR_NAME, " (n= ", n, ")" ))
 
-library(plyr)
-muv <- ddply(length_data_gears, "LAND_STANDARD_GEAR_NAME", summarise, grp.mean=mean(FL_CM))
+muv <- plyr::ddply(length_data_gears, "LAND_STANDARD_GEAR_NAME", summarise, grp.mean=mean(FL_CM))
 head(muv)
 
 agr_den_v <- length_data_gears %>% 
@@ -650,8 +661,7 @@ ycounts =length_data_gears_2012 %>% #group_by(YEAR) %>% filter(n() >= 30) %>% un
   tabyl("LAND_STANDARD_GEAR_NAME") %>%
   mutate(n_labels = paste0(LAND_STANDARD_GEAR_NAME, " (n= ", n, ")" ))
 
-library(plyr)
-muv12 <- ddply(length_data_gears_2012, "LAND_STANDARD_GEAR_NAME", summarise, grp.mean=mean(FL_CM))
+muv12 <- plyr::ddply(length_data_gears_2012, "LAND_STANDARD_GEAR_NAME", summarise, grp.mean=mean(FL_CM))
 head(muv12)
 
 agr_den_v12 <- length_data_gears_2012 %>% 
@@ -696,7 +706,7 @@ all_carSTX <-
   group_by(YEAR) %>%
   dplyr::mutate(year_labs = paste0(YEAR, "\n n = ", n())) %>%
   ggplot(aes(FL_CM))+
-  geom_density(size = 0.75)+
+  geom_density(linewidth = 0.75)+
   # geom_vline(data = fleet_final, aes(xintercept=mean(FL_CM)),
              # linetype="dashed", linewidth=1)+
   #scale_color_manual(values = gearcols, labels = counts$n_labels)+
@@ -736,6 +746,19 @@ all_car_gearsSTX <-
 export_fig_page(all_car_gearsSTX) 
 abc18 = all_car_gearsSTX
 
+# Aggregated cummulative density ####
+
+counts =length_data_final %>%
+  tabyl(gear) %>%
+  mutate(n_labels = paste0(gear, " (n= ", n, ")" ))
+
+abc20 = length_data_final %>%
+  ggplot(aes(FL_CM))+
+  stat_ecdf()+
+  # scale_color_manual(values = gearcols, labels = counts$n_labels)+
+  # scale_color_hue(labels = counts$n_labels)+
+  labs(x = "Fork Length (cm)", title = paste0(county,  "\n (N = ", sum(counts$n), ")"))+
+  theme_minimal()
 
 
        
