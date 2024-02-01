@@ -36,7 +36,7 @@ load(here::here('tools','sedar_84_sttj_yt_2022','sttj_yt_2022_figures.RData'))
 
 In preparation for SouthEast Data, Assessment, and Review (SEDAR) 84 Benchmark assessment of Caribbean Yellowtail Snapper in St. Thomas/St. John, U.S. Virgin Islands; the Southeast Fisheries Science Center, Sustainable Fisheries Division (SEFSC), Caribbean Fisheries Branch conducted a size composition analysis of the Trip Interview Program (TIP) data. This document summarizes data collected from 1983 to 2022.
 
-The TIP data pertaining to Yellowtail Snapper in St. Thomas/St. John is comprised of `r n_all_len` length observations across `r total_trip_id_unique` unique port sampling interviews, of which `r n_fork_len` are fork lengths (`r p_fork_len`%). Two analyses are described in this document. First, gear groupings were established among gears based upon Yellowtail Snapper size composition differences among gears. Gear groups were identified based on a generalized linear model (GLM) analysis using a gamma-distributed dependent variable and a covariate to account for changes in mean size over time. Second, the aggregate density of the lengths was determined based on time series and gear representation within the data.The GLM analysis of the full time series reported a statistical difference in the size of measured fish between the "LINES HAND", "POTS AND TRAPS; FISH", AND "ROD AND REEL" gears.
+The TIP data pertaining to Yellowtail Snapper in St. Thomas/St. John are comprised of `r n_all_len` length observations across `r total_trip_id_unique` unique port sampling interviews, of which `r n_fork_len` are fork lengths (`r p_fork_len`%). Two analyses are described in this document. First, gear groupings were established among gears based upon Yellowtail Snapper size composition differences among gears. Gear groups were identified based on a generalized linear mixed model (GLM) analysis using a gamma-distributed dependent variable and a covariate to account for changes in mean size over time. Random effects for interview ID and categorical year were included to account for non-independence of observations. Second, the aggregate density of the lengths was determined based on time series and gear representation within the data.The GLM analysis of the full time series reported a statistical difference in the size of measured fish between the "LINES HAND", "POTS AND TRAPS; FISH", AND "ROD AND REEL" gears.
 
 \newpage
 
@@ -44,7 +44,7 @@ The TIP data pertaining to Yellowtail Snapper in St. Thomas/St. John is comprise
 
 The Trip Interview Program (TIP) collects length and weight data from fish landed by commercial fishing vessels. Data collection began in 1983 with frequent updates in best practices; the latest being in 2017. Data are collected by trained shore-based samplers. The trained samplers interview fishermen to obtain morphometric data and biological samples from their catch. The TIP has five primary data tables: Interview, Effort, Landing, Sample, and Observation [@beggerly2022]. The Interview, Landing, and Sample tables were utilized in this document to analyze the year, region, species, interview ID, gear name, and length values. The data were filtered to Yellowtail Snapper fork lengths in St. Thomas/St. John recorded from 1983 to 2022.
 
-## Generalized Linear Model (GLM) Analysis
+## Generalized Linear Mixed Model (GLM) Analysis
 
 The GLM analysis of landed Yellowtail Snapper size composition among commercial fishing gears was first conducted on the time series as a whole from 1983-2022, and then on a truncated time series that best reflects the available species-specific commercial landings data from 2012-2022 (@fig-abc1). The analyses of the full and truncated time series display the statistical similarity of all available gears with respect to the mean size of fish caught throughout the time series. Gears with fewer than three interviews were excluded from the analysis.
 
@@ -56,7 +56,7 @@ The GLM analyses of the full time series (@tbl-tbl1) and truncated time series(@
 #| echo: false
 #| label: fig-abc1
 #| fig-cap: |
-#|   Plot Plot showing relative number of Yellowtail Snapper in St. Thomas/St. John over time. Each point is color specific to the gear it represents. Gears are arranged from most to least abundant. Grey vertical line denotes the beginning of the truncated time series at 2012. 
+#|   Plot Plot showing relative number of Yellowtail Snapper in St. Thomas/St. John over time. Each point is color specific to the gear it represents. Gears are arranged from most to least abundant. Gray vertical line denotes the beginning of the truncated time series in 2012. 
 #| fig-width: 12
 #| fig-height: 8
 

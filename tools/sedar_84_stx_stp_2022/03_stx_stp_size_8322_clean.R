@@ -2,7 +2,7 @@
 librarian::shelf(here, tidyverse)
 
 # Specify settings ####
-tip_spp_len_rds <- "stx_slp_prep_tip_20240123.rds"
+tip_spp_len_rds <- "stx_slp_prep_tip_20240131.rds"
 spp <- "slp"
 isl <- "stx"
 subset_years <- c(2012:2022)

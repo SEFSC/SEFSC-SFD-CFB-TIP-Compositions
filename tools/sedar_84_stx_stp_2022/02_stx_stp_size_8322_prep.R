@@ -2,7 +2,7 @@
 librarian::shelf(here, tidyverse)
 
 # Specify settings ####
-tip_spp_rds <- "stx_slp_format_tip_20240123.rds"
+tip_spp_rds <- "stx_slp_format_tip_20240131.rds"
 len_type <- "FORK LENGTH"
 len_mode <- "COMMERCIAL"
 end_year <- 2022

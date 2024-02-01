@@ -2,7 +2,7 @@
 librarian::shelf(here, tidyverse, measurements)
 
 # Specify settings ####
-tip_rds <- "com_tip_PR_VI_170867_20240109.RDS"
+tip_rds <- "com_tip_PR_VI_170867_20240131.RDS"
 spp_itis <- 170867
 spp <- "slp"
 isl <- "stx"
@@ -87,3 +87,4 @@ tip_k_25q # 2.159224
 tip_k_75q # 2.412345
 tip_k_lower # 1.779541
 tip_k_upper # 2.792027
+
