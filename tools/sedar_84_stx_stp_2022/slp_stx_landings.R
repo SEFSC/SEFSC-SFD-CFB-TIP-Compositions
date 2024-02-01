@@ -1,13 +1,55 @@
-# Load objects
-load("slp_stx_com_landals_1222_20231130_raw_C.RData")
-load("slp_stx_com_landals_1222_20231130.RData")
-
 # Load libraries
-library(tidyverse, measurements)
+librarian::shelf(here, tidyverse)
+
+# Load objects
+load(
+  here("data", "raw",
+       "slp_stx_com_landals_1222_20231130_raw_C.RData")
+)
 
 # Quick views
-view(data.qcd)
-view(final)
+View(data.qcd)
+
+data.qcd |>
+  select(GEAR_NM, GEAR_GROUP) |>
+  distinct() |>
+  arrange(GEAR_GROUP, GEAR_NM)
+
+# What fraction is trips by TRIP_YEAR and GEAR_GROUP where GEAR_GROUP == SCUBA),
+# compared to interviews by year and gear, gear %in%  c("SPEARS; DIVING", "BY HAND; DIVING GEAR")
+
+# Get LBS by year to identify main gears
+by_year <- data.qcd |>
+  group_by(TRIP_YEAR) |>
+  summarise(YEAR_LBS = sum(POUNDS_LANDED))
+
+# Get LBS by year and gear
+by_year_gear <- data.qcd |>
+  group_by(TRIP_YEAR, GEAR_NM) |>
+  summarize(TOTAL_LBS = sum(POUNDS_LANDED),
+            TOTAL_TRIPS = n_distinct(TRIP_ID),
+            IS_CONFIDENTIAL = case_when(n_distinct(VESSEL_CD) >= 3 ~ "N",
+                                        .default = "Y"),
+            .groups = "drop") |>
+  left_join(by_year, by = join_by(TRIP_YEAR)) |>
+  mutate(PERCENT_LBS = round(TOTAL_LBS/YEAR_LBS,4),
+         TRIP_YEAR = as.numeric(TRIP_YEAR))
+
+# Get LBS and trips across all years
+across_years <- data.qcd |>
+  summarise(YEAR_LBS = sum(POUNDS_LANDED))
+
+# Get LBS by year and gear
+across_years_by_gear <- data.qcd |>
+  group_by(GEAR_NM) |>
+  summarize(TOTAL_LBS = sum(POUNDS_LANDED),
+            TOTAL_TRIPS = n_distinct(TRIP_ID),
+            IS_CONFIDENTIAL = case_when(n_distinct(VESSEL_CD) >= 3 ~ "N",
+                                        .default = "Y"),
+            .groups = "drop") 
+
+
+
 
 # Reproduce non-confidential final, with the confidential information
 by_year_group <- data.qcd |>
