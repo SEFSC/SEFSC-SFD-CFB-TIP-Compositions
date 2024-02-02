@@ -58,8 +58,7 @@ LLconv <- read_csv("~/SEFSC-SFD-CFB-TIP-Compositions/tools/CSVs/LLconversions.cs
   show_col_types = FALSE
 )
 
-TIP_gears <- read_csv("~/SEFSC-SFD-CFB-TIP-Compositions/tools/CSVs/
-                      tip_gears_stp_stx_LANDSTDGEARNAME.csv",
+TIP_gears <- read_csv("~/SEFSC-SFD-CFB-TIP-Compositions/tools/CSVs/tip_gears_stp_stx_LANDSTDGEARNAME.csv",
   show_col_types = FALSE
 )
 
@@ -101,7 +100,7 @@ min_year <- 1983
 
 max_year <- 2022
 
-break_year <- 2005 # this is an optional value to denote a change in management.
+break_year <- 2012 # this is an optional value to denote a change in management.
 # inclusive on the upper bound. can be set to NA if not relevant.  2005 trap
 # specifications were updated and many closures went into place
 
@@ -236,6 +235,7 @@ length_data_final <- join_length_dat %>%
   #   LAND_STANDARD_GEAR_NAME == "TRAMMEL NETS" ~ "OTHER"
   # ))
 
+
 unique(length_data_final$LAND_STANDARD_GEAR_NAME)
 
 # Analyst have asked for a record of dropped observations
@@ -299,7 +299,7 @@ comp_names <- c(
 #
 # 214 TRAMMEL NETS - total length
 
-unique(length_data_final$gear) # "Hook and Line", "Trap", "Other", "Net"
+unique(length_data_final$gear) 
 
 ## All Gears ####
 
@@ -308,9 +308,7 @@ unique(length_data_final$gear) # "Hook and Line", "Trap", "Other", "Net"
 
 length_data_glm <- length_data_final |>
   select(
-    YEAR, FINAL_DATE, ID, COUNTY, FL_CM, LAND_STANDARD_GEAR_NAME, gear,
-    GEAR_GROUP
-  ) |>
+    YEAR, FINAL_DATE, ID, COUNTY, FL_CM, LAND_STANDARD_GEAR_NAME, gear) |>
   mutate(ID = as.character(ID)) |>
   select(-gear)
 
@@ -393,7 +391,7 @@ allgears_multcompcld_final <- allgears_multcompcld_trip |>
     asymp.UCL = round(asymp.UCL, 2)
   ) |>
   # dplyr::filter(ID >= 3) |>
-  dplyr::filter(`Interview(n)` >= 3) |>
+  dplyr::filter(ID >= 3) |>
   dplyr::rename(
     "Group" = ".group",
     "Gear" = "LAND_STANDARD_GEAR_NAME",
@@ -478,9 +476,7 @@ mean_by_year |>
 length_data_glm_2012 <- length_data_final |>
   filter(YEAR >= 2012) |>
   select(
-    YEAR, FINAL_DATE, ID, COUNTY, FL_CM, LAND_STANDARD_GEAR_NAME, gear,
-    GEAR_GROUP
-  ) |>
+    YEAR, FINAL_DATE, ID, COUNTY, FL_CM, LAND_STANDARD_GEAR_NAME, gear) |>
   mutate(ID = as.character(ID)) |>
   select(-gear)
 
