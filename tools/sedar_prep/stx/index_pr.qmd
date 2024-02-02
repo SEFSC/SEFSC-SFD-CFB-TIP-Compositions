@@ -1,0 +1,55 @@
+# Summary
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+library(here)
+source(here("text", "pr", 'landings.r'))
+```
+
+In February of 2022, the Caribbean Fishery Management Council (CFMC) requested the assistance of the National Marine Fisheries Service (NOAA Fisheries), Southeast Fisheries Science Center (SEFSC) to conduct spiny lobster assessment updates outside the SouthEast Data, Assessment, and Review (SEDAR) process. The request was to provide calculations of the Overfishing Limit (OFL) and Acceptable Biological Catch (ABC) for 2024-2026 utilizing the already established methods from SEDAR 57 stock assessment for U.S. Caribbean Spiny Lobster [@sedar2019]. This document provides the update of the SEDAR 57 assessment benchmark for Puerto Rico and specifies 2021 as the terminal year for data inputs. This work was conducted by the Southeast Fisheries Science Center, Sustainable Fisheries Division, Caribbean Fisheries Branch.
+
+There were two main steps in the update. First, the landings data from the SEDAR 57 assessment were updated through 2021. The stock assessment model parameters remained unchanged from those used in the benchmark stock assessments. The second step involved the sex and gear-specific carapace length data; these were updated through 2021 and subsequently the assessment model was run allowing parameters to be estimated. This two-step approach provisions for isolating the effect of updating each data input (e.g., landings, size composition).
+
+\newpage
+
+This report provides a summary of the procedures defined for the SEDAR 57 benchmark assessment and presents the updated data inputs and model results. Additionally, a sensitivity is included where the correction factors for 2020 and 2021 were replaced with the mean correction factors calculated by coast over the years 2014-2019. The report also provides OFL and ABC estimates for 2024-2026 using assumptions for 2022 and 2023 landings, as these are not yet known.
+
+The subsequent sections of this report compare outputs of the successive steps described above. However, included first is a comparison of the OFL and ABC estimates for 2024-2026 compared to the 2021-2023 values that resulted from the SEDAR 57 benchmark assessment with input landings through 2020 (@fig-abc2 and @tbl-abc2). The percent difference between the 2021-2023 constant-catch ABC and the 2024-2026 constant-catch ABC is `r diffcc_abc`%. The projections for 2024-2026 are further described in the final chapter of this report (@sec-06projection).
+
+\
+
+```{r}
+#| echo: false
+#| label: fig-abc2
+#| fig-cap: |
+#|   Caribbean Spiny Lobster variable-catch (annual) OFLs and ABCs for spiny lobster for Puerto Rico plotted in pounds whole weight. The line color relates to the source of the data. The line type refers to the forecasted values plotted from the stock assessment model projections as OFLs (dashed lines) or ABCs (dotted line).
+#| fig-width: 6
+#| fig-height: 3
+
+abc2
+```
+
+\newpage
+
+```{r}
+#| echo: false
+#| warning: false
+#| label: tbl-abc2
+#| tbl-cap: |
+#|   Caribbean Spiny Lobster variable-catch (annual) and constant-catch (average) OFLs and ABCs for Puerto Rico, based on the Tier 3 of the ABC Control Rule. The column titled "Source" indicates if the rows are associated with the SEDAR 57 benchmark with input landings through 2020 or with the SEDAR 57 update with input landings through 2023. All OFLs and ABCs are in pounds whole weight.
+
+library(knitr)
+kable("")
+
+```
+
+```{r}
+#| echo: false
+#| tbl-colwidths: false
+
+tab_abc2
+
+```
