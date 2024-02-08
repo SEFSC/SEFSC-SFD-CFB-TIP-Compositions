@@ -4,9 +4,10 @@
 
 # included effort and land standard gear name
 length_data_final2 <- join_length_dat %>%
-  select(YEAR, INTERVIEW_DATE, FINAL_DATE, ID, OBS_ID, STATE = STATE_LANDED, COUNTY=COUNTY_LANDED, 
-         COUNTY_CODE, FL_CM, LENGTH_TYPE1, LENGTH_UNIT1,OBS_WEIGHT_KG, OBS_WEIGHT_UNIT, lbin, source, 
-         LAND_STANDARD_GEAR_NAME, LAND_GEAR_NAME, GEARNAME_1, mgt_period, ISLAND, INT_TYPE, fleet, 
+  select(YEAR, INTERVIEW_DATE, FINAL_DATE, ID, OBS_ID, STATE = STATE_LANDED,
+         COUNTY=COUNTY_LANDED, COUNTY_CODE, FL_CM, LENGTH_TYPE1, LENGTH_UNIT1,
+         OBS_WEIGHT_KG, OBS_WEIGHT_UNIT, lbin, source, LAND_STANDARD_GEAR_NAME,
+         LAND_GEAR_NAME, GEARNAME_1, mgt_period, ISLAND, INT_TYPE, fleet, 
          DEALER_CODE, VESSEL_ID, LICENSE) %>%  #STAT_AREA
   filter(between(FL_CM , min_size, max_size),
          ISLAND != 'NOT CODED')|> 

@@ -70,7 +70,7 @@ disclaimer <- "Gears with less than 3 unique interviews were removed."
 flextable(as.data.frame(table(pr_yt$LENGTH_TYPE1, useNA='always')))%>%
   autofit()
 
-flextable(as.data.frame(table(pr_yt$LAND_STANDARD_GEAR_NAME, useNA='always')))%>%
+flextable(as.data.frame(table(pr_yt$gear, useNA='always')))%>%
   autofit()
 
 # len_types <- as.data.frame(table(stx_slp$LENGTH_TYPE1, useNA='always'))
@@ -136,19 +136,19 @@ tip2 <- #readRDS('./data_clean/tip_GOM.Rdata') %>%
          FISHING_MODE,
          INT_TYPE,
          YEAR = YEAR,
-         ITIS_CODE   = OBS_STANDARD_SPECIES_CODE,
-         SPECIES     = OBS_STANDARD_SPECIES_NAME,
+         ITIS_CODE = OBS_STANDARD_SPECIES_CODE,
+         SPECIES = OBS_STANDARD_SPECIES_NAME,
          QUANTITY,
          YTS,
          STATE_LANDED,
          COUNTY_LANDED,
-         COUNTY_CODE=LANDING_AREA_COUNTY_CODE,
+         COUNTY_CODE = LANDING_AREA_COUNTY_CODE,
          PLACE_LANDED,
          DEALER,
          DEALER_CODE,
          ISLAND,
          OBS_WEIGHT_KG,
-         OBS_WEIGHT_UNIT,
+         OBS_WEIGHT_UNIT, 
          LENGTH1_MM,
          LENGTH1,
          LENGTH_TYPE1,
@@ -175,49 +175,64 @@ tip2 <- #readRDS('./data_clean/tip_GOM.Rdata') %>%
 
 #### Add gear groupings, NO length-length conversions available ####
 
-###add length-length conversions to helper_table ; 
-tip3 <- merge(tip2, TIP_gears, by.x="LAND_STANDARD_GEAR_NAME",all.x=T)
-#gfin2a <- merge(gfin, flc, by.x=c("State_Landed","County_Landed"),all.x=T)
 
-tip4 <- tip3[tip3$YTS==1,]
+### add length-length conversions to helper_table ;
+tip3 <- merge(tip2, TIP_gears, by.x = "LAND_STANDARD_GEAR_NAME", all.x = T)
+# gfin2a <- merge(gfin, flc, by.x=c("State_Landed","County_Landed"),all.x=T)
 
-table(tip3$LAND_STANDARD_GEAR_NAME, tip3$gear, useNA='always')
+tip4 <- tip3[tip3$YTS == 1, ]
 
-#gear_groups <- c("HAND LINE", "LONGLINE") 
+# table(tip3$LAND_STANDARD_GEAR_NAME, tip3$gear, useNA='always')
+
+# gear_groups <- c("HAND LINE", "LONGLINE")
 gear_groups <- unique(TIP_gears$gear)
 
-##splitting here to more easily qa/qc above
-join_length_dat <- tip4 %>% #bind_rows(tip3 , gfin2) %>%
-  # len_len_convert(params = LLconv, 
-  #                 raw_length = LENGTH1, 
-  #                 length_type =LENGTH_TYPE1, 
-  #                 length_units =  LENGTH_UNIT1, 
+# look at how many records are not fork length 
+# antiforklength <- tip4 |>
+#   filter(LENGTH_TYPE1 != "FORK LENGTH")
+
+## splitting here to more easily qa/qc above
+join_length_dat <- tip4 %>% # bind_rows(tip3 , gfin2) %>%
+  # len_len_convert(params = LLconv,
+  #                 raw_length = LENGTH1,
+  #                 length_type =LENGTH_TYPE1,
+  #                 length_units =  LENGTH_UNIT1,
   #                 desired_type = len_type) %>%
-  untable(num = .$QUANTITY)  %>%
+  untable(num = .$QUANTITY) %>%
   filter(LENGTH_TYPE1 == "FORK LENGTH") %>%
   # filter(NEW_GEAR_NAME %in% c(gear_groups)) %>%
-  mutate( #gear = ifelse(grepl("hand*", NEW_GEAR_NAME, ignore.case = T, fixed = F), "HL", "LL"), #this part will need to be generalized for more than 2 gear types ; ++HOOKLINE IS HANDLINE IN THIS FILE ; OVERWRITING ALL HL TO LL ; CHANGED "hook*" TO "hand*"
-    #gear=GEAR_GRP,
-    FL_CM = LENGTH1_MM/10, 
-    lbin = floor(FL_CM / bin_size)*bin_size, 
-    mgt_period = ifelse(YEAR <= break_year, paste0(min_year," - ", break_year), paste0( break_year+1, " - ", max_year)))
-# is "select" the problem, its #out 
+  mutate(
+    FL_CM = LENGTH1_MM / 10,
+    lbin = floor(FL_CM / bin_size) * bin_size,
+    mgt_period = ifelse(YEAR <= break_year, paste0(min_year, " - ", break_year),
+                        paste0(break_year + 1, " - ", max_year)
+    )
+  )
 
-# FINAL dataset here ####
+# FINAL dataset here  ####
 
-length_data_final <- join_length_dat %>%
-  select(YEAR, INTERVIEW_DATE, FINAL_DATE, ID, OBS_ID, STATE = STATE_LANDED, COUNTY=COUNTY_LANDED, COUNTY_CODE, FL_CM, lbin, source, gear, gear_short, LAND_STANDARD_GEAR_NAME, LAND_GEAR_NAME, mgt_period, ISLAND, INT_TYPE, fleet, DEALER_CODE, VESSEL_ID, LICENSE) %>%  #STAT_AREA
-  filter(between(FL_CM , min_size, max_size),
-         ISLAND != 'NOT CODED')|> 
-  mutate(GEAR_GROUP = case_when(LAND_STANDARD_GEAR_NAME == "LINES HAND" ~ "HAND LINE",
-                                LAND_STANDARD_GEAR_NAME == "LINES LONG SET WITH HOOKS" ~ "HAND LINE",
-                                LAND_STANDARD_GEAR_NAME == "LINES POWER TROLL OTHER" ~ "HAND LINE",
-                                LAND_STANDARD_GEAR_NAME == "ROD AND REEL" ~ "HAND LINE",
-                                LAND_STANDARD_GEAR_NAME == "LINES LONG; REEF FISH" ~ "HAND LINE",
-                                LAND_STANDARD_GEAR_NAME == "HAUL SEINES"~ "HAUL SEINE",
-                                LAND_STANDARD_GEAR_NAME == "POTS AND TRAPS;SPINY LOBSTER" ~ "TRAPS",
-                                LAND_STANDARD_GEAR_NAME == 'POTS AND TRAPS; FISH'~ "TRAPS",
-                                TRUE ~ "OTHER"))
+length_data_full_gear <- join_length_dat %>%
+  select(YEAR, INTERVIEW_DATE, FINAL_DATE, ID, OBS_ID, STATE = STATE_LANDED,
+         COUNTY=COUNTY_LANDED, COUNTY_CODE, FL_CM, LENGTH_TYPE1, LENGTH_UNIT1,
+         OBS_WEIGHT_KG, OBS_WEIGHT_UNIT, lbin, source, LAND_STANDARD_GEAR_NAME,
+         LAND_GEAR_NAME, GEARNAME_1, mgt_period, ISLAND, INT_TYPE, fleet, 
+         DEALER_CODE, VESSEL_ID, LICENSE
+  ) %>%
+  filter(
+    between(FL_CM, min_size, max_size),
+    ISLAND != "NOT CODED"
+  ) 
+
+flextable(as.data.frame(table(length_data_full_gear$LAND_STANDARD_GEAR_NAME, useNA='always')))%>%
+  autofit()
+
+# if land_standard_gear_name is not coded, replace with gearname_1 (effort gear)
+length_data_final <- length_data_full_gear |> 
+  mutate(gear = case_when(LAND_STANDARD_GEAR_NAME == "NOT CODED" ~ GEARNAME_1, 
+                          TRUE ~ LAND_STANDARD_GEAR_NAME))
+
+flextable(as.data.frame(table(length_data_final$gear, useNA='always')))%>%
+  autofit()
 
 # Analyst have asked for a record of dropped observations
 ######### ADAPT THIS TO OUTPUT ALL DROPPED RECORDS ABOVE--MOVE HIGHER IN THE SCRIPT TO HAVE ALL VARS
@@ -249,32 +264,29 @@ full_set <- crossing(YEAR = seq(from = min_year, to = max_year, by = 1),
                      N = 0) %>%
   pivot_wider(names_from = lbin, values_from = N)
 
-comp_names = c("YEAR", "ln_fish", "ln_trips", "ln_dealers","ln_vessels", names(full_set)[-1])
+comp_names = c("YEAR", "ln_fish", "ln_trips", "ln_dealers","ln_vessels",
+               names(full_set)[-1])
 
 
 # GLM analysis ####
 
 # No filtering based on number of trips/fish per year yet, analysis of all available data.
 
-unique(length_data_final$gear) # "Hook and Line", "Trap", "Other", "Net"
-unique(length_data_final$GEAR_GROUP) # "OTHER"      "HAUL SEINE" "HAND LINE"  "TRAPS"  
-
-n_not_coded = sum(pr_yt$LAND_STANDARD_GEAR_NAME == "NOT CODED")
+# n_not_coded = sum(pr_yt$LAND_STANDARD_GEAR_NAME == "NOT CODED")
 n_all_len = length(pr_yt$LENGTH_TYPE1)
 p_not_coded = round(n_not_coded/n_all_len, 4)*100
 
-length_data_final_pr <- length_data_final |> 
-  filter(LAND_STANDARD_GEAR_NAME != "NOT CODED")
-
-unique(length_data_final_pr$LAND_STANDARD_GEAR_NAME)
+# length_data_final_pr <- length_data_final |> 
+#   filter(LAND_STANDARD_GEAR_NAME != "NOT CODED")
+# 
+# unique(length_data_final_pr$LAND_STANDARD_GEAR_NAME)
 
 ## All Gears ####
 
 length_data_glm <- length_data_final |>
-  select(YEAR, FINAL_DATE, ID, COUNTY, FL_CM, LAND_STANDARD_GEAR_NAME, gear, GEAR_GROUP) |> 
+  select(YEAR, FINAL_DATE, ID, COUNTY, FL_CM, gear) |> 
   # filter(gear == "Hook and Line") |> 
-  mutate(ID = as.character(ID)) |> 
-  select(-gear)
+  mutate(ID = as.character(ID)) 
 
 # plot data
 
@@ -296,19 +308,19 @@ length_data_glm <- length_data_final |>
 #   summarize(n = n(), .groups = "drop") 
 
 gant_data <- length_data_final %>% 
-  group_by(LAND_STANDARD_GEAR_NAME) %>% 
+  group_by(gear) %>% 
   dplyr::mutate(n_ID = n_distinct(ID)) |> 
   dplyr::filter(n_ID >= 3) %>% ungroup %>%
-  group_by(YEAR, LAND_STANDARD_GEAR_NAME) |>
+  group_by(YEAR, gear) |>
   dplyr::summarize(n = n(), .groups = "drop") |> 
   mutate(YEAR = as.integer(YEAR))
 
 abc1 <- gant_data |>
-  group_by(LAND_STANDARD_GEAR_NAME) |>
+  group_by(gear) |>
   dplyr::mutate(total_n = sum(n)) |> 
   ungroup() |>   
-  dplyr::mutate(LAND_STANDARD_GEAR_NAME = fct_reorder(LAND_STANDARD_GEAR_NAME, total_n)) %>%
-  ggplot(aes(x = YEAR, y = LAND_STANDARD_GEAR_NAME, color = LAND_STANDARD_GEAR_NAME, size = n)) +
+  dplyr::mutate(gear = fct_reorder(gear, total_n)) %>%
+  ggplot(aes(x = YEAR, y = gear, color = gear, size = n)) +
   geom_point()  +
   labs(x = "Year", y = "", colour = "", shape = "", 
        title = paste(county, "Length Samples"),
@@ -318,20 +330,20 @@ abc1 <- gant_data |>
         title = element_text(size = 15))
   
 gant_data_id <- length_data_final %>% 
-  group_by(LAND_STANDARD_GEAR_NAME) %>% 
+  group_by(gear) %>% 
   dplyr::mutate(n_ID = n_distinct(ID)) |> 
   dplyr::filter(n_ID >= 3) %>% ungroup %>%
-  group_by(YEAR, LAND_STANDARD_GEAR_NAME) |>
+  group_by(YEAR, gear) |>
   dplyr::summarize(n_ID = n_distinct(ID), .groups = "drop") |> 
   mutate(YEAR = as.integer(YEAR))
 
 abc21 <- gant_data_id |>
   # filter(YEAR > 2011) |> 
-  group_by(LAND_STANDARD_GEAR_NAME) |>
+  group_by(gear) |>
   dplyr::mutate(total_n = sum(n_ID)) |> 
   ungroup() |>   
-  dplyr::mutate(LAND_STANDARD_GEAR_NAME = fct_reorder(LAND_STANDARD_GEAR_NAME, total_n)) %>%
-  ggplot(aes(x = YEAR, y = LAND_STANDARD_GEAR_NAME, color = LAND_STANDARD_GEAR_NAME, size = n_ID)) +
+  dplyr::mutate(gear = fct_reorder(gear, total_n)) %>%
+  ggplot(aes(x = YEAR, y = gear, color = gear, size = n_ID)) +
   geom_point()  +
   labs(x = "Year", y = "", colour = "", shape = "", 
        title = paste(county, "Interviews"),
@@ -343,26 +355,26 @@ abc21 <- gant_data_id |>
 # fit models
 
 # comparing length to date and gear in a gamma full model
-mod2 = glmer(FL_CM ~ scale(FINAL_DATE) + LAND_STANDARD_GEAR_NAME + (1 | YEAR) + (1 | ID),
+mod2 = glmer(FL_CM ~ scale(FINAL_DATE) + gear + (1 | YEAR) + (1 | ID),
              data = length_data_glm, family = Gamma(link=log))
 
 
 # pairwise comparisons (if needed)(needed for Hook and Line)
 ### 
-mod_contr = emmeans::emmeans(object = mod2, pairwise ~ "LAND_STANDARD_GEAR_NAME", adjust = "tukey")
+mod_contr = emmeans::emmeans(object = mod2, pairwise ~ "gear", adjust = "tukey")
 
 allgears_multcompcld <- multcomp::cld(object = mod_contr$emmeans)
 
 length_data_fishcount <- length_data_final |> 
-  group_by(LAND_STANDARD_GEAR_NAME) |>
+  group_by(gear) |>
   tally()
 
 length_data_tripcount <- aggregate(data = length_data_final,              
-                                   ID ~ LAND_STANDARD_GEAR_NAME,
+                                   ID ~ gear,
                                    function(ID) length(unique(ID)))
 
-allgears_multcompcld_fish <- full_join(allgears_multcompcld, length_data_fishcount, by = "LAND_STANDARD_GEAR_NAME")
-allgears_multcompcld_trip <- full_join(allgears_multcompcld_fish, length_data_tripcount, by = "LAND_STANDARD_GEAR_NAME")
+allgears_multcompcld_fish <- full_join(allgears_multcompcld, length_data_fishcount, by = "gear")
+allgears_multcompcld_trip <- full_join(allgears_multcompcld_fish, length_data_tripcount, by = "gear")
 
 allgears_multcompcld_final <- allgears_multcompcld_trip |> 
   mutate(Percentage = round(n/sum(n)*100, 2), 
@@ -370,7 +382,7 @@ allgears_multcompcld_final <- allgears_multcompcld_trip |>
          asymp.LCL = round(asymp.LCL, 2),
          asymp.UCL = round(asymp.UCL, 2))|>
   dplyr::rename("Group" = ".group",
-                "Gear" = "LAND_STANDARD_GEAR_NAME",
+                "Gear" = "gear",
                 "Estimated Marginal Mean" = "emmean",
                 "LCL" = "asymp.LCL",
                 "UCL" = "asymp.UCL",
@@ -380,20 +392,21 @@ allgears_multcompcld_final <- allgears_multcompcld_trip |>
   dplyr::filter(`Interview(n)` >= 3)|> 
   select(Gear, "Estimated Marginal Mean", LCL, UCL,  Group, "Fish(n)","Interview(n)", Percentage ) |>  
   mutate("Gear Group" = case_when(Gear == "LINES HAND" ~ "Hand Line",
+                                  Gear == "BOTTOM LINE" ~ "Hand Line",
                                   Gear == "HAUL SEINES" ~ "Haul Seine",
                                   Gear == 'POTS AND TRAPS; FISH'~ "Haul Seine or Trap",
-                                  Gear == "NOT CODED" ~ "Net",
-                                  Gear == "ENTANGLING NETS (GILL) UNSPC"~ "Trap or Net",
-                                  Gear == "TRAMMEL NETS" ~ "Net",
-                                  Gear == "LINES LONG SET WITH HOOKS" ~ "Net or Hand Line",
-                                  Gear == "BY HAND; DIVING GEAR" ~ "Net or Hand Line",
-                                  Gear == "LINES POWER TROLL OTHER" ~ "Net or Hand Line",
-                                  Gear == "ROD AND REEL" ~ "Net or Hand Line",
-                                  TRUE ~ "Haul Seine, Trap, Net, or Hand Line")) 
+                                  Gear == "ENTANGLING NETS (GILL) UNSPC"~ "Trap, Net, or Diving",
+                                  Gear == "TRAMMEL NETS" ~ "Net or Diving",
+                                  Gear == "LINES LONG SET WITH HOOKS" ~ "Net, Diving, or Hand Line",
+                                  Gear == "BY HAND; DIVING GEAR" ~ "Diving or Hand Line",
+                                  Gear == "LINES POWER TROLL OTHER" ~ "Net, Diving, or Hand Line",
+                                  Gear == "FISH POT" ~ "Haul Siene, Trap, or Net", 
+                                  Gear == "ROD AND REEL" ~ "Trap, Net, Diving, or Hand Line",
+                                  TRUE ~ "Haul Seine, Trap, Net, Diving, or Hand Line")) 
 
 # create table of means for each gear
 mean_allgears <- length_data_glm %>%
-  group_by(LAND_STANDARD_GEAR_NAME) %>%
+  group_by(gear) %>%
   dplyr::mutate(n_ID = n_distinct(ID)) |> 
   dplyr::filter(n_ID >= 3) |>
   mean_table(FL_CM) |> 
@@ -415,57 +428,57 @@ tbl1 = flextable(allgears_multicom_mean_final) |>
 
 
 # look at table without "NOT CODED"
-
-      allgears_multcompcld_final_NC <- allgears_multcompcld_trip |> 
-        filter(LAND_STANDARD_GEAR_NAME != "NOT CODED") |> 
-        mutate(Percentage = round(n/sum(n)*100, 2), 
-               emmean = round(emmean, 2),
-               asymp.LCL = round(asymp.LCL, 2),
-               asymp.UCL = round(asymp.UCL, 2))|>
-        dplyr::rename("Group" = ".group",
-                      "Gear" = "LAND_STANDARD_GEAR_NAME",
-                      "Estimated Marginal Mean" = "emmean",
-                      "LCL" = "asymp.LCL",
-                      "UCL" = "asymp.UCL",
-                      "Fish(n)" = "n",
-                      "Interview(n)" = "ID") |> 
-        # filter("Interview(n)" >= 3) |> 
-        dplyr::filter(`Interview(n)` >= 3)|> 
-        select(Gear, "Estimated Marginal Mean", LCL, UCL,  Group, "Fish(n)","Interview(n)", Percentage ) |>  
-        mutate("Gear Group" = case_when(Gear == "LINES HAND" ~ "Hand Line",
-                                        Gear == "HAUL SEINES" ~ "Haul Seine",
-                                        Gear == 'POTS AND TRAPS; FISH'~ "Haul Seine or Trap",
-                                        Gear == "NOT CODED" ~ "Net",
-                                        Gear == "ENTANGLING NETS (GILL) UNSPC"~ "Trap or Net",
-                                        Gear == "TRAMMEL NETS" ~ "Net",
-                                        Gear == "LINES LONG SET WITH HOOKS" ~ "Net or Hand Line",
-                                        Gear == "BY HAND; DIVING GEAR" ~ "Net or Hand Line",
-                                        Gear == "LINES POWER TROLL OTHER" ~ "Net or Hand Line",
-                                        Gear == "ROD AND REEL" ~ "Net or Hand Line",
-                                        TRUE ~ "Haul Seine, Trap, Net, or Hand Line")) 
-      
-      # create table of means for each gear
-      mean_allgears_NC <- length_data_glm %>%
-        filter(LAND_STANDARD_GEAR_NAME != "NOT CODED") |> 
-        group_by(LAND_STANDARD_GEAR_NAME) %>%
-        dplyr::mutate(n_ID = n_distinct(ID)) |> 
-        dplyr::filter(n_ID >= 3) |>
-        mean_table(FL_CM) |> 
-        dplyr::rename("Gear" = "group_cat",
-                      "Mean" = "mean") |> 
-        select(Gear, Mean)
-      
-      allgears_multicom_mean_NC <- full_join(mean_allgears_NC, allgears_multcompcld_final_NC, by = "Gear")
-      
-      allgears_multicom_mean_final_NC <- allgears_multicom_mean_NC |> 
-        arrange(desc(Percentage))#|> 
-      # dplyr::filter(`Interview(n)` >= 3)
-      
-      tbl2 = flextable(allgears_multicom_mean_final_NC) |> 
-        theme_box() %>%
-        align(align = "center", part = "all") %>%
-        fontsize(size=8, part="all") %>%
-        autofit()
+# 
+#       allgears_multcompcld_final_NC <- allgears_multcompcld_trip |> 
+#         filter(gear != "NOT CODED") |> 
+#         mutate(Percentage = round(n/sum(n)*100, 2), 
+#                emmean = round(emmean, 2),
+#                asymp.LCL = round(asymp.LCL, 2),
+#                asymp.UCL = round(asymp.UCL, 2))|>
+#         dplyr::rename("Group" = ".group",
+#                       "Gear" = "gear",
+#                       "Estimated Marginal Mean" = "emmean",
+#                       "LCL" = "asymp.LCL",
+#                       "UCL" = "asymp.UCL",
+#                       "Fish(n)" = "n",
+#                       "Interview(n)" = "ID") |> 
+#         # filter("Interview(n)" >= 3) |> 
+#         dplyr::filter(`Interview(n)` >= 3)|> 
+#         select(Gear, "Estimated Marginal Mean", LCL, UCL,  Group, "Fish(n)","Interview(n)", Percentage ) |>  
+#         mutate("Gear Group" = case_when(Gear == "LINES HAND" ~ "Hand Line",
+#                                         Gear == "HAUL SEINES" ~ "Haul Seine",
+#                                         Gear == 'POTS AND TRAPS; FISH'~ "Haul Seine or Trap",
+#                                         Gear == "NOT CODED" ~ "Net",
+#                                         Gear == "ENTANGLING NETS (GILL) UNSPC"~ "Trap or Net",
+#                                         Gear == "TRAMMEL NETS" ~ "Net",
+#                                         Gear == "LINES LONG SET WITH HOOKS" ~ "Net or Hand Line",
+#                                         Gear == "BY HAND; DIVING GEAR" ~ "Net or Hand Line",
+#                                         Gear == "LINES POWER TROLL OTHER" ~ "Net or Hand Line",
+#                                         Gear == "ROD AND REEL" ~ "Net or Hand Line",
+#                                         TRUE ~ "Haul Seine, Trap, Net, or Hand Line")) 
+#       
+#       # create table of means for each gear
+#       mean_allgears_NC <- length_data_glm %>%
+#         filter(gear != "NOT CODED") |> 
+#         group_by(gear) %>%
+#         dplyr::mutate(n_ID = n_distinct(ID)) |> 
+#         dplyr::filter(n_ID >= 3) |>
+#         mean_table(FL_CM) |> 
+#         dplyr::rename("Gear" = "group_cat",
+#                       "Mean" = "mean") |> 
+#         select(Gear, Mean)
+#       
+#       allgears_multicom_mean_NC <- full_join(mean_allgears_NC, allgears_multcompcld_final_NC, by = "Gear")
+#       
+#       allgears_multicom_mean_final_NC <- allgears_multicom_mean_NC |> 
+#         arrange(desc(Percentage))#|> 
+#       # dplyr::filter(`Interview(n)` >= 3)
+#       
+#       tbl2 = flextable(allgears_multicom_mean_final_NC) |> 
+#         theme_box() %>%
+#         align(align = "center", part = "all") %>%
+#         fontsize(size=8, part="all") %>%
+#         autofit()
 
 
 # look at mean by year
@@ -505,7 +518,7 @@ mean_by_year |>
 ### overlay time periods ####
 
 length_data_1983_2022 <- length_data_final %>% 
-  group_by(LAND_STANDARD_GEAR_NAME) %>% 
+  group_by(gear) %>% 
   dplyr::mutate(n_ID = n_distinct(ID)) |> 
   dplyr::filter(n_ID >= 3) %>% #ungroup %>%
   # group_by(YEAR) %>% 
@@ -516,7 +529,7 @@ mean(length_data_1983_2022$FL_CM)
 
 # length_data_2012_2022 <- length_data_final |>
 #   filter(YEAR >= 2012) |>
-#   group_by(LAND_STANDARD_GEAR_NAME) %>% 
+#   group_by(gear) %>% 
 #   dplyr::mutate(n_ID = n_distinct(ID)) |> 
 #   dplyr::filter(n_ID >= 3) %>% #ungroup %>%
 #   # group_by(YEAR) %>% 
@@ -549,31 +562,31 @@ abc14 = agr_den_NOgears
 ### GEAR INDIVIDUALS ####
 
 length_data_gears <- length_data_final %>% 
-  group_by(LAND_STANDARD_GEAR_NAME) %>% 
+  group_by(gear) %>% 
   dplyr::mutate(n_ID = n_distinct(ID)) |> 
   dplyr::filter(n_ID >= 3) %>% #ungroup %>%
   # group_by(YEAR) %>% 
   # filter(n() >= 30) %>% 
   ungroup() |> 
-  filter(LAND_STANDARD_GEAR_NAME %in% c("LINES HAND", "POTS AND TRAPS; FISH",
-                                        "HAUL SEINES", "NOT CODED")) 
+  filter(gear %in% c("LINES HAND", "POTS AND TRAPS; FISH",
+                                        "HAUL SEINES", "BOTTOM LINE")) 
 
 ycounts =length_data_gears %>% #group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
-  tabyl("LAND_STANDARD_GEAR_NAME") %>%
-  mutate(n_labels = paste0(LAND_STANDARD_GEAR_NAME, " (n= ", n, ")" ))
+  tabyl("gear") %>%
+  mutate(n_labels = paste0(gear, " (n= ", n, ")" ))
 
-muv <- plyr::ddply(length_data_gears, "LAND_STANDARD_GEAR_NAME", summarise, grp.mean=mean(FL_CM))
+muv <- plyr::ddply(length_data_gears, "gear", summarise, grp.mean=mean(FL_CM))
 head(muv)
 
 agr_den_v <- length_data_gears %>% 
-  # group_by(LAND_STANDARD_GEAR_NAME) %>% 
+  # group_by(gear) %>% 
   # dplyr::mutate(n_ID = n_distinct(ID)) |> 
   # dplyr::filter(n_ID >= 3) %>% ungroup %>%
   # group_by(YEAR) %>% 
   # filter(n() >= 30) %>% ungroup %>%
   ggplot(aes(FL_CM))+
   # geom_density( aes(color = "Combined"),lwd=1.5)+
-  geom_density(aes(color = LAND_STANDARD_GEAR_NAME),linewidth = 0.75)+
+  geom_density(aes(color = gear),linewidth = 0.75)+
   scale_color_hue(labels=ycounts$n_labels)+
   # scale_color_hue(labels=c("Combined",ycounts$n_labels))+
   #scale_color_manual(values = gearcols, labels = c("Combined", counts$n_labels))+
@@ -588,7 +601,7 @@ agr_den_v <- length_data_gears %>%
         axis.title.y = element_text( size = 20),
         title = element_text(size = 20))+
   guides(color=guide_legend(ncol = 2))+
-  geom_vline(data=muv, aes(xintercept=grp.mean, color=LAND_STANDARD_GEAR_NAME),
+  geom_vline(data=muv, aes(xintercept=grp.mean, color=gear),
              linetype="dashed")
 
 
@@ -625,15 +638,15 @@ abc17 = all_carPR
 fleet_final_gears <- length_data_gears[length_data_gears$fleet==1,]
 
 fcounts = fleet_final_gears %>%  group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
-  tabyl(LAND_STANDARD_GEAR_NAME) %>%
-  mutate(n_labels = paste0(LAND_STANDARD_GEAR_NAME, " (n= ", n, ")" ))
+  tabyl(gear) %>%
+  mutate(n_labels = paste0(gear, " (n= ", n, ")" ))
 
 all_car_gearsPR <-
   fleet_final_gears %>%  group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
   group_by(YEAR) %>%
   dplyr::mutate(year_labs = paste0(YEAR, "\n n = ", n())) %>%
-  ggplot(aes(FL_CM, color = LAND_STANDARD_GEAR_NAME))+
-  geom_density(size = 0.75)+
+  ggplot(aes(FL_CM, color = gear))+
+  geom_density(linewidth = 0.75)+
   #scale_color_manual(values = gearcols, labels = counts$n_labels)+
   scale_color_hue(labels=fcounts$n_labels)+
   labs(color = "Gear Type", x = "Fork Length (cm)", title = paste0(county,  "\n (N = ", sum(fcounts$n), ")"))+
