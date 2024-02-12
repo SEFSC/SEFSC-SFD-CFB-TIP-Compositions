@@ -12,7 +12,7 @@ editor: visual
 
 # extract oracle by yr and state:
 
-cr_tip_yr(state_codes = "PR", year = "1997")
+# cr_tip_yr(state_codes = "PR", year = "1997")
 
 # load ORACLE
 com_tip_PR_1997 <- 
@@ -64,8 +64,7 @@ save(pr_97, file = "~/SEFSC-SFD-CFB-TIP-Compositions/data/dataframes/pr_97.Rda")
 
 #### Date Comparison
 
-Each year must correct the date error in Oracle data caused by time field 
-incorrectly being assigned due to daylight savings time.
+Each year must correct the date error in Oracle data caused by time field incorrectly being assigned due to daylight savings time.
 
 ```{r}
 # DATE COMPARISON ####
