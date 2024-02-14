@@ -75,6 +75,7 @@ abc1
 #| label: tbl-tbl1
 #| tbl-cap: |
 #|   GLMM analysis summary results for St. Croix TIP Stoplight Parrotfish fork lengths(cm) from 1983 to 2022. The column titled “group” indicates the group(s) where mean lengths are not statistically different from other gears with matching group number(s). The "n" column indicates the number of unique lengths recorded for each gear. The "Percentage" column indicates the percent of the total recorded lengths for each gear. Gears that make up less than 2% are shaded in gray.
+
 library(knitr)
 kable("")
 
@@ -91,29 +92,14 @@ tbl1
 
 \newpage
 
-<!-- ```{r all lengths GLMM 2012} -->
-
-<!-- #| echo: false -->
-
-<!-- #| label: fig-abc2 -->
-
-<!-- #| fig-cap: | -->
-
-<!-- #|   Plot showing relative number of Stoplight Parrotfish lengths collected in St. Croix from 2012 to 2022. Each point is color specific to the gear it represents. -->
-
-<!-- #| fig-width: 12 -->
-
-<!-- #| fig-height: 7 -->
-
-<!-- abc2 -->
-
-<!-- ``` -->
-
 ```{r all lengths GLMM tbl 2012}
 #| echo: false
 #| warning: false
+#| column: body
 #| label: tbl-tbl2
-#| tbl-cap: GLMM analysis summary results for the TIP data of Stoplight Parrotfish fork lengths in St. Croix from 2012 to 2022. The column titled “group” indicates the group(s) where mean lengths are not statistically different from other gears with matching group number(s). The "n" column indicates the number of unique lengths recorded for each gear. The "Percentage" column indicates the percent of the total recorded lengths for each gear. Gears that make up less than 2% are shaded in gray.
+#| tbl-cap: |
+#|   GLMM analysis summary results for the TIP data of Stoplight Parrotfish fork lengths in St. Croix from 2012 to 2022. The column titled “group” indicates the group(s) where mean lengths are not statistically different from other gears with matching group number(s). The "n" column indicates the number of unique lengths recorded for each gear. The "Percentage" column indicates the percent of the total recorded lengths for each gear. Gears that make up less than 2% are shaded in gray.
+
 library(knitr)
 kable("")
 
@@ -146,25 +132,6 @@ abc14
 
 ```
 
-<!-- \newpage -->
-
-<!-- ```{r all lengths agd} -->
-
-<!-- #| echo: false -->
-
-<!-- #| label: fig-abc16 -->
-
-<!-- #| fig-cap: | -->
-
-<!-- #|   Aggregated density plot of lengths measured in centimeters of Stoplight Parrotfish in St. Croix from 2012 to 2022. Dotted line represents mean length.  -->
-
-<!-- #| fig-width: 12 -->
-
-<!-- #| fig-height: 8 -->
-
-<!-- abc16 -->
-
-<!-- ``` -->
 
 \newpage
 
@@ -194,45 +161,6 @@ abc19
 
 ```
 
-<!-- \newpage -->
-
-<!-- ```{r all lengths agd by yr} -->
-
-<!-- #| echo: false -->
-
-<!-- #| label: fig-abc17 -->
-
-<!-- #| fig-cap: | -->
-
-<!-- #|   Aggregated density plot of lengths(cm) of Stoplight Parrotfish in St. Croix by year, all gears combined.  -->
-
-<!-- #| fig-width: 12 -->
-
-<!-- #| fig-height: 12 -->
-
-<!-- abc17 -->
-
-<!-- ``` -->
-
-<!-- \newpage -->
-
-<!-- ```{r diving agd by yr} -->
-
-<!-- #| echo: false -->
-
-<!-- #| label: fig-abc18 -->
-
-<!-- #| fig-cap: | -->
-
-<!-- #|   Aggregated density plot of lengths(cm)  of gears with greater than 2% representation for Stoplight Parrotfish in St. Croix by year.  -->
-
-<!-- #| fig-width: 12 -->
-
-<!-- #| fig-height: 12 -->
-
-<!-- abc18 -->
-
-<!-- ``` -->
 
 \newpage
 

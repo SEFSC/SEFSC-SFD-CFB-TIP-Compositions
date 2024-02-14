@@ -36,9 +36,9 @@ load(here::here('tools','sedar_84_pr_yt_2022','pr_yt_2022_figures.RData'))
 
 In preparation for SouthEast Data, Assessment, and Review (SEDAR) 84 Benchmark assessment of Caribbean Yellowtail Snapper in Puerto Rico; the Southeast Fisheries Science Center, Sustainable Fisheries Division (SEFSC), Caribbean Fisheries Branch conducted a size composition analysis of the Trip Interview Program (TIP) data. This document summarizes data collected from 1983 to 2022.
 
-The TIP data pertaining to Yellowtail Snapper in Puerto Rico are comprised of `r n_all_len` length observations across `r total_trip_id_unique` unique port sampling interviews. There are `r n_fork_len` fork length observations (`r p_fork_len`%). Two analyses are described in this document. First, gear groupings were established among gears based upon Yellowtail Snapper size composition differences among gears. Gear groups were identified based on a generalized linear mixed model (GLMM) analysis using a gamma-distributed dependent variable and a covariate to account for changes in mean size over time. Random effects for interview ID and categorical year were included to account for non-independence of observations. Second, the aggregate density of the lengths was determined based on time series and gear representation within the data.The GLMM analysis of the full time series reported a statistical difference in the size of measured fish between the "LINES HAND", "HAUL SEINES", and "TRAMMEL NETS".
+The TIP data pertaining to Yellowtail Snapper in Puerto Rico are comprised of `r n_all_len` length observations across `r total_trip_id_unique` unique port sampling interviews. There are `r n_fork_len` fork length observations (`r p_fork_len`%). Two analyses are described in this document. First, gear groupings were established among gears based upon Yellowtail Snapper size composition differences among gears. Gear groups were identified based on a generalized linear mixed model (GLMM) analysis using a gamma-distributed dependent variable and a covariate to account for changes in mean size over time. Random effects for interview ID and categorical year were included to account for non-independence of observations. Second, the aggregate density of the lengths was determined based on time series and gear representation within the data.The GLMM analysis of the full time series reported a statistical difference in the size of measured fish between "LINES HAND"/"BOTTOM LINE", "HAUL SEINES", and "TRAMMEL NETS".
 
-To understand the frequency with which trips are sampled, the number of interviews associated with main gears in the TIP data was compared to the number of trips reported in the Caribbean Commercial Landings logbook system. The r trips_2012 TIP interviews between r break_year and r max_year make up r tip_percentage% of reported logbook trips. The SCUBA gear grouping represented the main gears reported (SPEARS; DIVING and BY HAND; DIVING GEAR). There were r scuba_trips SCUBA interviews (r scuba_percentage% of SCUBA logbook trips).
+To understand the frequency with which trips are sampled, the number of interviews associated with main gears in the TIP data would have been compared to the number of trips reported in the Caribbean Commercial Landings logbook system. Due to the idiosyncrasies of the Puerto Rico trip frequency recordings in the commercial landings logbook, the percent of trips sampled by TIP requires further investigation. 
 
 \newpage
 
@@ -48,7 +48,7 @@ The Trip Interview Program (TIP) collects length and weight data from fish lande
 
 ## Generalized Linear Mixed Model (GLMM) Analysis
 
-The GLMM analysis of landed Yellowtail Snapper size composition among commercial fishing gears was conducted on the time series as a whole from 1983-2022 (@fig-abc1). The analyses of the time series displays the statistical similarity of all available gears with respect to the mean size of fish caught throughout the time series. The GLMM analysis of the full time series reported a statistical difference between the "LINES HAND", "HAUL SEINES", and "TRAMMEL NETS" gears (@tbl-tbl1).
+The GLMM analysis of landed Yellowtail Snapper size composition among commercial fishing gears was conducted on the time series as a whole from 1983-2022 (@fig-abc1). The analyses of the time series displays the statistical similarity of all available gears with respect to the mean size of fish caught throughout the time series. The GLMM analysis of the full time series reported a statistical difference between the  "LINES HAND"/"BOTTOM LINE", "HAUL SEINES", and "TRAMMEL NETS" gears (@tbl-tbl1).
 
 \newpage
 
@@ -63,6 +63,8 @@ The GLMM analysis of landed Yellowtail Snapper size composition among commercial
 abc1
 
 ```
+
+\newpage
 
 ```{r all interviews GLMM}
 #| echo: false
@@ -92,65 +94,12 @@ kable("")
 ```{r}
 #| echo: false
 #| tbl-colwidths: false
+#| tbl-cap-location: top
 #| warning: false
 library(flextable)
 tbl1
 
 ```
-
-<!-- \newpage -->
-
-<!-- ```{r all lengths GLMM 2012} -->
-
-<!-- #| echo: false -->
-
-<!-- #| warning: false -->
-
-<!-- #| label: fig-abc2 -->
-
-<!-- #| fig-cap: | -->
-
-<!-- #|   Plot showing relative number of Yellowtail Snapper lengths in Puerto Rico from 2012 to 2022. Each point is color specific to the gear it represents. -->
-
-<!-- #| fig-width: 12 -->
-
-<!-- #| fig-height: 7 -->
-
-<!-- abc2 -->
-
-<!-- ``` -->
-
-<!-- ```{r all lengths GLMM tbl 2012} -->
-
-<!-- #| echo: false -->
-
-<!-- #| warning: false -->
-
-<!-- #| label: tbl-tbl2 -->
-
-<!-- #| tbl-cap: | -->
-
-<!-- #|   GLMM analysis summary results for the TIP data of Yellowtail Snapper lengths in Puerto Rico from 2012 to 2022. The column titled “group” indicates the group(s) where mean lengths are not statistically different from other gears with matching group number(s). The "n" column indicates the number of unique lengths recorded for each gear. The "Percentage" column indicates the percent of the total recorded lengths for each gear.  -->
-
-<!-- library(knitr) -->
-
-<!-- kable("") -->
-
-<!-- ``` -->
-
-<!-- ```{r} -->
-
-<!-- #| echo: false -->
-
-<!-- #| tbl-colwidths: false -->
-
-<!-- #| warning: false -->
-
-<!-- library(flextable) -->
-
-<!-- tbl2 -->
-
-<!-- ``` -->
 
 \newpage
 
@@ -158,37 +107,15 @@ tbl1
 
 The aggregated densities of Yellowtail Snapper lengths(cm) in Puerto Rico are plotted across the full time period and by gear groupings for which GLMM analyses were conducted, respectively (@fig-abc14 and @fig-abc15). Each plot includes a vertical line associated with the respective mean length. N equals the number of individuals displayed by category.
 
-```{r all lengths agd}
+```{r}
 #| echo: false
 #| label: fig-abc14
-#| fig-cap: |
-#|   Aggregated density plot of lengths(cm) of Yellowtail Snapper in Puerto Rico, all gears combined. Dotted line represents mean length. 
-#| fig-width: 12
-#| fig-height: 8
-
+#| fig-cap:!expr paste("full_mean")
+  
+  
 abc14
 
 ```
-
-<!-- \newpage -->
-
-<!-- ```{r all lengths agd} -->
-
-<!-- #| echo: false -->
-
-<!-- #| label: fig-abc16 -->
-
-<!-- #| fig-cap: | -->
-
-<!-- #|   Aggregated density plot of lengths measured in centimeters of Yellowtail Snapper in Puerto Rico from 2012 to 2022. Dotted line represents mean length.  -->
-
-<!-- #| fig-width: 12 -->
-
-<!-- #| fig-height: 8 -->
-
-<!-- abc16 -->
-
-<!-- ``` -->
 
 \newpage
 
@@ -196,7 +123,7 @@ abc14
 #| echo: false
 #| label: fig-abc15
 #| fig-cap: |
-#|   Aggregated density plot of lengths(cm) of gears with greater than 2% representation for Yellowtail Snapper in Puerto Rico from 1983 to 2022. Dotted line represents mean length.
+#|   Aggregated density plot of lengths(cm) of gears with greater than 2% representation for Yellowtail Snapper in Puerto Rico from 1983 to 2022. Dotted line represents mean length. Mean lengths can be found in @tbl-tbl1.
 #| fig-width: 12
 #| fig-height: 8
 

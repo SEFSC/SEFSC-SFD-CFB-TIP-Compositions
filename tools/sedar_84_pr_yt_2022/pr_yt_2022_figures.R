@@ -274,7 +274,7 @@ comp_names = c("YEAR", "ln_fish", "ln_trips", "ln_dealers","ln_vessels",
 
 # n_not_coded = sum(pr_yt$LAND_STANDARD_GEAR_NAME == "NOT CODED")
 n_all_len = length(pr_yt$LENGTH_TYPE1)
-p_not_coded = round(n_not_coded/n_all_len, 4)*100
+# p_not_coded = round(n_not_coded/n_all_len, 4)*100
 
 # length_data_final_pr <- length_data_final |> 
 #   filter(LAND_STANDARD_GEAR_NAME != "NOT CODED")
@@ -525,7 +525,7 @@ length_data_1983_2022 <- length_data_final %>%
   # filter(n() >= 30) %>% 
   ungroup() 
 
-mean(length_data_1983_2022$FL_CM)
+full_mean = mean(length_data_1983_2022$FL_CM)
 
 # length_data_2012_2022 <- length_data_final |>
 #   filter(YEAR >= 2012) |>
