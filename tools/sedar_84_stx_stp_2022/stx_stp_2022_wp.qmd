@@ -113,8 +113,7 @@ tbl1
 #| echo: false
 #| warning: false
 #| label: tbl-tbl2
-#| tbl-cap: |
-#|   GLMM analysis summary results for the TIP data of Stoplight Parrotfish fork lengths in St. Croix from 2012 to 2022. The column titled “group” indicates the group(s) where mean lengths are not statistically different from other gears with matching group number(s). The "n" column indicates the number of unique lengths recorded for each gear. The "Percentage" column indicates the percent of the total recorded lengths for each gear. Gears that make up less than 2% are shaded in gray.
+#| tbl-cap: GLMM analysis summary results for the TIP data of Stoplight Parrotfish fork lengths in St. Croix from 2012 to 2022. The column titled “group” indicates the group(s) where mean lengths are not statistically different from other gears with matching group number(s). The "n" column indicates the number of unique lengths recorded for each gear. The "Percentage" column indicates the percent of the total recorded lengths for each gear. Gears that make up less than 2% are shaded in gray.
 library(knitr)
 kable("")
 
@@ -133,13 +132,13 @@ tbl2
 
 ## Aggregated Gear Density
 
-The aggregated densities of Stoplight Parrotfish lengths(cm) in St. Croix are plotted across the full time period and by gear groupings for which GLMM analyses were conducted, respectively (@fig-abc14, and @fig-abc15). Each plot includes a vertical line associated with the respective mean length. N equals the number of individuals displayed by gear category. Gears with fewer than three interviews were excluded from the analysis. <!-- Years with fewer than 30 lengths were excluded from the annual density plot.  -->
+The aggregated densities of Stoplight Parrotfish lengths(cm) in St. Croix are plotted across the full time period and by gear groupings for which GLMM analyses were conducted, respectively (@fig-abc14 and @fig-abc15). Each plot includes a vertical line associated with the respective mean length. N equals the number of individuals displayed by gear category. Gears with fewer than three interviews were excluded from the analysis. <!-- Years with fewer than 30 lengths were excluded from the annual density plot.  -->
 
 ```{r all lengths agd}
 #| echo: false
 #| label: fig-abc14
 #| fig-cap: |
-#|   Aggregated density plot of lengths(cm) of Stoplight Parrotfish in St. Croix, all gears combined. Dotted line represents mean length. 
+#|   Aggregated density plot of lengths(cm) of Stoplight Parrotfish in St. Croix, all gears combined. Dotted line represents mean length. The mean of 1983-2022 time series is `r full_mean` and `r truncated_mean`. 
 #| fig-width: 12
 #| fig-height: 8
 
@@ -173,7 +172,7 @@ abc14
 #| echo: false
 #| label: fig-abc15
 #| fig-cap: |
-#|   Aggregated density plot of lengths(cm)  of gears with greater than 2% representation for Stoplight Parrotfish in St. Croix from 1983 to 2022. Dotted line represents mean length.
+#|   Aggregated density plot of lengths(cm)  of gears with greater than 2% representation for Stoplight Parrotfish in St. Croix from 1983 to 2022. Dotted line represents mean length. Mean lengths can be found in @tbl-tbl1.
 #| fig-width: 12
 #| fig-height: 8
 
@@ -181,11 +180,13 @@ abc15
 
 ```
 
+\newpage
+
 ```{r diving agd 2012}
 #| echo: false
 #| label: fig-abc19
 #| fig-cap: |
-#|   Aggregated density plot of lengths(cm)  of gears with greater than 2% representation for Stoplight Parrotfish in St. Croix from 2012 to 2022. Dotted line represents mean length.
+#|   Aggregated density plot of lengths(cm)  of gears with greater than 2% representation for Stoplight Parrotfish in St. Croix from 2012 to 2022. Dotted line represents mean length. Mean lengths can be found in @tbl-tbl2.
 #| fig-width: 12
 #| fig-height: 8
 
