@@ -525,7 +525,7 @@ length_data_1983_2022 <- length_data_final %>%
   # filter(n() >= 30) %>% 
   ungroup() 
 
-full_mean = mean(length_data_1983_2022$FL_CM)
+full_mean = round(mean(length_data_1983_2022$FL_CM), 2)
 
 # length_data_2012_2022 <- length_data_final |>
 #   filter(YEAR >= 2012) |>

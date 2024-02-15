@@ -64,6 +64,8 @@ bin_size <- 1
 
 len_type <- "FORK LENGTH"
 
+disclaimer <- "Gears with less than 3 unique interviews were removed."
+
 flextable(as.data.frame(table(sttj_yt$LENGTH_TYPE1, useNA='always')))%>%
   autofit()
 
@@ -308,7 +310,9 @@ abc1 <- gant_data |>
   dplyr::mutate(gear = fct_reorder(gear, total_n)) %>%
   ggplot(aes(x = YEAR, y = gear, color = gear, size = n)) +
   geom_point()  +
-  labs(x = "Year", y = "", colour = "", shape = "", title = county) +
+  labs(x = "Year", y = "", colour = "", shape = "", 
+       title = paste(county, "Length Samples"),
+       caption = disclaimer) +
   theme_bw() + 
   theme(legend.position="null", text = element_text(size = 20), 
         title = element_text(size = 15))+
@@ -572,7 +576,7 @@ length_data_1983_2022 <- length_data_final %>%
   ungroup() 
 
 
-mean(length_data_1983_2022$FL_CM)
+full_mean = round(mean(length_data_1983_2022$FL_CM), 2)
 
 length_data_2012_2022 <- length_data_final |>
   filter(YEAR >= 2012) |>
@@ -583,7 +587,8 @@ length_data_2012_2022 <- length_data_final |>
   # filter(n() >= 30) %>% 
   ungroup()
 
-mean(length_data_2012_2022$FL_CM)
+
+truncated_mean = round(mean(length_data_2012_2022$FL_CM), 2)
 
 agr_den_NOgears <- 
   ggplot() +

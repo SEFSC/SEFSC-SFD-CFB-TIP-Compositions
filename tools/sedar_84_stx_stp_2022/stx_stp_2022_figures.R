@@ -75,6 +75,8 @@ bin_size <- 1
 
 len_type <- "FORK LENGTH"
 
+disclaimer <- "Gears with less than 3 unique interviews were removed."
+
 
 # Calculate data available ####
 flextable(as.data.frame(table(stx_slp$LENGTH_TYPE1, useNA = "always"))) %>%
@@ -327,7 +329,9 @@ abc1 <- gant_data |>
     color = gear, size = n
   )) +
   geom_point() +
-  labs(x = "Year", y = "", colour = "", shape = "", title = county) +
+  labs(x = "Year", y = "", colour = "", shape = "", 
+       title = paste(county, "Length Samples"),
+       caption = disclaimer) +
   theme_bw() +
   theme(
     legend.position = "null", text = element_text(size = 20),

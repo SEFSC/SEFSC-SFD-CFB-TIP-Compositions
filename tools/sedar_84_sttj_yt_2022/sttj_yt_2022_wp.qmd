@@ -92,25 +92,6 @@ tbl1
 
 \newpage
 
-<!-- ```{r all lengths GLM 2012} -->
-
-<!-- #| echo: false -->
-
-<!-- #| warning: false -->
-
-<!-- #| label: fig-abc2 -->
-
-<!-- #| fig-cap: | -->
-
-<!-- #|   Plot showing relative number of Yellowtail Snapper in St. Thomas/St. John from 2012 to 2022. Each point is color specific to the gear it represents. -->
-
-<!-- #| fig-width: 12 -->
-
-<!-- #| fig-height: 7 -->
-
-<!-- abc2 -->
-
-<!-- ``` -->
 
 ```{r all lengths GLM tbl 2012}
 #| echo: false
@@ -142,7 +123,7 @@ The aggregated densities of Yellowtail Snapper lengths(cm) in St. Thomas/St. Joh
 #| echo: false
 #| label: fig-abc14
 #| fig-cap: |
-#|   Aggregated density plot of lengths(cm) of Yellowtail Snapper in St. Thomas/St. John, all gears combined. Dotted line represents mean length. 
+#|   Aggregated density plot of lengths(cm) of Yellowtail Snapper in St. Thomas/St. John, all gears combined. Dotted line represents mean length. The means of 1983-2022 and 2012-2022 time series are 32.55cm and 31.98cm respectively.
 #| fig-width: 12
 #| fig-height: 8
 
@@ -150,45 +131,25 @@ abc14
 
 ```
 
-<!-- \newpage -->
-
-<!-- ```{r all lengths agd} -->
-
-<!-- #| echo: false -->
-
-<!-- #| label: fig-abc16 -->
-
-<!-- #| fig-cap: | -->
-
-<!-- #|   Aggregated density plot of lengths measured in centimeters of Yellowtail Snapper in St. Thomas/St. John from 2012 to 2022. Dotted line represents mean length.  -->
-
-<!-- #| fig-width: 12 -->
-
-<!-- #| fig-height: 8 -->
-
-<!-- abc16 -->
-
-<!-- ``` -->
-
 \newpage
 
 ```{r diving agd}
 #| echo: false
 #| label: fig-abc15
 #| fig-cap: |
-#|   Aggregated density plot of lengths(cm) of gears with greater than 2% representation for Yellowtail Snapper in St. Thomas/St. John from 1983 to 2022. Dotted line represents mean length.
+#|   Aggregated density plot of lengths(cm) of gears with greater than 2% representation for Yellowtail Snapper in St. Thomas/St. John from 1983 to 2022. Dotted line represents mean length. Mean lengths can be found in @tbl-tbl1.
 #| fig-width: 12
 #| fig-height: 8
 
 abc15
 
 ```
-
+\newpage
 ```{r diving agd 2012}
 #| echo: false
 #| label: fig-abc19
 #| fig-cap: |
-#|   Aggregated density plot of lengths(cm)  of gears with greater than 2% representation for Stoplight Parrotfish in St. Croix from 2012 to 2022. Dotted line represents mean length.
+#|   Aggregated density plot of lengths(cm)  of gears with greater than 2% representation for Stoplight Parrotfish in St. Croix from 2012 to 2022. Dotted line represents mean length. Mean lengths can be found in @tbl-tbl2.
 #| fig-width: 12
 #| fig-height: 8
 

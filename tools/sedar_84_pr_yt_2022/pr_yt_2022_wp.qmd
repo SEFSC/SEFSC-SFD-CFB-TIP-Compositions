@@ -66,20 +66,6 @@ abc1
 
 \newpage
 
-```{r all interviews GLMM}
-#| echo: false
-#| label: fig-abc21
-#| fig-cap: |
-#|   Plot showing relative number of Yellowtail Snapper interviews in Puerto Rico across time collected. Each point is color specific to the gear it represents. Gears are arranged from most to least abundant. 
-#| fig-width: 11
-#| fig-height: 6 
-
-abc21
-
-```
-
-\newpage
-
 ```{r all lengths GLMM tbl}
 #| echo: false
 #| warning: false
@@ -110,8 +96,10 @@ The aggregated densities of Yellowtail Snapper lengths(cm) in Puerto Rico are pl
 ```{r}
 #| echo: false
 #| label: fig-abc14
-#| fig-cap:!expr paste("full_mean")
-  
+#| fig-cap: |
+#|   Aggregated density plot of lengths(cm) of Yellowtail Snapper in Puerto Rico, all gears combined. Dotted line represents mean length (29.22cm).
+#| fig-width: 12
+#| fig-height: 8
   
 abc14
 
