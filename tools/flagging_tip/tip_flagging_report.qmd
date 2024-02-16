@@ -4,8 +4,8 @@ format: html
 editor: visual
 ---
 
-# TIP Flagging Report 
+# TIP Flagging Report
 
 The TIP flagging process has been developed to institute flags in the data entry process of the TIP program. The variables focused on pertain to length-weight composition. This process began with the exploration of the data set by species to visualize the available data by variable. Examples of the figures produced are provided within this document. The flagging process looked at lapses in data collection across variables, accuracy of data collected, and distribution of data collected across time.
 
-flex_table 
+flex_table

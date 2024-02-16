@@ -6,7 +6,7 @@
 librarian::shelf(here, tidyverse, ROracle, keyring, dotenv, lubridate)
 
 # Load HISTORICAL data 
-PR_historical_04 <- read.csv("data/raw/for_import_04.csv")
+PR_historical_04 <- read.csv("data/raw/hist_04.csv")
 
 # Format dates to be mm/dd/yyyy 
 pr_04 <- PR_historical_04 %>%
@@ -15,15 +15,15 @@ pr_04 <- PR_historical_04 %>%
 
 save(pr_04,file="data/dataframes/pr_04.Rda") # file is saved in data folder
 
-# PULL FROM ORACLE 
+# PULL FROM ORACLE - BEFORE DAYLIGHT SAVINGS
 com_tip_PR_2004 <- readRDS("~/SEFSC-SFD-CFB-TIP-Compositions/data/raw/com_tip_PR_2004_20231004.RDS")
 
 # Create a comparable table 
 com_tip_PR_2004_skeleton <- com_tip_PR_2004 %>%  # select comparable variables 
   select(ID, INTERVIEW_DATE, YEAR, REPORTING_AREA_ZIP, SAMPLE_AREA_COUNTY_CODE, 
          SAMPLE_AREA_PLACE_CODE, SAMPLE_AREA_STATE_CODE,  SAMPLE_AREA_ZIP, 
-         SITE_LOCATION, STANDARDGEAR_1,
-         STANDARDGEARNAME_1, OBS_STANDARD_SPECIES_CODE, OBS_STANDARD_SPECIES_NAME,
+         SITE_LOCATION, LAND_STANDARD_GEAR_NAME,
+         LAND_STANDARD_GEAR, OBS_STANDARD_SPECIES_CODE, OBS_STANDARD_SPECIES_NAME,
          LENGTH1_MM, OBS_WEIGHT_KG)
 
 # create new filterable date value
@@ -60,7 +60,46 @@ pr_04_historical_UNIQUEDATES_updated <- pr_04_historical_UNIQUEDATES %>%
 # combine two tables
 unique_dates_merge_04 <- full_join(com_tip_PR_2004_UNIQUEDATES_updated, pr_04_historical_UNIQUEDATES_updated, by = 'FINAL_DATE')
 # DATES ARE MISALIGNED FROM JAN 1 TO APRIL 1 AND NOV 3 TO DEC 31
+write.csv(unique_dates_merge_04, file = "data/CSVs/date_comparison_2004_b4dls.csv", row.names = FALSE)
 
+# PULL FROM ORACLE - AFTER DAYLIGHT SAVINGS
+cr_tip_yr(state_codes = "PR", year = 2004)
+
+com_tip_PR_2004_new <- readRDS("~/SEFSC-SFD-CFB-TIP-Compositions/data/raw/com_tip_PR_2004_20240216.RDS")
+
+# Create a comparable table 
+com_tip_PR_2004_skeleton_new <- com_tip_PR_2004_new %>%  # select comparable variables 
+  select(ID, INTERVIEW_DATE, YEAR, REPORTING_AREA_ZIP, SAMPLE_AREA_COUNTY_CODE, 
+         SAMPLE_AREA_PLACE_CODE, SAMPLE_AREA_STATE_CODE,  SAMPLE_AREA_ZIP, 
+         SITE_LOCATION, LAND_STANDARD_GEAR_NAME,
+         LAND_STANDARD_GEAR, OBS_STANDARD_SPECIES_CODE, OBS_STANDARD_SPECIES_NAME,
+         LENGTH1_MM, OBS_WEIGHT_KG)
+
+# create new filterable date value
+com_tip_PR_2004_NEWDATE_new <- com_tip_PR_2004_skeleton_new %>%
+  mutate(TEST_DATE = as.Date(ymd_hms(INTERVIEW_DATE)),
+         FINAL_DATE = case_when(is.na(TEST_DATE) ~ INTERVIEW_DATE, 
+                                TRUE ~ TEST_DATE))
+
+com_tip_PR_2004_ORGANIZED_new <- com_tip_PR_2004_NEWDATE_new[,c(1,2,3,17, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)]
+
+save(com_tip_PR_2004_ORGANIZED_new,file="data/dataframes/com_tip_PR_2004_ORGANIZED_new.Rda") # file is saved in data folder  
+
+
+# ORACLE unique dates and number of occurrences 
+com_tip_PR_2004_UNIQUEDATES_new <- com_tip_PR_2004_ORGANIZED_new %>% 
+  group_by(FINAL_DATE) %>% 
+  summarize(count=n())
+com_tip_PR_2004_UNIQUEDATES_updated_new <- com_tip_PR_2004_UNIQUEDATES_new %>%
+  rename(COUNT_ORACLE = count)
+
+# combine two tables
+unique_dates_merge_04_new <- full_join(com_tip_PR_2004_UNIQUEDATES_updated_new, pr_04_historical_UNIQUEDATES_updated, by = 'FINAL_DATE')
+write.csv(unique_dates_merge_04_new, file = "data/CSVs/date_comparison_2004_afterdls.csv", row.names = FALSE)
+
+
+
+# DATES ARE MISALIGNED FROM JAN 1 TO APRIL 1 AND NOV 3 TO DEC 31
 
 # change ORACLE dates so they align with HISTORICAL
 
