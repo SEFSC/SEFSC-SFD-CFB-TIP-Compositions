@@ -13,3 +13,6 @@
     cr_tip_sp(state_codes = c('PR', 'VI'), sp_codes = c(97648, 97646))
     n_cr_tip(state_codes = c('PR', 'VI'))
     
+  # SEDAR 84 ####
+    cr_tip_sp(state_codes = c('PR', 'VI'), sp_codes =168907)
+    

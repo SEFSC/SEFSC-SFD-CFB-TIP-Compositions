@@ -2,13 +2,18 @@
 title: "historical_comparison_by_yr"
 format: docx
 editor: visual
+output-file: historical_comparison_by_yr.docx
 ---
 
 The purpose of this document is to compare the data in the Oracle TIP dataset to the data in the historical TIP records by year.
 
-Step 1: extract data by year from each source
+# Step 1: 
+## extract data by year from each source
 
 ```{r}
+#| warning: false
+#| echo: false
+
 librarian::shelf(here, tidyverse, ROracle, keyring, dotenv, lubridate, flextable)
 # Specify settings ####
 tip_rds <- "com_tip_PR_1997_20231117.RDS"
@@ -18,7 +23,7 @@ yr <- 1997
 tip <- readRDS(here::here("data", "raw", tip_rds))
 
 
-# or extract oracle by yr and state 
+# or extract oracle by yr and state
 # cr_tip_yr(state_codes = "PR", year = "yr")
 
 # Create a comparable table
@@ -26,11 +31,10 @@ tip_skeleton <- tip %>% # select comparable variables
   select(
     ID, INTERVIEW_DATE, YEAR, REPORTING_AREA_ZIP, SAMPLE_AREA_STATE_CODE,
     SAMPLE_AREA_COUNTY_CODE, SAMPLE_AREA_ZIP, LANDING_AREA_PLACE_CODE,
-    LANDING_AREA_COUNTY_CODE, SAMPLE_AREA_PLACE_CODE,
-    GEAR_1, GEARNAME_1, GEAR_QTY_1, GEAR_FREQUENCY1, MIN_DEPTH1, MAX_DEPTH1,
-    OBS_STANDARD_SPECIES_CODE, OBS_STANDARD_SPECIES_NAME, TRIP_DAYS_FISHED,
-    LENGTH1, LENGTH_UNIT1, LENGTH_UNIT_CODE1, LENGTH_TYPE1, LENGTH_TYPE_CODE1,
-    LENGTH1_MM, OBS_WEIGHT, OBS_WEIGHT_KG, OBS_WEIGHT_UNIT, OBS_WEIGHT_UNIT_ID
+    LANDING_AREA_COUNTY_CODE, SAMPLE_AREA_PLACE_CODE, LAND_STANDARD_GEAR,
+    LAND_STANDARD_GEAR_NAME, GEAR_1, GEARNAME_1,
+    OBS_STANDARD_SPECIES_CODE, OBS_STANDARD_SPECIES_NAME, LENGTH_TYPE1,
+    LENGTH1_MM, OBS_WEIGHT_KG
   )
 
 # create new filterable date value
@@ -45,9 +49,8 @@ tip_NEWDATE <- tip_skeleton %>%
 
 tip_ORGANIZED <-
   tip_NEWDATE[, c(
-    1, 2, 3, 31, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
-    16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
-    29, 30
+    1, 2, 3, 21, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+    16, 17, 18, 19, 20
   )]
 
 # file is saved in data folder
@@ -65,7 +68,7 @@ save(tip_ORGANIZED,
 
 
 # Load HISTORICAL data ####
-pr_historical <- 
+pr_historical <-
   read.csv("~/SEFSC-SFD-CFB-TIP-Compositions/data/raw/for_import_97.csv")
 
 # Format dates to be mm/dd/yyyy
@@ -85,14 +88,17 @@ save(pr_hist_date,
     )
   )
 )
-
 ```
 
-Step 2: compare the number of records for each date available
+# Step 2: 
+## compare the number of records for each date available
 
 ```{r}
+#| warning: false
+#| echo: false
+
 # DATE COMPARISON ####
-#
+
 # load(file = "data/dataframes/pr_hist_date.Rda")
 # load(file = "data/dataframes/com_tip_PR_ORGANIZED.Rda")
 
@@ -122,7 +128,11 @@ unique_dates_merge <- full_join(com_tip_PR_UNIQUEDATES_updated,
 unique_dates_comparison <- unique_dates_merge %>%
   mutate(COMPARE = (COUNT_ORACLE - COUNT_HISTORICAL))
 
-flextable::flextable(unique_dates_comparison)
+flextable::flextable(unique_dates_comparison) |>
+  theme_box() %>%
+  align(align = "center", part = "all") %>%
+  fontsize(size = 8, part = "all") %>%
+  autofit()
 
 write.csv(unique_dates_comparison,
   file = "~/SEFSC-SFD-CFB-TIP-Compositions/data/CSVs/dates_comparison.csv",
@@ -142,10 +152,19 @@ save(unique_dates_comparison,
   )
 )
 
-total_yr_date_comparison <- unique_dates_comparison |> 
-  mutate(total_tip = sum(unique_dates_comparison$COUNT_ORACLE),
-         total_historical = sum(unique_dates_comparison$COUNT_HISTORICAL),
-         comparison = total_tip - total_historical)
+# compare total number of records from each source
+total_yr_date_comparison <- unique_dates_comparison |>
+  summarize(
+    total_tip = sum(COUNT_ORACLE, na.rm = TRUE),
+    total_historical = sum(COUNT_HISTORICAL, na.rm = TRUE)
+  ) |>
+  mutate(comparison = total_tip - total_historical)
+
+flextable(total_yr_date_comparison) |>
+  theme_box() %>%
+  align(align = "center", part = "all") %>%
+  fontsize(size = 8, part = "all") %>%
+  autofit()
 
 #' DATES ARE MISALIGNED from JAN 1 TO daylight savings starting and daylight
 #' savings ending TO DEC 31 when the data pull is conducted during daylight
@@ -194,117 +213,378 @@ total_yr_date_comparison <- unique_dates_comparison |>
 # unique_dates_comparison_97 <- unique_dates_merge_97_2 %>%
 #   mutate(COMPARE = (COUNT_ORACLE - COUNT_HISTORICAL))
 # # ORACLE IS MISSING 5 RECORDS ON 3/23 AND 3 ON 6/16 BUT MAKES UP FOR IT ON OTHER DATES
-# 
+#
 # write.csv(unique_dates_comparison_97, file = "data/CSVs/dates_comparison_97.csv", row.names = FALSE)
 # save(unique_dates_comparison_97, file = "data/dataframes/dates_comparison_97.Rda") # file is saved in data fold
 ```
 
-Step 3: area comparison
+# Step 3: 
+## area comparison
 
 ```{r}
+#| warning: false
+#| echo: false
+
 # AREAZIP COMPARISON ####
 
-# Load MUNI conversion table
+# Load MUNI(county code) conversion table
 load("~/SEFSC-SFD-CFB-TIP-Compositions/data/dataframes/muni_code_clean_UPDATED.Rda")
 
 # translate muni_zip -> CNTY_ID
 # split AREAZIP into 2-1 chr columns
-pr_97$muni_zip_HISTORICAL <- str_sub(pr_97$AREAZIP, -3, -2)
+pr_hist_date$muni_zip_HISTORICAL <- str_sub(pr_hist_date$AREAZIP, -3, -2)
 
-com_tip_PR_1997_corrected_dates$muni_zip_ORACLE <- as.numeric(as.character(com_tip_PR_1997_corrected_dates$SAMPLE_AREA_COUNTY_CODE))
+tip_ORGANIZED$muni_zip_ORACLE <- as.numeric(as.character(tip_ORGANIZED$SAMPLE_AREA_COUNTY_CODE))
 
 # FIND UNIQUE MUNI CODES AND # OF OCCURANCES
 
 # unique MUNI CODES and number of occurrences - ORACLE - 16 UNIQUE MUNI_ZIPS
-com_tip_PR_1997_UNIQUE_MUNI <- com_tip_PR_1997_corrected_dates %>%
+tip_ORGANIZED_UNIQUE_MUNI <- tip_ORGANIZED %>%
   group_by(muni_zip_ORACLE) %>%
   summarize(count = n())
-com_tip_PR_1997_MUNI_updated <- com_tip_PR_1997_UNIQUE_MUNI %>%
-  rename(count_ORACLE = count)
-com_tip_PR_1997_MUNI_names <- com_tip_PR_1997_MUNI_updated %>%
-  mutate(muni_name = muni_code_clean_UPDATED$CNTY_NAME[match(com_tip_PR_1997_MUNI_updated$muni_zip_ORACLE, muni_code_clean_UPDATED$muni_zip_ORACLE)])
+tip_ORGANIZED_MUNI_updated <- tip_ORGANIZED_UNIQUE_MUNI %>%
+  rename(COUNT_ORACLE = count)
+tip_ORGANIZED_MUNI_names <- tip_ORGANIZED_MUNI_updated %>%
+  mutate(
+    muni_name =
+      muni_code_clean_UPDATED$CNTY_NAME[match(
+        tip_ORGANIZED_MUNI_updated$muni_zip_ORACLE,
+        muni_code_clean_UPDATED$muni_zip_ORACLE
+      )]
+  )
 
 # unique dates and number of occurrences- HISTORICAL- 14 UNIQUE MUNI_ZIP
-pr_97_unique_MUNI <- pr_97 %>%
+pr_hist_unique_MUNI <- pr_hist_date %>%
   group_by(muni_zip_HISTORICAL) %>%
   summarize(count = n())
-pr_97_MUNI_updated <- pr_97_unique_MUNI %>%
-  rename(count_HISTORICAL = count)
+pr_hist_MUNI_updated <- pr_hist_unique_MUNI %>%
+  rename(COUNT_HISTORICAL = count)
 # pr_97_sp88_unique_MUNI_updated$muni_zip_HISTORICAL = as.numeric(as.character(pr_97_sp88_unique_MUNI_updated$muni_zip_HISTORICAL))
-pr_97_MUNI_names <- pr_97_MUNI_updated %>%
-  mutate(muni_name = muni_code_clean_UPDATED$CNTY_NAME[match(pr_97_MUNI_updated$muni_zip_HISTORICAL, muni_code_clean_UPDATED$muni_zip_HISTORICAL)])
+pr_hist_MUNI_names <- pr_hist_MUNI_updated %>%
+  mutate(
+    muni_name =
+      muni_code_clean_UPDATED$CNTY_NAME[match(
+        pr_hist_MUNI_updated$muni_zip_HISTORICAL,
+        muni_code_clean_UPDATED$muni_zip_HISTORICAL
+      )]
+  )
 
 # merge tables
-unique_muni_merge_97 <- full_join(com_tip_PR_1997_MUNI_names, pr_97_MUNI_names, by = "muni_name")
+unique_muni_merge <- full_join(tip_ORGANIZED_MUNI_names, pr_hist_MUNI_names, by = "muni_name")
 
 # COMPARE
-muni_comparison_97 <- unique_muni_merge_97 %>%
-  mutate(COMPARE = (count_ORACLE - count_HISTORICAL))
+muni_comparison <- unique_muni_merge %>%
+  mutate(COMPARE = (COUNT_ORACLE - COUNT_HISTORICAL))
 
-# FIGURE OUT WHATS HAPPENING WITH THE HISTORICAL GEAR CODES
+flextable(muni_comparison) |>
+  theme_box() %>%
+  align(align = "center", part = "all") %>%
+  fontsize(size = 8, part = "all") %>%
+  autofit()
 
-write.csv(muni_comparison_97, file = "data/CSVs/muni_comparison_97.csv", row.names = FALSE)
-save(muni_comparison_97, file = "data/dataframes/muni_comparison_97.Rda") # file is saved in data folder
+# total comparison - ensure there is the same difference
+total_yr_muni_comparison <- muni_comparison |>
+  summarize(
+    total_tip = sum(COUNT_ORACLE, na.rm = TRUE),
+    total_historical = sum(COUNT_HISTORICAL, na.rm = TRUE)
+  ) |>
+  mutate(comparison = total_tip - total_historical)
+
+flextable(total_yr_muni_comparison) |>
+  theme_box() %>%
+  align(align = "center", part = "all") %>%
+  fontsize(size = 8, part = "all") %>%
+  autofit()
+
+hist_na <- pr_hist_date |>
+  filter(muni_zip_HISTORICAL == "00")
+
+# file is saved in data folder
+save(muni_comparison,
+  file = here::here(
+    "data", "dataframes",
+    paste0(
+      "muni_comparison",
+      "_",
+      yr,
+      ".Rda"
+    )
+  )
+)
+```
+
+# Step 4:
+## gear comparison 
+
+```{r}
+#| warning: false
+#| echo: false
 
 # GEAR COMPARISON ####
 
-load(file = "data/dataframes/gear_codes.Rda")
+# read in conversion table
+gear_codes <- read_csv("~/SEFSC-SFD-CFB-TIP-Compositions/data/CSVs/TIPS_GEAR_GROUPS.csv")
 
-# unique GEAR CODES and number of occurrences - ORACLE - 11 UNIQUE GEAR CODES
-com_tip_PR_1997_unique_GEAR <- com_tip_PR_1997 %>%
-  group_by(STANDARDGEAR_1) %>%
+# unique GEAR CODES and number of occurrences - ORACLE -
+# use GEAR_1 because those are the island specific codes and will match with
+# those used in historic
+tip_unique_GEAR <- tip_ORGANIZED %>%
+  group_by(GEAR_1) %>%
   summarize(count = n())
-com_tip_PR_1997_unique_GEAR_updated <- com_tip_PR_1997_unique_GEAR %>%
+tip_unique_GEAR_updated <- tip_unique_GEAR %>%
   rename(
-    count_ORACLE = count,
-    STANDARD_GEAR = STANDARDGEAR_1
+    COUNT_ORACLE = count,
+    PR_GEAR = GEAR_1
   )
 # com_PR_lob_unique_MUNI_updated$muni_zip_ORACLE = as.numeric(as.character(com_PR_lob_unique_MUNI_updated$muni_zip_ORACLE))
-com_tip_PR_1997_unique_GEAR_NAMES <- com_tip_PR_1997_unique_GEAR_updated %>%
-  mutate(GEAR_name = gear_codes$STANDARD_NAME[match(com_tip_PR_1997_unique_GEAR_updated$STANDARD_GEAR, gear_codes$STANDARD_GEAR)])
+tip_unique_GEAR_NAMES <- tip_unique_GEAR_updated %>%
+  mutate(
+    GEAR_NAME =
+      gear_codes$STANDARD_NAME[match(
+        tip_unique_GEAR_updated$PR_GEAR,
+        gear_codes$PR_GEAR
+      )]
+  )
 
 
 # unique dates and number of occurrences- HISTORICAL- 13 UNIQUE MUNI_ZIP
-pr_97_unique_GEAR <- pr_97 %>%
+pr_hist_unique_GEAR <- pr_hist_date %>%
   group_by(GEARCODE) %>%
   summarize(count = n())
-pr_97_unique_GEAR_UPDATED <- pr_97_unique_GEAR %>%
-  rename(count_HISTORICAL = count)
-# pr_97_sp901_unique_MUNI_updated$muni_zip_HISTORICAL = as.numeric(as.character(pr_97_sp901_unique_MUNI_updated$muni_zip_HISTORICAL))
-pr_97_unique_GEAR_NAMES <- pr_97_unique_GEAR_UPDATED %>%
-  mutate(GEAR_name = gear_codes$STANDARD_NAME[match(pr_97_unique_GEAR_UPDATED$GEARCODE, gear_codes$GEARCODE)])
+pr_hist_unique_GEAR_UPDATED <- pr_hist_unique_GEAR %>%
+  rename(
+    COUNT_HISTORICAL = count,
+    PR_GEAR = GEARCODE
+  )
+
+pr_hist_unique_GEAR_NAMES <- pr_hist_unique_GEAR_UPDATED %>%
+  mutate(
+    GEAR_NAME =
+      gear_codes$STANDARD_NAME[match(
+        pr_hist_unique_GEAR_UPDATED$PR_GEAR,
+        gear_codes$PR_GEAR
+      )]
+  )
 
 # merge tables
-unique_GEAR_merge_PR <- merge(com_tip_PR_1997_unique_GEAR_NAMES, pr_97_unique_GEAR_NAMES, by = "GEAR_name", all = TRUE)
-
-# ORACLE by hand, diving gear (snare) vs HISTORICAL scuba diving and skin diving
+unique_GEAR_merge_PR <-
+  merge(tip_unique_GEAR_NAMES,
+    pr_hist_unique_GEAR_NAMES,
+    by = "GEAR_NAME",
+    all = TRUE
+  )
 
 # COMPARE
-GEAR_comparison_97 <- unique_GEAR_merge_PR %>%
-  mutate(COMPARE = (count_ORACLE - count_HISTORICAL))
+GEAR_comparison <- unique_GEAR_merge_PR %>%
+  mutate(COMPARE = (COUNT_ORACLE - COUNT_HISTORICAL))
 
-write.csv(GEAR_comparison_97, file = "data/CSVs/GEAR_code_comparison_97.csv", row.names = FALSE)
-save(GEAR_comparison_97, file = "data/dataframes/GEAR_code_comparison_97.Rda") # file is saved in data folder
-# 	land crab trap AND pots and traps, spiny lobster NEED TO BE COMBINED INTO SAME GEAR GROUP
+flextable(GEAR_comparison) |>
+  theme_box() %>%
+  align(align = "center", part = "all") %>%
+  fontsize(size = 8, part = "all") %>%
+  autofit()
+
+# total comparison - ensure there is the same difference
+total_yr_gear_comparison <- GEAR_comparison |>
+  summarize(
+    total_tip = sum(COUNT_ORACLE, na.rm = TRUE),
+    total_historical = sum(COUNT_HISTORICAL, na.rm = TRUE)
+  ) |>
+  mutate(comparison = total_tip - total_historical)
+
+flextable(total_yr_gear_comparison) |>
+  theme_box() %>%
+  align(align = "center", part = "all") %>%
+  fontsize(size = 8, part = "all") %>%
+  autofit()
+
+# file is saved in data folder
+save(GEAR_comparison,
+  file = here::here(
+    "data", "dataframes",
+    paste0(
+      "GEAR_comparison",
+      "_",
+      yr,
+      ".Rda"
+    )
+  )
+)
 ```
 
-## Quarto
-
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
-
-## Running Code
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+# Step 5: 
+## species comparison
 
 ```{r}
-1 + 1
-```
-
-You can add options to executable code like this
-
-```{r}
+#| warning: false
 #| echo: false
-2 * 2
+
+# read in conversion table
+species_codes <- read_csv("~/SEFSC-SFD-CFB-TIP-Compositions/data/CSVs/PR_SPECIES_CODES.csv")
+species_codes$ID <- str_remove(species_codes$ID, "^0+")
+species_codes[146, 1] <- "0"
+
+# FIND UNIQUE SPECIES CODES AND # OF OCCURANCES ####
+
+tip_unique_SPC <- tip_ORGANIZED %>%
+  group_by(OBS_STANDARD_SPECIES_CODE) %>%
+  tally()
+
+tip_spc_rename <- tip_unique_SPC |>
+  rename(
+    COUNT_ORACLE = n,
+    tip_spc = OBS_STANDARD_SPECIES_CODE
+  )
+
+tip_unique_SPC_NAMES <- tip_spc_rename %>%
+  mutate(
+    SPC_NAME =
+      species_codes$NAME[match(
+        tip_spc_rename$tip_spc,
+        species_codes$STANDARD_SPECIES_ID
+      )]
+  )
+
+
+pr_hist_unique_spc <- pr_hist_date %>%
+  group_by(SPECIES) %>% # if data 2000 to 2007, use SPECIES_B
+  tally()
+pr_hist_unique_spc_renamed <- pr_hist_unique_spc |>
+  dplyr::rename(
+    COUNT_HISTORICAL = n,
+    hist_spc = SPECIES
+  )
+
+pr_hist_unique_SPC_NAMES <- pr_hist_unique_spc_renamed %>%
+  mutate(
+    SPC_NAME =
+      species_codes$NAME[match(
+        pr_hist_unique_spc_renamed$hist_spc,
+        species_codes$ID
+      )]
+  )
+
+# compare species names
+unique_species_merge <-
+  merge(tip_unique_SPC_NAMES, pr_hist_unique_SPC_NAMES,
+    by = "SPC_NAME",
+    all = TRUE
+  )
+
+# COMPARE
+SPC_comparison <- unique_species_merge %>%
+  mutate(COMPARE = (COUNT_ORACLE - COUNT_HISTORICAL))
+
+flextable(SPC_comparison) |>
+  theme_box() %>%
+  align(align = "center", part = "all") %>%
+  fontsize(size = 8, part = "all") %>%
+  autofit()
+
+# total comparison - ensure there is the same difference
+total_yr_spc_comparison <- SPC_comparison |>
+  summarize(
+    total_tip = sum(COUNT_ORACLE, na.rm = TRUE),
+    total_historical = sum(COUNT_HISTORICAL, na.rm = TRUE)
+  ) |>
+  mutate(comparison = total_tip - total_historical)
+
+flextable(total_yr_spc_comparison) |>
+  theme_box() %>%
+  align(align = "center", part = "all") %>%
+  fontsize(size = 8, part = "all") %>%
+  autofit()
+
+# file is saved in data folder
+save(SPC_comparison,
+  file = here::here(
+    "data", "dataframes",
+    paste0(
+      "SPC_comparison",
+      "_",
+      yr,
+      ".Rda"
+    )
+  )
+)
+
+# some species codes (ex. 704 and 167746 seem to be
+# missing from hist and oracle respectively)
+# look into pr_species_codes_historic.csv
+# rerun with other species conversion table ^ 
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+# Step 6: 
+## length comparison
+
+```{r}
+#| warning: false
+#| echo: false
+
+# FIND UNIQUE length values AND # OF OCCURANCES ####
+
+tip_unique_len <- tip_ORGANIZED %>%
+  group_by(LENGTH1_MM) %>%
+  tally()
+
+tip_len_rename <- tip_unique_len |>
+  rename(
+    COUNT_ORACLE = n,
+    len = LENGTH1_MM
+  )
+
+pr_hist_unique_len <- pr_hist_date %>%
+  group_by(STLENGTH) %>% # historical length variable, update based on variable used
+  tally()
+pr_hist_unique_len_renamed <- pr_hist_unique_len |>
+  dplyr::rename(
+    COUNT_HISTORICAL = n,
+    len = STLENGTH
+  )
+
+# compare species names
+unique_len_merge <-
+  merge(tip_len_rename, pr_hist_unique_len_renamed,
+    by = "len",
+    all = TRUE
+  )
+
+len_comparison <- unique_len_merge %>%
+  mutate(COMPARE = (COUNT_ORACLE - COUNT_HISTORICAL))
+
+flextable(len_comparison) |>
+  theme_box() %>%
+  align(align = "center", part = "all") %>%
+  fontsize(size = 8, part = "all") %>%
+  autofit()
+
+# total comparison - ensure there is the same difference
+total_yr_len_comparison <- len_comparison |>
+  summarize(
+    total_tip = sum(COUNT_ORACLE, na.rm = TRUE),
+    total_historical = sum(COUNT_HISTORICAL, na.rm = TRUE)
+  ) |>
+  mutate(comparison = total_tip - total_historical)
+
+flextable(total_yr_len_comparison) |>
+  theme_box() %>%
+  align(align = "center", part = "all") %>%
+  fontsize(size = 8, part = "all") %>%
+  autofit()
+
+# file is saved in data folder
+save(len_comparison,
+  file = here::here(
+    "data", "dataframes",
+    paste0(
+      "len_comparison",
+      "_",
+      yr,
+      ".Rda"
+    )
+  )
+)
+
+
+
+```
