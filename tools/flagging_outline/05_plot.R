@@ -4,6 +4,18 @@
 #' 1 - gears across time
 #' 2 - aggregated density of lengths 
 
+
+# Load libraries ####
+librarian::shelf(here, tidyverse, flextable, ggplot2)
+
+# Specify settings ####
+tip_spp_rds <- "pr_yts_prep_tip_20240229.rds" # rds from end of 02 script
+spp <- "yts"
+isl <- "pr"
+
+# Read in formatted data ####
+tip_spp <- readRDS(here::here("data", tip_spp_rds))
+
 # Plot gears used over time ####
 gear_data <- tip_spp_count |>
   group_by(gear) %>%
@@ -29,6 +41,158 @@ gear_by_yr <- gear_data |>
     legend.position = "null", text = element_text(size = 15),
     title = element_text(size = 15)
   )
+
+# Gear Density Plots ####
+
+# Filtered to years with 30 or more length records (regardless of gear) per year. STT and STJ records are grouped together.
+
+## Aggregated density plots ####
+
+### overlay time periods ####
+
+
+length_data_1983_2022 <- length_data_final %>% 
+  group_by(gear) %>% 
+  dplyr::mutate(n_ID = n_distinct(ID)) |> 
+  dplyr::filter(n_ID >= 3) %>% #ungroup %>%
+  # group_by(YEAR) %>% 
+  # filter(n() >= 30) %>% 
+  ungroup() 
+
+
+full_mean = round(mean(length_data_1983_2022$FL_CM), 2)
+
+length_data_2012_2022 <- length_data_final |>
+  filter(YEAR >= 2012) |>
+  group_by(gear) %>% 
+  dplyr::mutate(n_ID = n_distinct(ID)) |> 
+  dplyr::filter(n_ID >= 3) %>% #ungroup %>%
+  # group_by(YEAR) %>% 
+  # filter(n() >= 30) %>% 
+  ungroup()
+
+
+truncated_mean = round(mean(length_data_2012_2022$FL_CM), 2)
+
+agr_den_NOgears <- 
+  ggplot() +
+  geom_density(aes(FL_CM, color = "length_data_1983_2022"),linewidth = 1.0, alpha = .2, data = length_data_1983_2022) +
+  geom_density(aes(FL_CM, color = "length_data_2012_2022"),linewidth = 1.0, alpha = .2, data = length_data_2012_2022) +
+  geom_vline(data = length_data_1983_2022, aes(xintercept=mean(FL_CM), color = "length_data_1983_2022"),
+             linetype="dashed", linewidth=1) +
+  geom_vline(data=length_data_2012_2022, aes(xintercept=mean(FL_CM), color = "length_data_2012_2022"),
+             linetype="dashed", linewidth=1) +
+  labs(x = "Fork Length (cm)", title = county)+
+  # scale_fill_discrete(name = "Time Series", labels = c("1983-2022", "2012-2022"))
+  guides(color=guide_legend(title="Time Series"))+
+  scale_color_discrete(labels=c('1983-2022', '2012-2022'))+
+  theme(legend.title = element_text(size=20), 
+        legend.text = element_text(size=20),
+        legend.position = "bottom",
+        axis.text.x=element_text(size=20),
+        axis.text.y=element_text(size=20),
+        axis.title.x = element_text( size = 20),
+        axis.title.y = element_text( size = 20),
+        title = element_text(size = 20))
+# scale_fill_manual(name = "dataset", values = c(length_data_1983_2022 = "red", length_data_2012_2022 = "green"))
+abc14 = agr_den_NOgears
+
+### GEAR INDIVIDUALS ####
+
+length_data_gears <- length_data_final %>% 
+  group_by(gear) %>% 
+  dplyr::mutate(n_ID = n_distinct(ID)) |> 
+  dplyr::filter(n_ID >= 3) %>% #ungroup %>%
+  # group_by(YEAR) %>% 
+  # filter(n() >= 30) %>% 
+  ungroup() |> 
+  filter(gear %in% c("LINES HAND", "POTS AND TRAPS; FISH",
+                     "HAUL SEINES", "LINES POWER TROLL OTHER")) 
+
+ycounts =length_data_gears %>% #group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
+  tabyl("gear") %>%
+  mutate(n_labels = paste0(gear, " (n= ", n, ")" ))
+
+muv <- plyr::ddply(length_data_gears, "gear", summarise, grp.mean=mean(FL_CM))
+head(muv)
+
+agr_den_v <- length_data_gears %>% 
+  # group_by(gear) %>% 
+  # dplyr::mutate(n_ID = n_distinct(ID)) |> 
+  # dplyr::filter(n_ID >= 3) %>% ungroup %>%
+  # group_by(YEAR) %>% 
+  # filter(n() >= 30) %>% ungroup %>%
+  ggplot(aes(FL_CM))+
+  # geom_density( aes(color = "Combined"),lwd=1.5)+
+  geom_density(aes(color = gear),linewidth = 0.75)+
+  scale_color_hue(labels=ycounts$n_labels)+
+  # scale_color_hue(labels=c("Combined",ycounts$n_labels))+
+  #scale_color_manual(values = gearcols, labels = c("Combined", counts$n_labels))+
+  labs(color = "Gear" , x = "Fork Length (cm)", title = county)+ #title = paste0(county,  "\n (N = ", sum(ycounts$n), ")"))+
+  # theme_minimal()
+  theme(legend.title = element_text(size=20), 
+        legend.text = element_text(size=20),
+        legend.position = "bottom",
+        axis.text.x=element_text(size=20),
+        axis.text.y=element_text(size=20),
+        axis.title.x = element_text( size = 20),
+        axis.title.y = element_text( size = 20),
+        title = element_text(size = 20))+
+  guides(color=guide_legend(ncol = 2))+
+  geom_vline(data=muv, aes(xintercept=grp.mean, color=gear),
+             linetype="dashed")
+
+
+abc15 = agr_den_v
+
+
+### top gears individuals #### 
+
+length_data_gears_2012 <- length_data_glm_2012 %>% 
+  group_by(gear) %>% 
+  dplyr::mutate(n_ID = n_distinct(ID)) |> 
+  dplyr::filter(n_ID >= 3) %>% #ungroup %>%
+  # group_by(YEAR) %>% 
+  # filter(n() >= 30) %>% 
+  ungroup() |> 
+  filter(gear %in% c("LINES HAND", "POTS AND TRAPS; FISH",
+                     "ROD AND REEL")) 
+
+ycounts =length_data_gears_2012 %>% #group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
+  tabyl("gear") %>%
+  mutate(n_labels = paste0(gear, " (n= ", n, ")" ))
+
+muv12 <- plyr::ddply(length_data_gears_2012, "gear", summarise, grp.mean=mean(FL_CM))
+head(muv12)
+
+agr_den_v12 <- length_data_gears_2012 %>% 
+  # group_by(gear) %>% 
+  # dplyr::mutate(n_ID = n_distinct(ID)) |> 
+  # dplyr::filter(n_ID >= 3) %>% ungroup %>%
+  # group_by(YEAR) %>% 
+  # filter(n() >= 30) %>% ungroup %>%
+  ggplot(aes(FL_CM))+
+  # geom_density( aes(color = "Combined"),lwd=1.5)+
+  geom_density(aes(color = gear),linewidth = 0.75)+
+  scale_color_hue(labels=ycounts$n_labels)+
+  # scale_color_hue(labels=c("Combined",ycounts$n_labels))+
+  #scale_color_manual(values = gearcols, labels = c("Combined", counts$n_labels))+
+  labs(color = "Gear" , x = "Fork Length (cm)", title = county)+ #title = paste0(county,  "\n (N = ", sum(ycounts$n), ")"))+
+  # theme_minimal()
+  theme(legend.title = element_text(size=20), 
+        legend.text = element_text(size=20),
+        legend.position = "bottom",
+        axis.text.x=element_text(size=20),
+        axis.text.y=element_text(size=20),
+        axis.title.x = element_text( size = 20),
+        axis.title.y = element_text( size = 20),
+        title = element_text(size = 20))+
+  guides(color=guide_legend(ncol = 2))+
+  geom_vline(data=muv12, aes(xintercept=grp.mean, color=gear),
+             linetype="dashed")
+
+
+abc19 = agr_den_v12
 
 
 ## Annual Density plots ####
