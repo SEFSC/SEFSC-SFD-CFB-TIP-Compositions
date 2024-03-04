@@ -4,10 +4,12 @@ format: docx
 editor: visual
 output-file: historical_comparison_by_yr.docx
 ---
+# 1997
 
 The purpose of this document is to compare the data in the Oracle TIP dataset to the data in the historical TIP records by year.
 
-# Step 1: 
+# Step 1:
+
 ## extract data by year from each source
 
 ```{r}
@@ -15,6 +17,9 @@ The purpose of this document is to compare the data in the Oracle TIP dataset to
 #| echo: false
 
 librarian::shelf(here, tidyverse, ROracle, keyring, dotenv, lubridate, flextable)
+# pull year data if needed 
+# cr_tip_yr(state_codes = "PR", year = 2003)
+
 # Specify settings ####
 tip_rds <- "com_tip_PR_1997_20231117.RDS"
 yr <- 1997
@@ -90,7 +95,8 @@ save(pr_hist_date,
 )
 ```
 
-# Step 2: 
+# Step 2:
+
 ## compare the number of records for each date available
 
 ```{r}
@@ -218,7 +224,8 @@ flextable(total_yr_date_comparison) |>
 # save(unique_dates_comparison_97, file = "data/dataframes/dates_comparison_97.Rda") # file is saved in data fold
 ```
 
-# Step 3: 
+# Step 3:
+
 ## area comparison
 
 ```{r}
@@ -314,7 +321,8 @@ save(muni_comparison,
 ```
 
 # Step 4:
-## gear comparison 
+
+## gear comparison
 
 ```{r}
 #| warning: false
@@ -412,7 +420,8 @@ save(GEAR_comparison,
 )
 ```
 
-# Step 5: 
+# Step 5:
+
 ## species comparison
 
 ```{r}
@@ -420,9 +429,11 @@ save(GEAR_comparison,
 #| echo: false
 
 # read in conversion table
-species_codes <- read_csv("~/SEFSC-SFD-CFB-TIP-Compositions/data/CSVs/PR_SPECIES_CODES.csv")
-species_codes$ID <- str_remove(species_codes$ID, "^0+")
-species_codes[146, 1] <- "0"
+species_codes <- 
+  read_csv("~/SEFSC-SFD-CFB-TIP-Compositions/data/CSVs/pr_species_codes_oracle_conv.csv")
+tip_ORGANIZED$OBS_STANDARD_SPECIES_CODE <- 
+  str_remove(tip_ORGANIZED$OBS_STANDARD_SPECIES_CODE, "^0+")
+# species_codes[146, 1] <- "0"
 
 # FIND UNIQUE SPECIES CODES AND # OF OCCURANCES ####
 
@@ -514,7 +525,8 @@ save(SPC_comparison,
 # rerun with other species conversion table ^ 
 ```
 
-# Step 6: 
+# Step 6:
+
 ## length comparison
 
 ```{r}
