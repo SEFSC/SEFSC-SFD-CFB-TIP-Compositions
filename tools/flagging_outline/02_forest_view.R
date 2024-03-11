@@ -7,7 +7,7 @@ librarian::shelf(
 )
 
 # Specify settings ####
-tip_spp_rds <- "pr_yts_format_tip_20240229.rds" # rds from end of 01 script
+tip_spp_rds <- "pr_yts_format_tip_20240307.rds" # rds from end of 01 script
 spp <- "yts"
 isl <- "pr"
 
@@ -38,6 +38,7 @@ tip_spp_relevant <- tip_spp |>
 
 # Find first year and min/max lengths ####
 ### use this as preliminary look at possible inaccurate lengths
+# compare type1 and type2 lengths 
 table(tip_spp$length_type1, useNA='always')
 table(tip_spp$length_type2, useNA='always')
 
@@ -197,7 +198,7 @@ length_time <- tip_spp_count |>
 
 # Save formatted tip_spp ####
 saveRDS(
-  tip_spp_relevant,
+  tip_spp_count,
   file = here::here(
     "data",
     paste0(

@@ -241,11 +241,13 @@ load("~/SEFSC-SFD-CFB-TIP-Compositions/data/dataframes/muni_code_clean_UPDATED.R
 # split AREAZIP into 2-1 chr columns
 pr_hist_date$muni_zip_HISTORICAL <- str_sub(pr_hist_date$AREAZIP, -3, -2)
 
+unique(pr_hist_date$muni_zip_HISTORICAL)
+
 tip_ORGANIZED$muni_zip_ORACLE <- as.numeric(as.character(tip_ORGANIZED$SAMPLE_AREA_COUNTY_CODE))
 
 # FIND UNIQUE MUNI CODES AND # OF OCCURANCES
 
-# unique MUNI CODES and number of occurrences - ORACLE - 16 UNIQUE MUNI_ZIPS
+# unique MUNI CODES and number of occurrences - ORACLE
 tip_ORGANIZED_UNIQUE_MUNI <- tip_ORGANIZED %>%
   group_by(muni_zip_ORACLE) %>%
   summarize(count = n())
@@ -260,7 +262,7 @@ tip_ORGANIZED_MUNI_names <- tip_ORGANIZED_MUNI_updated %>%
       )]
   )
 
-# unique dates and number of occurrences- HISTORICAL- 14 UNIQUE MUNI_ZIP
+# unique dates and number of occurrences- HISTORICAL
 pr_hist_unique_MUNI <- pr_hist_date %>%
   group_by(muni_zip_HISTORICAL) %>%
   summarize(count = n())

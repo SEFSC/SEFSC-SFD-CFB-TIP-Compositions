@@ -6,7 +6,7 @@
 librarian::shelf(here, tidyverse)
 
 # Specify settings ####
-tip_spp_rds <- "pr_yts_forest_tip_20240229.rds" # rds from end of 02 script
+tip_spp_rds <- "pr_yts_forest_tip_20240307.rds" # rds from end of 02 script
 spp <- "yts"
 isl <- "pr"
 len_type <- "FORK LENGTH"
@@ -20,6 +20,7 @@ end_yr <- 2022
 tip_spp <- readRDS(here::here("data", tip_spp_rds))
 
 # Prep data for analysis ####
+# filter to specified settings 
 tip_spp_len <- tip_spp |>
   dplyr::filter(
     length_type1 == len_type,

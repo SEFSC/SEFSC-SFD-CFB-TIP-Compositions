@@ -43,6 +43,7 @@ tip_spp <- tip |>
       land_standard_gear_name == "NOT CODED" ~ gearname_1,
       TRUE ~ land_standard_gear_name
     ),
+    # Create variable for sector (rec or com)
     sector = dplyr::case_when(
       fishing_mode %in% c(
         "HEADBOAT",
@@ -55,7 +56,6 @@ tip_spp <- tip |>
       .default = fishing_mode
     )
   )
-colnames(tip_spp) # check to make sure new variables are added
 
 # Save formatted tip_spp ####
 saveRDS(

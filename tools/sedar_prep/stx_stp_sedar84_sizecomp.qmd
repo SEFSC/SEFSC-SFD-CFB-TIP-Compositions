@@ -279,7 +279,7 @@ table(stx_stp$STANDARDGEARNAME_1, stx_stp$STANDARDGEARNAME_2)
 
 ```
 
-#### Add gear groupings, NO length-length conversions available 
+#### Add gear groupings, NO length-length conversions available
 
 ```{r }
 #| warning: false
@@ -543,7 +543,6 @@ ggplot(aes(FL_CM,color = STANDARDGEARNAME_1))+
 
 
 ```
-
 
 ```{r mgt_period_spear_plot, fig.width=12, fig.height=8}
 #| warning: false
@@ -983,7 +982,7 @@ for(i in 1:length(final_gears)){
 
 ```
 
-# Stacked bar charts: visual representation of gear distribution within groupings 
+# Stacked bar charts: visual representation of gear distribution within groupings
 
 ```{r gear_distribution_plot, fig.width=10, fig.height=6}
 #| warning: false
