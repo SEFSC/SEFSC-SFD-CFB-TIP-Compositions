@@ -66,6 +66,7 @@ gear_by_id <- gant_data_id |>
              color = "darkgrey", linewidth=1.5)
 
 # Gear Density Plots ####
+
 ## Aggregated density plots ####
 ### overlay time periods 
 

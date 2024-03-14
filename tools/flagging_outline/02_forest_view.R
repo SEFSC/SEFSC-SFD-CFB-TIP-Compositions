@@ -7,9 +7,11 @@ librarian::shelf(
 )
 
 # Specify settings ####
-tip_spp_rds <- "pr_yts_format_tip_20240307.rds" # rds from end of 01 script
+tip_spp_rds <- "pr_yts_format_tip_20240312.rds" # rds from end of 01 script
 spp <- "yts"
 isl <- "pr"
+print_isl <- "Puerto Rico"
+
 
 # Read in formatted data ####
 tip_spp <- readRDS(here::here("data", tip_spp_rds))
@@ -85,11 +87,14 @@ county_by_year <- county_data |>
   dplyr::mutate(total_n = sum(n)) |>
   ungroup() |>
   dplyr::mutate(county_sampledn = fct_reorder(county_sampledn, total_n)) %>%
-  ggplot(aes(x = year, y = county_sampledn, color = county_sampledn, size = n)) +
+  ggplot(aes(x = year,
+             y = county_sampledn, 
+             color = county_sampledn, 
+             size = n)) +
   geom_point() +
   labs(
     x = "Year", y = "", colour = "", shape = "",
-    title = paste(isl, "Length Samples")
+    title = paste(print_isl, "Length Samples")
   ) +
   theme_bw() +
   theme(
@@ -116,7 +121,7 @@ gear_by_yr <- gear_data |>
   geom_point() +
   labs(
     x = "Year", y = "", colour = "", shape = "",
-    title = paste(isl, "Length Samples")
+    title = paste(print_isl, "Length Samples")
   ) +
   theme_bw() +
   theme(
@@ -139,6 +144,11 @@ weight_types <- tip_spp_relevant |>
     last_year = max(year),
     n_years = dplyr::n_distinct(year)
   )
+flextable(weight_types)|> 
+  theme_box() %>%
+  align(align = "center", part = "all") %>%
+  fontsize(size=8, part="all") %>%
+  autofit() 
 
 # Plot weight values recorded over time ####
 weight_time <- tip_spp_count |>
@@ -177,7 +187,11 @@ length_types <- tip_spp_relevant |>
     percent_na_obs_weight_lbs = round(na_obs_weight_lbs / n * 100, 1),
   )
 
-view(length_types)
+flextable(length_types)|> 
+  theme_box() %>%
+  align(align = "center", part = "all") %>%
+  fontsize(size=8, part="all") %>%
+  autofit() 
 
 # Plot length values recorded over time ####
 length_time <- tip_spp_count |>

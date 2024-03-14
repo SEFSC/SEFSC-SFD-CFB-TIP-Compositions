@@ -6,7 +6,7 @@
 librarian::shelf(here, tidyverse)
 
 # Specify settings ####
-tip_spp_rds <- "pr_yts_forest_tip_20240307.rds" # rds from end of 02 script
+tip_spp_rds <- "pr_yts_forest_tip_20240312.rds" # rds from end of 02 script
 spp <- "yts"
 isl <- "pr"
 len_type <- "FORK LENGTH"
@@ -15,6 +15,8 @@ min_size <- 1
 max_size <- 122   
 start_yr <- 1983
 end_yr <- 2022 
+print_isl <- "Puerto Rico"
+
 
 # Read in formatted data ####
 tip_spp <- readRDS(here::here("data", tip_spp_rds))

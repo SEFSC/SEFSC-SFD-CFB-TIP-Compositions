@@ -4,67 +4,94 @@
 #' k calculations to determine possible gear groupings and data outliers
 
 # Load libraries ####
-librarian::shelf(here, tidyverse, flextable, ggplot2, lmerTest, meantables)
+librarian::shelf(here, tidyverse, flextable, ggplot2, ggpubr, lmerTest, meantables)
 
 # Specify settings ####
-tip_spp_rds <- "pr_yts_prep_tip_20240307.rds" # rds from end of 03 script
+tip_spp_rds <- "pr_yts_prep_tip_20240312.rds" # rds from end of 03 script
 spp <- "yts"
 isl <- "pr"
-break_year <- 2012 
+break_year <- 2012
+print_isl <- "Puerto Rico"
+
 
 # Read in formatted data ####
 tip_spp <- readRDS(here::here("data", tip_spp_rds))
 
-# GLMM model analysis #### 
+# GLMM model analysis ####
 tip_spp_glm <- tip_spp |>
-  select(year, interview_date, id, island, length1_cm, gear) 
+  select(year, interview_date, id, island, length1_cm, gear)
 
 # plot data
 
 # Create box plot across years
 box_plot <- ggboxplot(
-  tip_spp_glm, x = "gear", y = "length1_cm",
+  tip_spp_glm,
+  x = "gear", y = "length1_cm",
   color = "gear",
-  ylab = "length1_cm", xlab = "gear")
+) +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 10),
+    legend.position = "none"
+  ) +
+  labs(
+    x = "Gear", y = "Length(cm)", colour = "", shape = "",
+    title = paste(print_isl, "Length Samples")
+  )
 box_plot
 # Create density plot across years
-density_plot <- ggdensity(use_gear, x = "length1_cm",
-                          add = "mean", rug = TRUE,
-                          color = "gear", fill = "gear",
-                          ylab = "length1_cm", xlab = "Gear")
+density_plot <- ggdensity(
+  tip_spp_glm,
+  x = "length1_cm",
+  add = "mean", rug = TRUE
+  # color = "gear", fill = "gear",
+) +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 10),
+    legend.position = "none"
+  ) +
+  labs(
+    x = "All Gears", y = "Length(cm)", colour = "", shape = "",
+    title = paste(print_isl, "Length Samples")
+  )
 density_plot
 
-#' filtered to gears with 30 or more occurrences for the purposes 
+#' filtered to gears with 30 or more occurrences for the purposes
 #' of plotting visibility
-allgears_glm_plot <- tip_spp_glm %>% 
-  group_by(gear) %>% 
-  filter(n() >= 30) %>% 
-  ungroup |>
+allgears_glm_plot <- tip_spp_glm %>%
+  group_by(gear) %>%
+  filter(n() >= 30) %>%
+  ungroup() |>
   ggplot(aes(x = as.Date(interview_date), y = length1_cm)) +
   geom_point(aes(colour = gear, shape = gear), size = 1, alpha = 0.5) +
-  scale_shape_manual(values=c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 
-                              13, 14, 15, 16, 17, 18, 19))+
+  scale_shape_manual(values = c(
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12,
+    13, 14, 15, 16, 17, 18, 19
+  )) +
   geom_smooth(method = "lm", formula = "y ~ x", col = "black") +
   # facet_wrap(~ COUNTY_LANDED) +
   labs(x = "", y = "Length (cm)", colour = "", shape = "") +
   theme_bw() +
-  theme(legend.position = "bottom", legend.text = element_text(size = 7),
-        legend.box.spacing = unit(0, "npc"), panel.grid = element_blank()) +
+  theme(
+    legend.position = "bottom", legend.text = element_text(size = 7),
+    legend.box.spacing = unit(0, "npc"), panel.grid = element_blank()
+  ) +
   guides(colour = guide_legend(override.aes = list(size = 2)))
 allgears_glm_plot
 
 ## Comparing length to date and gear in a gamma full model ####
 mod2 <- glmer(length1_cm ~ scale(interview_date) + gear + (1 | year) + (1 | id),
-              data = tip_spp, 
-              family = Gamma(link = log)
+  data = tip_spp,
+  family = Gamma(link = log)
 )
 
-# pairwise comparisons - compares each gear to eachother and gives p value
-mod_contr <- emmeans::emmeans(object = mod2, 
-                              pairwise ~ "gear", 
-                              adjust = "tukey")
+# pairwise comparisons - compares each gear to each other and gives p value
+mod_contr <- emmeans::emmeans(
+  object = mod2,
+  pairwise ~ "gear",
+  adjust = "tukey"
+)
 
-# cld provides gear groupings based on which gears are 
+# cld provides gear groupings based on which gears are
 # similar vs significantly different from each other
 allgears_multcompcld <- multcomp::cld(object = mod_contr$emmeans)
 
@@ -80,14 +107,16 @@ length_data_tripcount <- aggregate(
 )
 
 # Add counts to GLMM table
-allgears_multcompcld_fish <- full_join(allgears_multcompcld, 
-                                       length_data_fishcount, 
-                                       by = "gear")
-allgears_multcompcld_trip <- full_join(allgears_multcompcld_fish, 
-                                       length_data_tripcount, 
-                                       by = "gear")
+allgears_multcompcld_fish <- full_join(allgears_multcompcld,
+  length_data_fishcount,
+  by = "gear"
+)
+allgears_multcompcld_trip <- full_join(allgears_multcompcld_fish,
+  length_data_tripcount,
+  by = "gear"
+)
 
-# Clean table of GLMM and summary stats and filter to gears with more than 3 
+# Clean table of GLMM and summary stats and filter to gears with more than 3
 # unique interviews
 allgears_multcompcld_final <- allgears_multcompcld_trip |>
   mutate(
@@ -106,15 +135,18 @@ allgears_multcompcld_final <- allgears_multcompcld_trip |>
     "Interview(n)" = "id"
   ) |>
   dplyr::filter(`Interview(n)` >= 3) |>
-  select(Gear, 
-         "Estimated Marginal Mean",
-         LCL, 
-         UCL, 
-         Group, 
-         "Fish(n)", 
-         "Interview(n)", 
-         Percentage) |>
+  select(
+    Gear,
+    "Estimated Marginal Mean",
+    LCL,
+    UCL,
+    Group,
+    "Fish(n)",
+    "Interview(n)",
+    Percentage
+  ) |>
   # Add gear groups related to each statistical group given by GLMM
+  ### FIX THESE GEAR GROUPINGS 
   mutate("Gear Group" = case_when(
     Gear == "LINES HAND" ~ "Hand Line",
     Gear == "POTS AND TRAPS; FISH" ~ "Traps",
@@ -139,8 +171,8 @@ mean_allgears <- tip_spp %>%
 
 # Join means to GLMM/summary stats table
 allgears_multicom_mean <- full_join(mean_allgears,
-                                    allgears_multcompcld_final,
-                                    by = "Gear"
+  allgears_multcompcld_final,
+  by = "Gear"
 )
 
 # Arrange table in decreasing order of gear percent representation
@@ -148,114 +180,134 @@ allgears_multicom_mean_final <- allgears_multicom_mean |>
   arrange(desc(Percentage))
 # dplyr::filter(`Interview(n)` >= 3)
 
+
+glm_tbl = flextable(allgears_multicom_mean_final) |> 
+  theme_box() %>%
+  align(align = "center", part = "all") %>%
+  fontsize(size=8, part="all") %>%
+  autofit() 
+
 # Repeat GLMM with data after data break year ####
 
 tip_spp_break_year <- tip_spp |>
-  filter(year >= break_year) |> 
-  select(year, interview_date, id, island, length1_cm,  gear) 
+  filter(year >= break_year) |>
+  select(year, interview_date, id, island, length1_cm, gear)
 
 # plot data
 
 allgears_glm_plot <- length_data_glm_2012 |>
   ggplot(aes(x = as.Date(FINAL_DATE), y = FL_CM)) +
-  geom_point(aes(colour = gear , shape = gear), size = 1, alpha = 0.5) +
+  geom_point(aes(colour = gear, shape = gear), size = 1, alpha = 0.5) +
   geom_smooth(method = "lm", formula = "y ~ x", col = "black") +
   # facet_wrap(~ COUNTY_LANDED) +
   labs(x = "", y = "Length (cm)", colour = "", shape = "") +
   theme_bw() +
-  theme(legend.position = "bottom", legend.text = element_text(size = 15),
-        legend.box.spacing = unit(0, "npc"), panel.grid = element_blank()) +
+  theme(
+    legend.position = "bottom", legend.text = element_text(size = 15),
+    legend.box.spacing = unit(0, "npc"), panel.grid = element_blank()
+  ) +
   guides(colour = guide_legend(override.aes = list(size = 2)))
 
 # gant_data_12 <- length_data_glm_2012 %>% group_by(ID) %>% dplyr::filter(n() >= 3) %>% ungroup %>%
 #   # filter(ID >= 3) |>
 #   group_by(YEAR, gear) |>
-#   dplyr::summarize(n = n(), .groups = "drop") |> 
+#   dplyr::summarize(n = n(), .groups = "drop") |>
 #   mutate(YEAR = as.integer(YEAR))
 
-# gant_data_12 <- length_data_glm_2012 %>% 
-#   group_by(gear) %>% 
-#   dplyr::mutate(n_ID = n_distinct(ID)) |> 
+# gant_data_12 <- length_data_glm_2012 %>%
+#   group_by(gear) %>%
+#   dplyr::mutate(n_ID = n_distinct(ID)) |>
 #   dplyr::filter(n_ID >= 3) %>% ungroup %>%
 #   group_by(YEAR, gear) |>
-#   dplyr::summarize(n = n(), .groups = "drop") |> 
+#   dplyr::summarize(n = n(), .groups = "drop") |>
 #   mutate(YEAR = as.integer(YEAR))
-# 
+#
 # abc2 <- gant_data_12 |>
 #   ggplot(aes(x = YEAR, y = gear, color = gear, size = n)) +
 #   geom_point()  +
 #   labs(x = "Year", y = "", colour = "", shape = "") +
-#   theme_bw() + 
+#   theme_bw() +
 #   theme(legend.position="null", text = element_text(size = 15)) +
 #   xlim(2012,2022)
 
 # fit models
 
 # comparing length to date and gear in a gamma full model
-mod2 = glmer(FL_CM ~ scale(FINAL_DATE) + gear + (1 | YEAR) + (1 | ID),
-             data = length_data_glm_2012, family = Gamma(link=log))
+mod2 <- glmer(FL_CM ~ scale(FINAL_DATE) + gear + (1 | YEAR) + (1 | ID),
+  data = length_data_glm_2012, family = Gamma(link = log)
+)
 
 
 # pairwise comparisons (if needed)(needed for Hook and Line)
-### 
-mod_contr = emmeans::emmeans(object = mod2, pairwise ~ "gear", adjust = "tukey")
+###
+mod_contr <- emmeans::emmeans(object = mod2, pairwise ~ "gear", adjust = "tukey")
 
 allgears_multcompcld_2012 <- multcomp::cld(object = mod_contr$emmeans)
 
-length_data_fishcount_12 <- length_data_glm_2012 |> 
+length_data_fishcount_12 <- length_data_glm_2012 |>
   group_by(gear) |>
   tally()
-length_data_tripcount_12 <- aggregate(data = length_data_glm_2012,                # Applying aggregate
-                                      ID ~ gear,
-                                      function(ID) length(unique(ID)))
+length_data_tripcount_12 <- aggregate(
+  data = length_data_glm_2012, # Applying aggregate
+  ID ~ gear,
+  function(ID) length(unique(ID))
+)
 
 allgears_multcompcld_fish_2012 <- full_join(allgears_multcompcld_2012, length_data_fishcount_12, by = "gear")
 allgears_multcompcld_trip_2012 <- full_join(allgears_multcompcld_fish_2012, length_data_tripcount_12, by = "gear")
 
-allgears_multcompcld_finaL_2012 <- allgears_multcompcld_trip_2012 |> 
-  mutate(Percentage = round(n/sum(n)*100, 2), 
-         emmean = round(emmean, 2),
-         asymp.LCL = round(asymp.LCL, 2),
-         asymp.UCL = round(asymp.UCL, 2))|>
-  dplyr::rename("Group" = ".group",
-                "Gear" = "gear",
-                "Estimated Marginal Mean" = "emmean",
-                "LCL" = "asymp.LCL",
-                "UCL" = "asymp.UCL",
-                "Fish(n)" = "n",
-                "Interview(n)" = "ID") |> 
-  # filter("Interview(n)" >= 3) |> 
-  dplyr::filter(`Interview(n)` >= 3)|> 
-  select(Gear, "Estimated Marginal Mean", LCL, UCL,  Group, "Fish(n)","Interview(n)", Percentage ) |>
-  mutate("Gear Group" = case_when(Gear == "LINES HAND" ~ "Hand Line",
-                                  Gear == 'POTS AND TRAPS; FISH'~ "Traps",
-                                  Gear == "HAUL SEINES"~ "Hand Line or Traps",
-                                  Gear == "POTS AND TRAPS; CMB"~ "Hand Line or Traps",
-                                  Gear == "POTS AND TRAPS;SPINY LOBSTER" ~ "Hand Line or Traps",
-                                  Gear == "ROD AND REEL" ~ "Rod and Reel",
-                                  TRUE ~ "Hand Line, Traps, or Rod and Reel")) 
+allgears_multcompcld_finaL_2012 <- allgears_multcompcld_trip_2012 |>
+  mutate(
+    Percentage = round(n / sum(n) * 100, 2),
+    emmean = round(emmean, 2),
+    asymp.LCL = round(asymp.LCL, 2),
+    asymp.UCL = round(asymp.UCL, 2)
+  ) |>
+  dplyr::rename(
+    "Group" = ".group",
+    "Gear" = "gear",
+    "Estimated Marginal Mean" = "emmean",
+    "LCL" = "asymp.LCL",
+    "UCL" = "asymp.UCL",
+    "Fish(n)" = "n",
+    "Interview(n)" = "ID"
+  ) |>
+  # filter("Interview(n)" >= 3) |>
+  dplyr::filter(`Interview(n)` >= 3) |>
+  select(Gear, "Estimated Marginal Mean", LCL, UCL, Group, "Fish(n)", "Interview(n)", Percentage) |>
+  mutate("Gear Group" = case_when(
+    Gear == "LINES HAND" ~ "Hand Line",
+    Gear == "POTS AND TRAPS; FISH" ~ "Traps",
+    Gear == "HAUL SEINES" ~ "Hand Line or Traps",
+    Gear == "POTS AND TRAPS; CMB" ~ "Hand Line or Traps",
+    Gear == "POTS AND TRAPS;SPINY LOBSTER" ~ "Hand Line or Traps",
+    Gear == "ROD AND REEL" ~ "Rod and Reel",
+    TRUE ~ "Hand Line, Traps, or Rod and Reel"
+  ))
 
 # create table of means for each gear
 mean_allgears2012 <- length_data_glm_2012 %>%
   group_by(gear) %>%
-  dplyr::mutate(n_ID = n_distinct(ID)) |> 
+  dplyr::mutate(n_ID = n_distinct(ID)) |>
   dplyr::filter(n_ID >= 3) |>
-  mean_table(FL_CM) |> 
-  dplyr::rename("Gear" = "group_cat",
-                "Mean" = "mean") |> 
+  mean_table(FL_CM) |>
+  dplyr::rename(
+    "Gear" = "group_cat",
+    "Mean" = "mean"
+  ) |>
   select(Gear, Mean)
 
 allgears_multicom_mean2012 <- full_join(mean_allgears2012, allgears_multcompcld_finaL_2012, by = "Gear")
 
-allgears_multicom_mean_final2012 <- allgears_multicom_mean2012 |> 
+allgears_multicom_mean_final2012 <- allgears_multicom_mean2012 |>
   arrange(desc(Percentage))
 
 
-tbl2 = flextable(allgears_multicom_mean_final2012) |> 
+glm_tlb2 <- flextable(allgears_multicom_mean_final2012) |>
   theme_box() %>%
   align(align = "center", part = "all") %>%
-  fontsize(size=8, part="all") %>%
-  autofit() 
+  fontsize(size = 8, part = "all") %>%
+  autofit()
 
 
 
@@ -275,21 +327,21 @@ tip_k_upper <- tip_k_75q + 1.5 * tip_k_iqr
 
 tip_k_iqr # 0.3245058
 tip_k_25q # 1.359978
-tip_k_75q # 1.684483 
-tip_k_lower # 0.8732189 
-tip_k_upper # 2.171242 
+tip_k_75q # 1.684483
+tip_k_lower # 0.8732189
+tip_k_upper # 2.171242
 
-# Implement filtering system to remove outliers #### 
-#' For our purposes of the SEDAR 84 size comp, we filtered out interviews with 
-#' less than 3 unique interview IDs per gear 
-#' Other filters could include removing gears with less than 30 recorded lengths, 
-#' years with less than 30 recorded lengths, years with less than 10 unique 
-#' interview IDs, or k more or less than upper and lower limits set above 
+# Implement filtering system to remove outliers ####
+#' For our purposes of the SEDAR 84 size comp, we filtered out interviews with
+#' less than 3 unique interview IDs per gear
+#' Other filters could include removing gears with less than 30 recorded lengths,
+#' years with less than 30 recorded lengths, years with less than 10 unique
+#' interview IDs, or k more or less than upper and lower limits set above
 
 tip_clean <- tip_spp %>%
   group_by(gear) %>%
   dplyr::mutate(n_ID = n_distinct(id)) |>
-  dplyr::filter(n_ID >= 3) |> 
+  dplyr::filter(n_ID >= 3) |>
   ungroup()
 
 # Save cleaned tip_clean ####
@@ -308,16 +360,15 @@ saveRDS(
 # ## Comparing k to date and area in a gamma full model ####
 # # If using multiple islands use "island", if just PR use "county_sampled"
 # mod3 <- glmer(k ~ scale(interview_date) + county_sampled + (1 | year) + (1 | id),
-#               data = tip_spp, 
+#               data = tip_spp,
 #               family = Gamma(link = log)
 # )
-# 
+#
 # # pairwise comparisons - compares each gear to eachother and gives p value
-# mod_contr <- emmeans::emmeans(object = mod3, 
-#                               pairwise ~ "gear", 
+# mod_contr <- emmeans::emmeans(object = mod3,
+#                               pairwise ~ "gear",
 #                               adjust = "tukey")
-# 
-# # cld provides gear groupings based on which gears are 
+#
+# # cld provides gear groupings based on which gears are
 # # similar vs significantly different from each other
 # allgears_multcompcld <- multcomp::cld(object = mod_contr$emmeans)
-
