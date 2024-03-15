@@ -6,7 +6,7 @@
 librarian::shelf(here, tidyverse)
 
 # Specify settings ####
-tip_spp_rds <- "pr_yts_forest_tip_20240312.rds" # rds from end of 02 script
+tip_spp_rds <- "pr_yts_forest_tip_20240314.rds" # rds from end of 02 script
 spp <- "yts"
 isl <- "pr"
 len_type <- "FORK LENGTH"

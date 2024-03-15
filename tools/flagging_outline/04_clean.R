@@ -7,7 +7,7 @@
 librarian::shelf(here, tidyverse, flextable, ggplot2, ggpubr, lmerTest, meantables)
 
 # Specify settings ####
-tip_spp_rds <- "pr_yts_prep_tip_20240312.rds" # rds from end of 03 script
+tip_spp_rds <- "pr_yts_prep_tip_20240314.rds" # rds from end of 03 script
 spp <- "yts"
 isl <- "pr"
 break_year <- 2012

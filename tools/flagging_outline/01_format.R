@@ -70,37 +70,37 @@ saveRDS(
   )
 )
 
-# Tabulate length types ####
-length_types <- tip_spp |>
-  dplyr::group_by(
-    island,
-    obs_standard_species_code,
-    length_type1
-  ) |>
-  dplyr::summarize(
-    .groups = "drop",
-    n = dplyr::n(),
-    percent = round(n / nrow(tip_spp) * 100, 1),
-    first_year = min(year),
-    last_year = max(year),
-    n_years = dplyr::n_distinct(year),
-    na_length1_cm = sum(is.na(length1_cm)),
-    percent_na_length1_cm = round(na_length1_cm / n * 100, 1),
-    na_obs_weight_kg = sum(is.na(obs_weight_kg)),
-    percent_na_obs_weight_kg = round(na_obs_weight_kg / n * 100, 1),
-  )
-
-view(length_types)
-
-# OBTAIN LOWER AND UPPER ESTIMATES OF K ####
-tip_k_iqr <- IQR(tip_spp$k, na.rm = TRUE)
-tip_k_25q <- quantile(tip_spp$k, 0.25, na.rm = TRUE)
-tip_k_75q <- quantile(tip_spp$k, 0.75, na.rm = TRUE)
-tip_k_lower <- tip_k_25q - 1.5 * tip_k_iqr
-tip_k_upper <- tip_k_75q + 1.5 * tip_k_iqr
-
-tip_k_iqr # 0.2531215
-tip_k_25q # 2.159224
-tip_k_75q # 2.412345
-tip_k_lower # 1.779541
-tip_k_upper # 2.792027
+# # Tabulate length types ####
+# length_types <- tip_spp |>
+#   dplyr::group_by(
+#     island,
+#     obs_standard_species_code,
+#     length_type1
+#   ) |>
+#   dplyr::summarize(
+#     .groups = "drop",
+#     n = dplyr::n(),
+#     percent = round(n / nrow(tip_spp) * 100, 1),
+#     first_year = min(year),
+#     last_year = max(year),
+#     n_years = dplyr::n_distinct(year),
+#     na_length1_cm = sum(is.na(length1_cm)),
+#     percent_na_length1_cm = round(na_length1_cm / n * 100, 1),
+#     na_obs_weight_kg = sum(is.na(obs_weight_kg)),
+#     percent_na_obs_weight_kg = round(na_obs_weight_kg / n * 100, 1),
+#   )
+# 
+# view(length_types)
+# 
+# # OBTAIN LOWER AND UPPER ESTIMATES OF K ####
+# tip_k_iqr <- IQR(tip_spp$k, na.rm = TRUE)
+# tip_k_25q <- quantile(tip_spp$k, 0.25, na.rm = TRUE)
+# tip_k_75q <- quantile(tip_spp$k, 0.75, na.rm = TRUE)
+# tip_k_lower <- tip_k_25q - 1.5 * tip_k_iqr
+# tip_k_upper <- tip_k_75q + 1.5 * tip_k_iqr
+# 
+# tip_k_iqr # 0.2531215
+# tip_k_25q # 2.159224
+# tip_k_75q # 2.412345
+# tip_k_lower # 1.779541
+# tip_k_upper # 2.792027

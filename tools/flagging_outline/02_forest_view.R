@@ -7,7 +7,7 @@ librarian::shelf(
 )
 
 # Specify settings ####
-tip_spp_rds <- "pr_yts_format_tip_20240312.rds" # rds from end of 01 script
+tip_spp_rds <- "pr_yts_format_tip_20240314.rds" # rds from end of 01 script
 spp <- "yts"
 isl <- "pr"
 print_isl <- "Puerto Rico"

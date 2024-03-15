@@ -75,7 +75,7 @@ full_mean = round(mean(tip_spp$length1_cm), 2)
 tip_spp_2012_2022 <- tip_spp |>
   filter(year >= 2012) 
 
-truncated_mean = round(mean(length_data_2012_2022$length1_cm), 2)
+truncated_mean = round(mean(tip_spp_2012_2022$length1_cm), 2)
 
 agr_den_NOgears <- 
   ggplot() +
