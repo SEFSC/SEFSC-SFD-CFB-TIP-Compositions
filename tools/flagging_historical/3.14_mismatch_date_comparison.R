@@ -1,11 +1,30 @@
 # find records that are mismatching ####
+yr = 1997
 
 # select records by date that are not aligned ####
+librarian::shelf(here, tidyverse, ROracle, keyring, dotenv, lubridate, flextable)
+load("~/SEFSC-SFD-CFB-TIP-Compositions/data/dataframes/unique_dates_comparison_1997.Rda")
+load("~/SEFSC-SFD-CFB-TIP-Compositions/data/dataframes/pr_historical_1997.Rda")
+load("~/SEFSC-SFD-CFB-TIP-Compositions/data/dataframes/com_tip_PR_1997.Rda")
 
 # find dates where records are misaligned 
 misaligned_dates <- unique_dates_comparison |> 
   filter(is.na(COMPARE) | COMPARE < 0 | COMPARE > 0)
 unique(misaligned_dates$FINAL_DATE)
+
+# file is saved in data folder
+save(misaligned_dates,
+     file = here::here(
+       "data", "dataframes",
+       paste0(
+         "misaligned_dates",
+         "_",
+         yr,
+         ".Rda"
+       )
+     )
+)
+
 # filter datasets to those dates 
 # oracle
 misaligned_dates_oracle <- tip_ORGANIZED |> 
@@ -103,14 +122,14 @@ misaligned_unique_place_merge <-
 misaligned_place_comparison <- misaligned_unique_place_merge %>%
   mutate(COMPARE = (COUNT_ORACLE - COUNT_HISTORICAL))
 
-flextable(misaligned_muni_comparison) |>
+flextable(misaligned_place_comparison) |>
   theme_box() %>%
   align(align = "center", part = "all") %>%
   fontsize(size = 8, part = "all") %>%
   autofit()
 
 # total comparison - ensure there is the same difference
-total_yr_muni_comparison <- muni_comparison |>
+total_yr_muni_comparison <- misaligned_place_comparison |>
   summarize(
     total_tip = sum(COUNT_ORACLE, na.rm = TRUE),
     total_historical = sum(COUNT_HISTORICAL, na.rm = TRUE)
@@ -122,4 +141,86 @@ flextable(total_yr_muni_comparison) |>
   align(align = "center", part = "all") %>%
   fontsize(size = 8, part = "all") %>%
   autofit()
+
+# GEAR COMPARISON #### 
+
+# read in conversion table
+gear_codes <- read_csv("~/SEFSC-SFD-CFB-TIP-Compositions/data/CSVs/TIPS_GEAR_GROUPS.csv")
+
+# unique GEAR CODES and number of occurrences - ORACLE -
+# use GEAR_1 because those are the island specific codes and will match with
+# those used in historic
+mis_tip_unique_GEAR <- misaligned_dates_oracle %>%
+  group_by(GEAR_1) %>%
+  summarize(count = n())
+mis_tip_unique_GEAR_updated <- mis_tip_unique_GEAR %>%
+  rename(
+    COUNT_ORACLE = count,
+    PR_GEAR = GEAR_1
+  )
+# com_PR_lob_unique_MUNI_updated$muni_zip_ORACLE = as.numeric(as.character(com_PR_lob_unique_MUNI_updated$muni_zip_ORACLE))
+mis_tip_unique_GEAR_NAMES <- mis_tip_unique_GEAR_updated %>%
+  mutate(
+    GEAR_NAME =
+      gear_codes$STANDARD_NAME[match(
+        mis_tip_unique_GEAR_updated$PR_GEAR,
+        gear_codes$PR_GEAR
+      )]
+  )
+
+
+# unique dates and number of occurrences- HISTORICAL- 13 UNIQUE MUNI_ZIP
+mis_pr_hist_unique_GEAR <- misaligned_dates_his %>%
+  group_by(GEARCODE) %>%
+  summarize(count = n())
+mis_pr_hist_unique_GEAR_UPDATED <- mis_pr_hist_unique_GEAR %>%
+  rename(
+    COUNT_HISTORICAL = count,
+    PR_GEAR = GEARCODE
+  )
+
+mis_pr_hist_unique_GEAR_NAMES <- mis_pr_hist_unique_GEAR_UPDATED %>%
+  mutate(
+    GEAR_NAME =
+      gear_codes$STANDARD_NAME[match(
+        mis_pr_hist_unique_GEAR_UPDATED$PR_GEAR,
+        gear_codes$PR_GEAR
+      )]
+  )
+
+# merge tables
+mis_unique_GEAR_merge_PR <-
+  merge(mis_tip_unique_GEAR_NAMES,
+        mis_pr_hist_unique_GEAR_NAMES,
+        by = "GEAR_NAME",
+        all = TRUE
+  )
+
+# COMPARE
+mis_GEAR_comparison <- mis_unique_GEAR_merge_PR %>%
+  mutate(COMPARE = (COUNT_ORACLE - COUNT_HISTORICAL))
+
+flextable(mis_GEAR_comparison) |>
+  theme_box() %>%
+  align(align = "center", part = "all") %>%
+  fontsize(size = 8, part = "all") %>%
+  autofit()
+
+# total comparison - ensure there is the same difference
+mis_total_yr_gear_comparison <- mis_GEAR_comparison |>
+  summarize(
+    total_tip = sum(COUNT_ORACLE, na.rm = TRUE),
+    total_historical = sum(COUNT_HISTORICAL, na.rm = TRUE)
+  ) |>
+  mutate(comparison = total_tip - total_historical)
+
+flextable(mis_total_yr_gear_comparison) |>
+  theme_box() %>%
+  align(align = "center", part = "all") %>%
+  fontsize(size = 8, part = "all") %>%
+  autofit()
+
+# try group by strategy 
+
+
          
