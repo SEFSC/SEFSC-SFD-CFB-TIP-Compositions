@@ -16,55 +16,8 @@ print_isl <- "Puerto Rico"
 # Read in formatted data ####
 tip_spp <- readRDS(here::here("data", tip_spp_rds))
 
-# Select variables relevant to flagging investigation ####
-tip_spp_relevant <- tip_spp |>
-  select(
-    id, # trip interview id
-    interview_date,
-    year,
-    island, # pr, stt, stx
-    obs_standard_species_code,
-    length1_cm, # calculated from length1_mm
-    length1_inch, # calculated from length1_mm
-    obs_weight_lbs, # calculated from obs_weight
-    k, # calculated 01
-    sex_name, # male, female, unknown, not sexed
-    gear, # gear from land_standard_gear_name subbed w/ gear_1 when unavailable
-    county_sampled, # sampled county in PR
-    length_unit1, # original length unit
-    length_type1, # original length type
-    obs_weight_unit, # original weight unit
-    sample_condition,
-    sector
-  )
-
-# Find first year and min/max lengths ####
-### use this as preliminary look at possible inaccurate lengths
-# compare type1 and type2 lengths 
-table(tip_spp$length_type1, useNA='always')
-table(tip_spp$length_type2, useNA='always')
-
-min(tip_spp_relevant$length1_cm,na.rm = TRUE)
-max(tip_spp_relevant$length1_cm,na.rm = TRUE)
-
-tip_range  <- tip_spp_relevant[with(tip_spp_relevant,order(-length1_cm)),]
-tip_range$length1_cm[1:25]
-
-tip_range2 <- tip_spp_relevant[with(tip_spp_relevant,order(length1_cm)),]
-tip_range2$length1_cm[1:25]
-
-min(tip_spp_relevant$year,na.rm = TRUE)
-
-# Specify settings ####
-## Range currently set to not drop any obs 
-min_size <- 1
-max_size <- 122   
-min_year <- 1983
-max_year <- 2022 
-
-
 # Create count of observed records for each area  ####
-tip_spp_count <- tip_spp_relevant |>
+tip_spp_count <- tip_spp |>
   add_count(county_sampled) |>
   dplyr::mutate(county_sampledn = paste0(county_sampled, " (", n, ")")) |>
   select(-n) |>
