@@ -1,4 +1,5 @@
 # adyan's
+# all islands and species?
 
 # Convert units and calculate and k
 spp_size_prep <- spp_size |>

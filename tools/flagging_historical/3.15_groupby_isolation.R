@@ -74,7 +74,7 @@ gear_codes <- read_csv("~/SEFSC-SFD-CFB-TIP-Compositions/data/CSVs/TIPS_GEAR_GRO
 # oracle
 aligned_dates_oracle_gear <- aligned_dates_oracle_muni %>%
   mutate(
-    GEAR_NAME =
+    gear_name =
       gear_codes$STANDARD_NAME[match(
         aligned_dates_oracle_muni$GEAR_1,
         gear_codes$PR_GEAR
@@ -84,7 +84,7 @@ aligned_dates_oracle_gear <- aligned_dates_oracle_muni %>%
 # historical 
 aligned_dates_his_gear <- aligned_dates_his_muni %>%
   mutate(
-    GEAR_NAME =
+    gear_name =
       gear_codes$STANDARD_NAME[match(
         aligned_dates_his_muni$GEARCODE,
         gear_codes$PR_GEAR
@@ -92,10 +92,62 @@ aligned_dates_his_gear <- aligned_dates_his_muni %>%
   )
 
 
+# input species names ####
+
+# read in conversion table
+species_codes <- 
+  read_csv("~/SEFSC-SFD-CFB-TIP-Compositions/data/CSVs/pr_species_codes_oracle_conv.csv")
+tip_ORGANIZED$OBS_STANDARD_SPECIES_CODE <- 
+  str_remove(tip_ORGANIZED$OBS_STANDARD_SPECIES_CODE, "^0+")#
+
+# oracle
+aligned_dates_oracle_spp <- aligned_dates_oracle_gear %>%
+  mutate(
+    spp_name =
+      species_codes$NAME[match(
+        aligned_dates_oracle_gear$OBS_STANDARD_SPECIES_CODE,
+        species_codes$STANDARD_SPECIES_ID
+      )]
+  )
+
+# historical
+# if data 2000 to 2007, use SPECIES_B
+aligned_dates_his_spp <- aligned_dates_his_gear %>%
+  mutate(
+    spp_name =
+      species_codes$NAME[match(
+        aligned_dates_his_gear$SPECIES,
+        species_codes$ID
+      )]
+  )
+
 # organize data sheets in order of original comparison script
 # date, area, gear, species, size
+# historical length variable STLENGTH, update based on variable used
 
-grouped_oracle <- aligned_dates_oracle |> 
-  group_by(FINAL_DATE, )
+grouped_oracle <- aligned_dates_oracle_spp |> 
+  arrange(desc(FINAL_DATE)) |> 
+  group_by(FINAL_DATE, place_name, gear_name, spp_name, LENGTH1_MM) |> 
+  select(ID, FINAL_DATE, place_name, gear_name, spp_name, LENGTH1_MM) |> 
+  rename(date = FINAL_DATE, 
+         length = LENGTH1_MM)
 
 
+
+grouped_hist <- aligned_dates_his_spp |> 
+  arrange(desc(INTDATE)) |> 
+  group_by(INTDATE, place_name, gear_name, spp_name, STLENGTH ) |> 
+  select(INTDATE, place_name, gear_name, spp_name, STLENGTH) |> 
+  rename(date = INTDATE,
+         length = STLENGTH)
+
+
+# compare records ####
+records_compare <-
+  merge(grouped_oracle, grouped_hist, by.x=c('date', 'place_name', 'gear_name'), 
+        by.y=c('date', 'place_name', 'gear_name')) 
+records_compare <-
+  merge(grouped_oracle, grouped_hist,
+        by = c("date", "place_name"),
+        all = TRUE
+  )

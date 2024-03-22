@@ -10,11 +10,6 @@ isl <- "pr"
 # Read in raw data ####
 tip <- readRDS(here::here("data", "raw", tip_rds))
 
-# Find first year and min/max lengths ####
-### use this as preliminary look at possible inaccurate lengths
-# compare type1 and type2 lengths 
-table(tip_spp$length_type1, useNA='always')
-table(tip_spp$length_type2, useNA='always')
 
 # Prep raw data ####
 tip_spp <- tip |>
@@ -68,6 +63,12 @@ tip_spp <- tip |>
     date = interview_date,
     species_code = obs_standard_species_code
   )
+
+# Find first year and min/max lengths ####
+### use this as preliminary look at possible inaccurate lengths
+# compare type1 and type2 lengths 
+table(tip_spp$length_type1, useNA='always')
+table(tip_spp$length_type2, useNA='always')
 
 # look at min and max standardized lengths ####
 min(tip_spp$length1_cm,na.rm = TRUE)
