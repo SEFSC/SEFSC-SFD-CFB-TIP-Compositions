@@ -6,7 +6,7 @@
 
 
 # Load libraries ####
-librarian::shelf(here, tidyverse, flextable, ggplot2)
+librarian::shelf(here, tidyverse, flextable, ggplot2, janitor)
 
 # Specify settings ####
 tip_spp_rds <- "pr_yts_clean_tip_20240307.rds" # rds from end of 02 script
@@ -41,13 +41,16 @@ gear_by_yr <- gear_data |>
     title = element_text(size = 15)
   )
 
+abc1 = gear_by_yr
+
 # Plot gears by number of unqiue interviews over time ####
 gant_data_id <- tip_spp %>% 
+  group_by(gear) %>% 
+  dplyr::mutate(n_ID = n_distinct(id)) |> 
+  dplyr::filter(n_ID >= 3) %>% ungroup %>%
   group_by(year, gear) |>
   dplyr::summarize(n_ID = n_distinct(id), .groups = "drop") |> 
-  mutate(year = as.integer(year))+
-  geom_vline(xintercept = (break_year - 0.5),  
-             color = "darkgrey", linewidth=1.5)
+  mutate(year = as.integer(year))
 
 gear_by_id <- gant_data_id |>
   # filter(YEAR > 2011) |> 
@@ -65,6 +68,8 @@ gear_by_id <- gant_data_id |>
   geom_vline(xintercept = (break_year - 0.5),  
              color = "darkgrey", linewidth=1.5)
 
+abc2 = gear_by_id
+
 # Gear Density Plots ####
 
 ## Aggregated density plots ####
@@ -72,10 +77,10 @@ gear_by_id <- gant_data_id |>
 
 full_mean = round(mean(tip_spp$length1_cm), 2)
 
-tip_spp_2012_2022 <- tip_spp |>
-  filter(year >= 2012) 
+tip_spp_break <- tip_spp |>
+  filter(year >= break_year) 
 
-truncated_mean = round(mean(tip_spp_2012_2022$length1_cm), 2)
+truncated_mean = round(mean(tip_spp_break$length1_cm), 2)
 
 agr_den_NOgears <- 
   ggplot() +
@@ -85,24 +90,25 @@ agr_den_NOgears <-
                alpha = .2, 
                data = tip_spp) +
   geom_density(aes(length1_cm, 
-                   color = "tip_spp_2012_2022"),
+                   color = "tip_spp_break"),
                linewidth = 1.0, 
                alpha = .2, 
-               data = tip_spp_2012_2022) +
+               data = tip_spp_break) +
   geom_vline(data = tip_spp, 
              aes(xintercept=mean(length1_cm), 
                  color = "tip_spp"),
              linetype="dashed", linewidth=1) +
-  geom_vline(data=tip_spp_2012_2022, 
+  geom_vline(data=tip_spp_break, 
              aes(xintercept=mean(length1_cm), 
-                 color = "tip_spp_2012_2022"),
+                 color = "tip_spp_break"),
              linetype="dashed", linewidth=1) +
   labs(x = "Fork Length (cm)", 
        title = paste0(print_isl, 
                       " aggregated length density"))+
-  # scale_fill_discrete(name = "Time Series", labels = c("1983-2022", "2012-2022"))
   guides(color=guide_legend(title="Time Series"))+
-  scale_color_discrete(labels=c('1983-2022', '2012-2022'))+
+  scale_color_discrete(
+    labels=c(paste0(min_year, "-", max_year), 
+             paste0(break_year, "-", max_year)))+
   theme(legend.title = element_text(size=20), 
         legend.text = element_text(size=20),
         legend.position = "bottom",
@@ -111,7 +117,8 @@ agr_den_NOgears <-
         axis.title.x = element_text( size = 20),
         axis.title.y = element_text( size = 20),
         title = element_text(size = 20))
-# scale_fill_manual(name = "dataset", values = c(length_data_1983_2022 = "red", length_data_2012_2022 = "green"))
+
+abc3 = agr_den_NOgears
 
 ### GEAR INDIVIDUALS ####
 tip_spp_top_gears <- tip_spp %>% # filter to gears >2% reported
@@ -150,33 +157,29 @@ agr_den_top_gears <- tip_spp_top_gears %>%
   geom_vline(data=muv, aes(xintercept=grp.mean, color=gear),
              linetype="dashed")
 
-### 2012 top gears individuals #### 
+abc4 = agr_den_top_gears
 
-length_data_gears_2012 <- length_data_glm_2012 %>% 
+### top gears after time break #### 
+
+tip_spp_break_gears <- tip_spp_break %>% 
   filter(gear %in% c("LINES HAND", "POTS AND TRAPS; FISH",
                      "ROD AND REEL")) 
 
-ycounts =length_data_gears_2012 %>% #group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
+ycounts =tip_spp_break_gears %>% 
   tabyl("gear") %>%
   mutate(n_labels = paste0(gear, " (n= ", n, ")" ))
 
-muv12 <- plyr::ddply(length_data_gears_2012, "gear", summarise, grp.mean=mean(FL_CM))
-head(muv12)
+muv_break <- 
+  plyr::ddply(tip_spp_break_gears, 
+              "gear", summarise, grp.mean=mean(length1_cm))
+head(muv_break)
 
-agr_den_v12 <- length_data_gears_2012 %>% 
-  # group_by(gear) %>% 
-  # dplyr::mutate(n_ID = n_distinct(ID)) |> 
-  # dplyr::filter(n_ID >= 3) %>% ungroup %>%
-  # group_by(YEAR) %>% 
-  # filter(n() >= 30) %>% ungroup %>%
-  ggplot(aes(FL_CM))+
-  # geom_density( aes(color = "Combined"),lwd=1.5)+
+agr_den_break <- tip_spp_break_gears %>% 
+  ggplot(aes(length1_cm))+
   geom_density(aes(color = gear),linewidth = 0.75)+
   scale_color_hue(labels=ycounts$n_labels)+
-  # scale_color_hue(labels=c("Combined",ycounts$n_labels))+
-  #scale_color_manual(values = gearcols, labels = c("Combined", counts$n_labels))+
-  labs(color = "Gear" , x = "Fork Length (cm)", title = county)+ #title = paste0(county,  "\n (N = ", sum(ycounts$n), ")"))+
-  # theme_minimal()
+  labs(color = "Gear" , x = "Fork Length (cm)", title = print_isl)+ 
+  #title = paste0(print_isl,  "\n (N = ", sum(ycounts$n), ")"))+
   theme(legend.title = element_text(size=20), 
         legend.text = element_text(size=20),
         legend.position = "bottom",
@@ -190,18 +193,18 @@ agr_den_v12 <- length_data_gears_2012 %>%
              linetype="dashed")
 
 
-abc19 = agr_den_v12
+abc5 = agr_den_break
 
 
 ## Annual Density plots ####
 ### ALL GEARS ####
-fleet_final <- length_data_1983_2022[length_data_1983_2022$fleet==1,]
+fleet_final <- tip_spp[tip_spp$fleet==1,]
 
-fcounts = fleet_final %>%  group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
+fcounts = fleet_final %>%  group_by(year) %>% filter(n() >= 30) %>% ungroup %>%
   tabyl(gear) %>%
   mutate(n_labels = paste0(gear, " (n= ", n, ")" ))
 
-all_carSTTJ <-
+all_gear_anden <-
   fleet_final %>%  group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
   group_by(YEAR) %>%
   dplyr::mutate(year_labs = paste0(YEAR, "\n n = ", n())) %>%

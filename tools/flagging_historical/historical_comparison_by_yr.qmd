@@ -19,7 +19,7 @@ The purpose of this document is to compare the data in the Oracle TIP dataset to
 
 librarian::shelf(here, tidyverse, ROracle, keyring, dotenv, lubridate, flextable)
 # pull year data if needed 
-# cr_tip_yr(state_codes = "PR", year = 2003)
+cr_tip_yr(state_codes = "PR", year = 2003)
 
 # Specify settings ####
 tip_rds <- "com_tip_PR_1997_20231117.RDS"

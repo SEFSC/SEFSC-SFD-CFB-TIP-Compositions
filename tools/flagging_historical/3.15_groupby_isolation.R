@@ -69,7 +69,8 @@ aligned_dates_his_muni <- aligned_dates_his %>%
 # input gear names #### 
 
 # read in conversion table
-gear_codes <- read_csv("~/SEFSC-SFD-CFB-TIP-Compositions/data/CSVs/TIPS_GEAR_GROUPS.csv")
+gear_codes <- 
+  read_csv("~/SEFSC-SFD-CFB-TIP-Compositions/data/CSVs/TIPS_GEAR_GROUPS.csv")
 
 # oracle
 aligned_dates_oracle_gear <- aligned_dates_oracle_muni %>%
@@ -129,9 +130,12 @@ grouped_oracle <- aligned_dates_oracle_spp |>
   arrange(desc(FINAL_DATE)) |> 
   group_by(FINAL_DATE, place_name, gear_name, spp_name, LENGTH1_MM) |> 
   select(ID, FINAL_DATE, place_name, gear_name, spp_name, LENGTH1_MM) |> 
-  rename(date = FINAL_DATE, 
-         length = LENGTH1_MM)
-
+  rename(date = FINAL_DATE,
+         place_o = place_name,
+         gear_o = gear_name,
+         spp_o = spp_name,
+         length_o = LENGTH1_MM)
+grouped_oracle$compare_id <- seq.int(nrow(grouped_oracle))
 
 
 grouped_hist <- aligned_dates_his_spp |> 
@@ -139,15 +143,21 @@ grouped_hist <- aligned_dates_his_spp |>
   group_by(INTDATE, place_name, gear_name, spp_name, STLENGTH ) |> 
   select(INTDATE, place_name, gear_name, spp_name, STLENGTH) |> 
   rename(date = INTDATE,
-         length = STLENGTH)
+         place_h = place_name,
+         gear_h = gear_name,
+         spp_h = spp_name,
+         length_h = STLENGTH)
+grouped_hist$compare_id <- seq.int(nrow(grouped_hist))
 
 
 # compare records ####
 records_compare <-
-  merge(grouped_oracle, grouped_hist, by.x=c('date', 'place_name', 'gear_name'), 
-        by.y=c('date', 'place_name', 'gear_name')) 
+  merge(grouped_oracle, grouped_hist, by.x=c("compare_id", "place_o",
+                                             "gear_o","spp_o","length_o"), 
+        by.y=c("compare_id",  "place_h",
+               "gear_h","spp_h","length_h")) 
 records_compare <-
   merge(grouped_oracle, grouped_hist,
-        by = c("date", "place_name"),
+        by = c("date", "place_name", "gear_name", "spp_name","length"),
         all = TRUE
   )
