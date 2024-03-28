@@ -1,4 +1,4 @@
-# 04.2 glmm process outline ####
+# 04b glmm process outline ####
 
 # Fit GLMMs to size comp data (USVI commercial yellowtail snapper)
 # Kyle Dettloff

@@ -9,7 +9,8 @@
 librarian::shelf(here, tidyverse, flextable, ggplot2, janitor)
 
 # Specify settings ####
-tip_spp_rds <- "pr_yts_clean_tip_20240307.rds" # rds from end of 02 script
+tip_spp_rds <- "pr_yts_clean_tip_20240307.rds" # rds from end of 04 script
+clean_gear <- "pr_yts_clean_gear_list_20240328.rds" # gears representing >2%
 spp <- "yts"
 isl <- "pr"
 print_isl <- "Puerto Rico"
@@ -17,6 +18,7 @@ break_year = 2012
 
 # Read in formatted data ####
 tip_spp <- readRDS(here::here("data", tip_spp_rds))
+gear_2percent <- readRDS(here::here("data", clean_gear))
 
 # Plot gears by number of fish measured used over time ####
 gear_data <- tip_spp |>
@@ -197,48 +199,47 @@ abc5 = agr_den_break
 
 
 ## Annual Density plots ####
-### ALL GEARS ####
-fleet_final <- tip_spp[tip_spp$fleet==1,]
 
-fcounts = fleet_final %>%  group_by(year) %>% filter(n() >= 30) %>% ungroup %>%
+### top gears together ####
+ann_den_top_gears <- tip_spp|> 
+  filter(gear %in% gear_2percent$Gear)
+
+fcounts = ann_den_top_gears %>%  group_by(year) %>% filter(n() >= 30) %>% ungroup %>%
   tabyl(gear) %>%
   mutate(n_labels = paste0(gear, " (n= ", n, ")" ))
 
-all_gear_anden <-
-  fleet_final %>%  group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
-  group_by(YEAR) %>%
-  dplyr::mutate(year_labs = paste0(YEAR, "\n n = ", n())) %>%
-  ggplot(aes(FL_CM))+
+plot_ann_den <-
+  ann_den_top_gears %>%  group_by(year) %>% filter(n() >= 30) %>% ungroup %>%
+  group_by(year) %>%
+  dplyr::mutate(year_labs = paste0(year, "\n n = ", n())) %>%
+  ggplot(aes(length1_cm))+
   geom_density(linewidth = 0.75)+
   # geom_vline(data = fleet_final, aes(xintercept=mean(FL_CM)),
   # linetype="dashed", linewidth=1)+
   #scale_color_manual(values = gearcols, labels = counts$n_labels)+
   # scale_color_hue(labels=fcounts$n_labels)+
-  labs(x = "Fork Length (cm)", title = paste0(county,  "\n (N = ", sum(fcounts$n), ")"))+
+  labs(x = "Fork Length (cm)", 
+       title = paste0(print_isl,  "\n (N = ", sum(fcounts$n), ")"))+
   facet_wrap(~year_labs, ncol = 7)
-# theme_minimal()
-# theme(legend.title = element_text(linewidth=14), 
-# legend.text = element_text(linewidth=12))+
 
-export_fig_page(all_carSTTJ) 
-abc17 = all_carSTTJ
+abc6 = plot_ann_den
 
-### TOP GEARS ####
-fleet_final_gears <- length_data_gears[length_data_gears$fleet==1,]
-
-fcounts = fleet_final_gears %>%  group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
+### top gears separated ####
+fcounts = ann_den_top_gears %>%  group_by(year) %>% filter(n() >= 30) %>% ungroup %>%
   tabyl(gear) %>%
   mutate(n_labels = paste0(gear, " (n= ", n, ")" ))
 
-all_car_gearsSTTJ <-
-  fleet_final_gears %>%  group_by(YEAR) %>% filter(n() >= 30) %>% ungroup %>%
-  group_by(YEAR) %>%
-  dplyr::mutate(year_labs = paste0(YEAR, "\n n = ", n())) %>%
-  ggplot(aes(FL_CM, color = gear))+
+plot_ann_den_separate <-
+  ann_den_top_gears %>%  group_by(year) %>% filter(n() >= 30) %>% ungroup %>%
+  group_by(year) %>%
+  dplyr::mutate(year_labs = paste0(year, "\n n = ", n())) %>%
+  ggplot(aes(length1_cm, color = gear))+
   geom_density(linewidth = 0.75)+
   #scale_color_manual(values = gearcols, labels = counts$n_labels)+
   scale_color_hue(labels=fcounts$n_labels)+
-  labs(color = "Gear Type", x = "Fork Length (cm)", title = paste0(county,  "\n (N = ", sum(fcounts$n), ")"))+
+  labs(color = "Gear Type", 
+       x = "Fork Length (cm)", 
+       title = paste0(print_isl,  "\n (N = ", sum(fcounts$n), ")"))+
   facet_wrap(~year_labs, ncol = 7)+
   # theme_minimal()
   guides(color=guide_legend(ncol = 2))+
@@ -246,21 +247,17 @@ all_car_gearsSTTJ <-
         legend.text = element_text(size=12),
         legend.position = "bottom")
 
-export_fig_page(all_car_gearsSTTJ) 
-
-abc18 = all_car_gearsSTTJ
+abc7 = all_car_gearsSTTJ
 
 # Aggregated cummulative density ####
 
-counts =length_data_final %>%
+counts = tip_spp %>%
   tabyl(gear) %>%
   mutate(n_labels = paste0(gear, " (n= ", n, ")" ))
 
-abc20 = length_data_final %>%
-  ggplot(aes(FL_CM))+
+abc20 = tip_spp %>%
+  ggplot(aes(length1_cm))+
   stat_ecdf()+
-  # scale_color_manual(values = gearcols, labels = counts$n_labels)+
-  # scale_color_hue(labels = counts$n_labels)+
-  labs(x = "Fork Length (cm)", title = paste0(county,  "\n (N = ", sum(counts$n), ")"))+
+  labs(x = "Fork Length (cm)",
+       title = paste0(print_isl,  "\n (N = ", sum(counts$n), ")"))+
   theme_minimal()
-
