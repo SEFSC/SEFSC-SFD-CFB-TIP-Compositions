@@ -1,0 +1,88 @@
+# 02a_spp_size_prep
+# filter to species
+# calculate table of length stats
+# calculate k 
+
+# Load libraries ####
+librarian::shelf(
+  here, tidyverse, janitor, flextable, ggplot2
+)
+
+# Specify settings ####
+tip_spp_rds <- "pr_yts_format_tip_20240403.rds" # rds from end of 01a script
+spp_itis <- 168907
+spp <- "yts"
+isl <- "pr"
+print_spp <- "Yellowtail Snapper"
+print_isl <- "Puerto Rico"
+
+# Read in formatted data ####
+tip_spp <- readRDS(here::here("data", tip_spp_rds))
+
+# Convert units and calculate k #### 
+tip_spp_prep <- tip_spp |>
+  dplyr:: filter(species_code == spp_itis) 
+
+spp_size_calc <- tip_spp_prep |> 
+  dplyr::mutate(
+    length1_cm = measurements::conv_unit(length1_mm, "mm", "cm"),
+    length1_inch = measurements::conv_unit(length1_mm, "mm", "inch"),
+    obs_weight_lbs = measurements::conv_unit(obs_weight_kg, "kg", "lbs"),
+    k = 10^5 * obs_weight_kg / length1_cm^3,
+    record_type = case_when(
+      !is.na(k) ~ "complete",
+      .default = "incomplete"
+    )
+  )
+# Find upper and lower estimates of k ####
+tip_k_iqr <- IQR(spp_size_calc$k, na.rm = TRUE)
+tip_k_25q <- quantile(spp_size_calc$k, 0.25, na.rm = TRUE)
+tip_k_75q <- quantile(spp_size_calc$k, 0.75, na.rm = TRUE)
+tip_k_lower <- tip_k_25q - 1.5 * tip_k_iqr
+tip_k_upper <- tip_k_75q + 1.5 * tip_k_iqr
+
+# compare type1 and type2 lengths 
+table(tip_spp_prep$length_type1, useNA='always')
+table(tip_spp_prep$length_type2, useNA='always')
+
+# look at min and max standardized lengths ####
+### use this as preliminary look at possible inaccurate lengths
+min(spp_size_calc$length1_cm,na.rm = TRUE)
+max(spp_size_calc$length1_cm,na.rm = TRUE)
+
+tip_range  <- spp_size_calc[with(spp_size_calc,order(-length1_cm)),]
+tip_range$length1_cm[1:25]
+
+tip_range2 <- spp_size_calc[with(spp_size_calc,order(length1_cm)),]
+tip_range2$length1_cm[1:25]
+
+# Settings ####
+min_len <- 5
+max_len <- 270
+
+# filter to size range 
+
+spp_size_prep <- spp_size_calc |> 
+  dplyr::filter(length1_cm > min_len,
+                length1_cm < max_len)
+
+
+# Tabulate lengths and weights ####
+length_types <- spp_size_prep |>
+  dplyr::group_by(
+    island,
+    species_code,
+    length_type1
+  ) |>
+  dplyr::summarize(
+    .groups = "drop",
+    n = dplyr::n(),
+    percent = round(n / nrow(tip_spp) * 100, 1),
+    first_year = min(year),
+    last_year = max(year),
+    n_years = dplyr::n_distinct(year),
+    na_length1_cm = sum(is.na(length1_cm)),
+    percent_na_length1_cm = round(na_length1_cm / n * 100, 1),
+    na_obs_weight_kg = sum(is.na(obs_weight_kg)),
+    percent_na_obs_weight_kg = round(na_obs_weight_kg / n * 100, 1),
+  )

@@ -58,9 +58,6 @@ county_by_year <- county_data |>
 
 # Plot gears used over time ####
 gear_data <- tip_spp_count |>
-  # group_by(gear) %>%
-  # dplyr::mutate(n_id = n_distinct(id)) |>
-  # dplyr::filter(n_id >= 3) %>% ungroup %>%
   group_by(year, gearn) |>
   dplyr::summarize(n = n(), .groups = "drop") |>
   mutate(year = as.integer(year))
@@ -120,6 +117,23 @@ weight_time <- tip_spp_count |>
   )
 
 # Tabulate lengths ####
+
+# compare type1 and type2 lengths 
+table(tip_spp$length_type1, useNA='always')
+table(tip_spp$length_type2, useNA='always')
+
+# look at min and max standardized lengths ####
+### use this as preliminary look at possible inaccurate lengths
+min(tip_spp$length1_cm,na.rm = TRUE)
+max(tip_spp$length1_cm,na.rm = TRUE)
+
+tip_range  <- tip_spp[with(tip_spp,order(-length1_cm)),]
+tip_range$length1_cm[1:25]
+
+tip_range2 <- tip_spp[with(tip_spp,order(length1_cm)),]
+tip_range2$length1_cm[1:25]
+
+# count lengths
 length_count <- tip_spp_count |>
   dplyr::group_by(
     county_landed,

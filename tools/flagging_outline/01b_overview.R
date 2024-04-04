@@ -1,21 +1,24 @@
-# This script is for investigating the relativeness of a specific species/island 
-# to the tip dataset as a whole
+# This script is for investigating the representation of a specific 
+# species/island to the tip dataset as a whole
 
-#' run the first script with a data pull of the entire dataset 
+# run the 01a script with a data pull of the entire dataset first
 
 # Load libraries ####
 librarian::shelf(here, tidyverse, measurements)
 
 # Specify settings ####
-tip_spp_rds <- "pr_yts_format_tip_20240321.rds" # rds from end of 01a script
+tip_spp_rds <- "pr_yts_format_tip_20240402.rds" # rds from end of 01a script
 spp_itis <- 168907
 spp <- "yts"
 isl <- "pr"
+print_spp <- "Yellowtail Snapper"
+print_isl <- "Puerto Rico"
 
 # Read in formatted data ####
 tip_spp <- readRDS(here::here("data", tip_spp_rds))
 
 # Tabulate TIP interviews and records by island and year ####
+# count all records and interviews
 count_all <- tip_spp |>
   dplyr::group_by(island, year) |>
   dplyr::summarize(
@@ -24,6 +27,7 @@ count_all <- tip_spp |>
     all_records = n()
   )
 
+# count only specific specie
 count_spp <- tip_spp |>
   dplyr::filter(species_code == spp_itis) |>
   dplyr::group_by(island, year) |>
@@ -33,6 +37,7 @@ count_spp <- tip_spp |>
     spp_records = n()
   )
 
+# summarize both counts
 count_overview <- count_all |>
   dplyr::left_join(count_spp, by = join_by(island, year)) |>
   dplyr::mutate(
@@ -45,6 +50,7 @@ count_overview <- count_all |>
     values_to = "count"
   )
 
+# calculate percent spp each year
 percent_overview <- count_overview |>
   tidyr::pivot_wider(
     names_from = subset,
@@ -54,9 +60,10 @@ percent_overview <- count_overview |>
     percent = round(100 * spp / all, 2)
   )
 
+# count spp based on sector
 count_spp_sector <- tip_spp |>
   dplyr::filter(
-    species_code == spp_code,
+    species_code == spp_itis,
     length_type1 != "NO LENGTH",
     island != "not coded"
   ) |>
@@ -73,18 +80,29 @@ plot_count_overview <- count_overview |>
   ggplot2::facet_grid(category ~ island, scales = "free_y") +
   ggplot2::theme(
     legend.position = "bottom",
-    legend.title = element_blank()
-  )
+    legend.title = element_blank())+ 
+  labs(x = "Year", 
+       y = "Count",
+       title = paste0(print_spp, 
+                      " Subset Comparison of Interviews and Records by Year"))
 
 plot_percent_overview <- percent_overview |>
   ggplot2::ggplot(aes(x = year, y = percent)) +
   ggplot2::geom_col() +
-  ggplot2::facet_grid(category ~ island)
+  ggplot2::facet_grid(category ~ island)+
+  labs(x = "Year", 
+       y = "Percent",
+       title = paste0(print_spp, 
+                      " Percent Composition of Total TIP Interviews and Records"))
 
 plot_count_spp_sector <- count_spp_sector |>
   ggplot2::ggplot(aes(x = year, y = records, fill = length_type1)) +
   ggplot2::geom_col(position = position_dodge(preserve = "single")) +
   ggplot2::facet_grid(sector ~ island) +
+  labs(x = "Year", 
+       y = "Records",
+       title = paste0(print_spp, 
+                      " Length Types"))+
   ggplot2::theme(
     legend.position = "bottom",
     legend.title = element_blank()
