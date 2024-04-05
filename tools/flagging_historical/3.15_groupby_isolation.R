@@ -127,8 +127,9 @@ aligned_dates_his_spp <- aligned_dates_his_gear %>%
 # historical length variable STLENGTH, update based on variable used
 
 grouped_oracle <- aligned_dates_oracle_spp |> 
+  arrange(desc(LENGTH1_MM)) |> 
+  group_by(FINAL_DATE, place_name, gear_name, spp_name) |> 
   arrange(desc(FINAL_DATE)) |> 
-  group_by(FINAL_DATE, place_name, gear_name, spp_name, LENGTH1_MM) |> 
   select(ID, FINAL_DATE, place_name, gear_name, spp_name, LENGTH1_MM) |> 
   rename(date = FINAL_DATE,
          place_o = place_name,
@@ -139,8 +140,9 @@ grouped_oracle$compare_id <- seq.int(nrow(grouped_oracle))
 
 
 grouped_hist <- aligned_dates_his_spp |> 
+  arrange(desc(STLENGTH)) |> 
+  group_by(INTDATE, place_name, gear_name, spp_name ) |> 
   arrange(desc(INTDATE)) |> 
-  group_by(INTDATE, place_name, gear_name, spp_name, STLENGTH ) |> 
   select(INTDATE, place_name, gear_name, spp_name, STLENGTH) |> 
   rename(date = INTDATE,
          place_h = place_name,
@@ -151,13 +153,32 @@ grouped_hist$compare_id <- seq.int(nrow(grouped_hist))
 
 
 # compare records ####
-records_compare <-
+records_compare_all <-
   merge(grouped_oracle, grouped_hist, by.x=c("compare_id", "place_o",
                                              "gear_o","spp_o","length_o"), 
-        by.y=c("compare_id",  "place_h",
+        by.y=c("compare_id", "place_h",
                "gear_h","spp_h","length_h")) 
-records_compare <-
-  merge(grouped_oracle, grouped_hist,
-        by = c("date", "place_name", "gear_name", "spp_name","length"),
-        all = TRUE
-  )
+
+
+# remove matched records  for easier organisation 
+# filter datasets to not those dates 
+# oracle
+round1_oracle <- grouped_oracle |> 
+  filter(compare_id %notin% records_compare_all$compare_id) |> 
+  select(-compare_id)
+round1_oracle$compare_id <- seq.int(nrow(round1_oracle))
+
+
+# historical 
+round1_historical <- grouped_hist |> 
+  filter(compare_id %notin% records_compare_all$compare_id)|> 
+  select(-compare_id)
+round1_historical$compare_id <- seq.int(nrow(round1_historical))
+
+
+
+records_compare_area <-
+  merge(round1_oracle, round1_historical, by.x=c("compare_id", 
+                                             "gear_o","spp_o","length_o"), 
+        by.y=c("compare_id", 
+               "gear_h","spp_h","length_h")) 

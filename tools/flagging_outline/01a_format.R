@@ -2,7 +2,9 @@
 librarian::shelf(here, tidyverse, measurements)
 
 # Specify settings ####
-tip_rds <- "com_tip_PR_VI_20230627.RDS" # add pull of all CAR region and species
+tip_rds <- "com_tip_PR_VI_168738_20240404.RDS" # add pull of all CAR region and species
+isl <- "car"
+spp <- "rbr"
 
 # Read in raw data ####
 tip <- readRDS(here::here("data", "raw", tip_rds))
@@ -66,7 +68,7 @@ min(tip_spp$year,na.rm = TRUE)
 
 # Specify settings ####
 ## Range currently set to not drop any obs 
-min_year <- 1979
+min_year <- 1983
 max_year <- 2022 
 
 # Select variables relevant to flagging investigation ####
@@ -108,7 +110,12 @@ saveRDS(
     paste0(
       isl, "_",
       spp, "_format_tip_",
-      format(Sys.time(), "%Y%m%d"), ".rds"
+      format(Sys.time(), "%Y%m%d"), 
+      ".rds"
     )
   )
 )
+
+write.csv(tip_spp_relevant, 
+          file = "data/CSVs/tip_rbr_04042024.csv", 
+          row.names=FALSE)

@@ -8,13 +8,13 @@ librarian::shelf(
   here, tidyverse, janitor, flextable, ggplot2
 )
 
-# Specify settings ####
-tip_spp_rds <- "pr_yts_format_tip_20240403.rds" # rds from end of 01a script
-spp_itis <- 168907
-spp <- "yts"
-isl <- "pr"
-print_spp <- "Yellowtail Snapper"
-print_isl <- "Puerto Rico"
+# Specify settings #### 
+tip_spp_rds <- "car_rbr_format_tip_20240404.rds" # rds from end of 01a script
+spp_itis <- "168738"
+spp <- "rbr"
+isl <- "car"
+print_spp <- "Rainbow Runner"
+print_isl <- "Caribbean"
 
 # Read in formatted data ####
 tip_spp <- readRDS(here::here("data", tip_spp_rds))
@@ -56,19 +56,8 @@ tip_range$length1_cm[1:25]
 tip_range2 <- spp_size_calc[with(spp_size_calc,order(length1_cm)),]
 tip_range2$length1_cm[1:25]
 
-# Settings ####
-min_len <- 5
-max_len <- 270
-
-# filter to size range 
-
-spp_size_prep <- spp_size_calc |> 
-  dplyr::filter(length1_cm > min_len,
-                length1_cm < max_len)
-
-
 # Tabulate lengths and weights ####
-length_types <- spp_size_prep |>
+length_types <- spp_size_calc |>
   dplyr::group_by(
     island,
     species_code,
@@ -86,3 +75,4 @@ length_types <- spp_size_prep |>
     na_obs_weight_kg = sum(is.na(obs_weight_kg)),
     percent_na_obs_weight_kg = round(na_obs_weight_kg / n * 100, 1),
   )
+
