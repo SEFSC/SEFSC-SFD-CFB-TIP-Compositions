@@ -1,14 +1,15 @@
 # Load libraries ####
 librarian::shelf(here, tidyverse, measurements)
 
-# Specify settings ####
-tip_rds <- "com_tip_PR_VI_168738_20240404.RDS" # add pull of all CAR region and species
-isl <- "car"
-spp <- "rbr"
+# if pulling new data from oracle ->
+# cr_tip(state_codes = c("PR", "VI"))
 
+# Specify settings ####
+tip_rds <- "com_tip_PR_VI_20240409.RDS" # add pull of all CAR region and species
+isl <- "pr"
+spp<- "yts"
 # Read in raw data ####
 tip <- readRDS(here::here("data", "raw", tip_rds))
-
 
 # Prep raw data ####
 tip_spp <- tip |>
@@ -68,7 +69,7 @@ min(tip_spp$year,na.rm = TRUE)
 
 # Specify settings ####
 ## Range currently set to not drop any obs 
-min_year <- 1983
+min_year <- 1979
 max_year <- 2022 
 
 # Select variables relevant to flagging investigation ####
@@ -91,7 +92,7 @@ tip_spp_relevant <- tip_spp |>
     length1_mm,
     length_unit1, # original length unit
     length_type1, # original length type
-    length_type2, 
+    length_type2, # for future comparisons
     obs_weight_kg,
     obs_weight_unit, # original weight unit
     sample_condition,
@@ -116,6 +117,7 @@ saveRDS(
   )
 )
 
-write.csv(tip_spp_relevant, 
-          file = "data/CSVs/tip_rbr_04042024.csv", 
-          row.names=FALSE)
+# export data as csv if needed 
+# write.csv(tip_spp_relevant, 
+#           file = "data/CSVs/tip_rbr_04042024.csv", 
+#           row.names=FALSE)

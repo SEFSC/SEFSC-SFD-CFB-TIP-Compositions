@@ -9,20 +9,21 @@ librarian::shelf(
 )
 
 # Specify settings #### 
-tip_spp_rds <- "car_rbr_format_tip_20240404.rds" # rds from end of 01a script
-spp_itis <- "168738"
-spp <- "rbr"
-isl <- "car"
-print_spp <- "Rainbow Runner"
-print_isl <- "Caribbean"
+tip_spp_rds <- "pr_yts_format_tip_20240409.rds" # rds from end of 01a script
+spp_itis <- "168907" # find on itis.gov
+spp <- "yts"
+isl <- "pr"
+print_spp <- "Yellowtail Snapper"
+print_isl <- "Puerto Rico"
 
 # Read in formatted data ####
 tip_spp <- readRDS(here::here("data", tip_spp_rds))
 
-# Convert units and calculate k #### 
+# Filter to target species ####
 tip_spp_prep <- tip_spp |>
   dplyr:: filter(species_code == spp_itis) 
 
+# Convert units and calculate k #### 
 spp_size_calc <- tip_spp_prep |> 
   dplyr::mutate(
     length1_cm = measurements::conv_unit(length1_mm, "mm", "cm"),
@@ -34,6 +35,7 @@ spp_size_calc <- tip_spp_prep |>
       .default = "incomplete"
     )
   )
+
 # Find upper and lower estimates of k ####
 tip_k_iqr <- IQR(spp_size_calc$k, na.rm = TRUE)
 tip_k_25q <- quantile(spp_size_calc$k, 0.25, na.rm = TRUE)
@@ -76,3 +78,43 @@ length_types <- spp_size_calc |>
     percent_na_obs_weight_kg = round(na_obs_weight_kg / n * 100, 1),
   )
 
+flextable(length_types)|> 
+  theme_box() %>%
+  align(align = "center", part = "all") %>%
+  fontsize(size=8, part="all") %>%
+  autofit() 
+
+# Tabulate weight types ####
+weight_types <- spp_size_calc |>
+  dplyr::group_by(
+    island,
+    species_code,
+    sample_condition
+  ) |>
+  dplyr::summarize(
+    .groups = "drop",
+    n = dplyr::n(),
+    percent = round(n / nrow(tip_spp) * 100, 1),
+    first_year = min(year),
+    last_year = max(year),
+    n_years = dplyr::n_distinct(year)
+  )
+flextable(weight_types)|> 
+  theme_box() %>%
+  align(align = "center", part = "all") %>%
+  fontsize(size=8, part="all") %>%
+  autofit() 
+
+# Save formatted tip_spp ####
+saveRDS(
+  spp_size_calc,
+  file = here::here(
+    "data",
+    paste0(
+      isl, "_",
+      spp, "_spp_size_prep_",
+      format(Sys.time(), "%Y%m%d"), 
+      ".rds"
+    )
+  )
+)
