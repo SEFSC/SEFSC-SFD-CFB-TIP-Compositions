@@ -151,6 +151,20 @@ grouped_hist <- aligned_dates_his_spp |>
          length_h = STLENGTH)
 grouped_hist$compare_id <- seq.int(nrow(grouped_hist))
 
+# redo on reordering variables
+reordered_hist <- aligned_dates_his_spp |> 
+  select(INTDATE, place_name, gear_name, spp_name, STLENGTH)|> 
+  rename(date = INTDATE,
+         place_h = place_name,
+         gear_h = gear_name,
+         spp_h = spp_name,
+         length_h = STLENGTH)
+
+reordered_hist[
+  order( reordered_hist[,1], reordered_hist[,2], reordered_hist[,3], 
+         reordered_hist[,4], reordered_hist[,5] ),
+]
+
 
 # compare records ####
 records_compare_all <-
@@ -176,9 +190,32 @@ round1_historical <- grouped_hist |>
 round1_historical$compare_id <- seq.int(nrow(round1_historical))
 
 
-
+# these are the records that match except for location name
 records_compare_area <-
   merge(round1_oracle, round1_historical, by.x=c("compare_id", 
                                              "gear_o","spp_o","length_o"), 
         by.y=c("compare_id", 
                "gear_h","spp_h","length_h")) 
+
+
+# remove previously matched records for easier organisation 
+# filter datasets to not those dates 
+# oracle
+round2_oracle <- round1_oracle |> 
+  filter(compare_id %notin% records_compare_area$compare_id) |> 
+  select(-compare_id)
+round2_oracle$compare_id <- seq.int(nrow(round2_oracle))
+
+
+# historical 
+round2_historical <- round1_historical |> 
+  filter(compare_id %notin% records_compare_area$compare_id)|> 
+  select(-compare_id)
+round2_historical$compare_id <- seq.int(nrow(round2_historical))
+
+# these are the records that match except for gear name
+records_compare_gear <-
+  merge(round1_oracle, round1_historical, by.x=c("compare_id", 
+                                                 "spp_o","length_o"), 
+        by.y=c("compare_id", 
+               "spp_h","length_h")) 
