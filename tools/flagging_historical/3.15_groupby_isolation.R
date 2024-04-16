@@ -126,32 +126,47 @@ aligned_dates_his_spp <- aligned_dates_his_gear %>%
 # date, area, gear, species, size
 # historical length variable STLENGTH, update based on variable used
 
-grouped_oracle <- aligned_dates_oracle_spp |> 
-  arrange(desc(LENGTH1_MM)) |> 
-  group_by(FINAL_DATE, place_name, gear_name, spp_name) |> 
-  arrange(desc(FINAL_DATE)) |> 
+# grouped_oracle <- aligned_dates_oracle_spp |> 
+#   arrange(desc(LENGTH1_MM)) |> 
+#   group_by(FINAL_DATE, place_name, gear_name, spp_name) |> 
+#   arrange(desc(FINAL_DATE)) |> 
+#   select(ID, FINAL_DATE, place_name, gear_name, spp_name, LENGTH1_MM) |> 
+#   rename(date = FINAL_DATE,
+#          place_o = place_name,
+#          gear_o = gear_name,
+#          spp_o = spp_name,
+#          length_o = LENGTH1_MM)
+# grouped_oracle$compare_id <- seq.int(nrow(grouped_oracle))
+# 
+# 
+# grouped_hist <- aligned_dates_his_spp |> 
+#   arrange(desc(STLENGTH)) |> 
+#   group_by(INTDATE, place_name, gear_name, spp_name ) |> 
+#   arrange(desc(INTDATE)) |> 
+#   select(INTDATE, place_name, gear_name, spp_name, STLENGTH) |> 
+#   rename(date = INTDATE,
+#          place_h = place_name,
+#          gear_h = gear_name,
+#          spp_h = spp_name,
+#          length_h = STLENGTH)
+# grouped_hist$compare_id <- seq.int(nrow(grouped_hist))
+
+# redo on reordering variables
+# oracle
+reordered_oracle <- aligned_dates_oracle_spp |> 
   select(ID, FINAL_DATE, place_name, gear_name, spp_name, LENGTH1_MM) |> 
   rename(date = FINAL_DATE,
          place_o = place_name,
          gear_o = gear_name,
          spp_o = spp_name,
          length_o = LENGTH1_MM)
-grouped_oracle$compare_id <- seq.int(nrow(grouped_oracle))
 
+oracle_clean <- reordered_oracle %>%
+  arrange(desc(date), place_o, gear_o, spp_o, length_o)
 
-grouped_hist <- aligned_dates_his_spp |> 
-  arrange(desc(STLENGTH)) |> 
-  group_by(INTDATE, place_name, gear_name, spp_name ) |> 
-  arrange(desc(INTDATE)) |> 
-  select(INTDATE, place_name, gear_name, spp_name, STLENGTH) |> 
-  rename(date = INTDATE,
-         place_h = place_name,
-         gear_h = gear_name,
-         spp_h = spp_name,
-         length_h = STLENGTH)
-grouped_hist$compare_id <- seq.int(nrow(grouped_hist))
+oracle_clean$compare_id <- seq.int(nrow(oracle_clean))
 
-# redo on reordering variables
+# historical
 reordered_hist <- aligned_dates_his_spp |> 
   select(INTDATE, place_name, gear_name, spp_name, STLENGTH)|> 
   rename(date = INTDATE,
@@ -160,15 +175,14 @@ reordered_hist <- aligned_dates_his_spp |>
          spp_h = spp_name,
          length_h = STLENGTH)
 
-reordered_hist[
-  order( reordered_hist[,1], reordered_hist[,2], reordered_hist[,3], 
-         reordered_hist[,4], reordered_hist[,5] ),
-]
+hist_clean <- reordered_hist %>%
+  arrange(desc(date), place_h, gear_h, spp_h, length_h)
 
+hist_clean$compare_id <- seq.int(nrow(hist_clean))
 
 # compare records ####
 records_compare_all <-
-  merge(grouped_oracle, grouped_hist, by.x=c("compare_id", "place_o",
+  merge(oracle_clean, hist_clean, by.x=c("compare_id", "place_o",
                                              "gear_o","spp_o","length_o"), 
         by.y=c("compare_id", "place_h",
                "gear_h","spp_h","length_h")) 
@@ -177,14 +191,14 @@ records_compare_all <-
 # remove matched records  for easier organisation 
 # filter datasets to not those dates 
 # oracle
-round1_oracle <- grouped_oracle |> 
+round1_oracle <- oracle_clean |> 
   filter(compare_id %notin% records_compare_all$compare_id) |> 
   select(-compare_id)
 round1_oracle$compare_id <- seq.int(nrow(round1_oracle))
 
 
 # historical 
-round1_historical <- grouped_hist |> 
+round1_historical <- hist_clean |> 
   filter(compare_id %notin% records_compare_all$compare_id)|> 
   select(-compare_id)
 round1_historical$compare_id <- seq.int(nrow(round1_historical))
