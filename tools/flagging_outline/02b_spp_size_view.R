@@ -110,3 +110,5 @@ length_time <- tip_spp_count |>
     color = "COUNTY_SAMPLED (# obs)",
     subtitle = paste("N = ", nrow(tip_spp_count))
   )
+
+# do we need to print these graphs? 
