@@ -59,11 +59,12 @@ tip_range2 <- spp_size_calc[with(spp_size_calc,order(length1_cm)),]
 tip_range2$length1_cm[1:25]
 
 # Tabulate lengths and weights ####
-length_types <- spp_size_calc |>
+length_count <- spp_size_calc |>
   dplyr::group_by(
     island,
     species_code,
-    length_type1
+    length_type1,
+    fishing_mode
   ) |>
   dplyr::summarize(
     .groups = "drop",
@@ -76,13 +77,32 @@ length_types <- spp_size_calc |>
     percent_na_length1_cm = round(na_length1_cm / n * 100, 1),
     na_obs_weight_kg = sum(is.na(obs_weight_kg)),
     percent_na_obs_weight_kg = round(na_obs_weight_kg / n * 100, 1),
+    min_length_cm = min(length1_cm),
+    max_length_cm = max(length1_cm),
+    avg_length_cm = round(mean(length1_cm), 2),
+    na_length_cm = sum(is.na(length1_cm)),
+    min_length_inch = round(min(length1_inch), 1),
+    max_length_inch = round(max(length1_inch), 1),
+    avg_length_in = round(mean(length1_inch), 1),
+    min_weight_kg = min(obs_weight_kg, na.rm = TRUE),
+    max_weight_kg = max(obs_weight_kg, na.rm = TRUE),
+    avg_weight_kg = round(mean(obs_weight_kg, na.rm = TRUE), 2),
+    na_weight_kg = sum(is.na(obs_weight_kg)),
+    min_weight_lbs = round(min(obs_weight_lbs, na.rm = TRUE), 1),
+    max_weight_lbs = round(min(obs_weight_lbs, na.rm = TRUE), 1),
+    avg_weight_lbs = round(min(obs_weight_lbs, na.rm = TRUE), 1),
+    min_k_cm = round(min(k, na.rm = TRUE), 2),
+    max_k_cm = round(max(k, na.rm = TRUE), 2),
+    avg_k_cm = round(mean(k, na.rm = TRUE), 2),
+    # n_k_keep = sum(k_keep == FALSE, na.rm = TRUE),
+    # percent_k_keep = round(n_k_keep / dplyr::n() * 100, 1)
   )
 
-flextable(length_types)|> 
+flextable(length_count)|> 
   theme_box() %>%
   align(align = "center", part = "all") %>%
   fontsize(size=8, part="all") %>%
-  autofit() 
+  autofit()
 
 # Tabulate weight types ####
 weight_types <- spp_size_calc |>
@@ -106,12 +126,17 @@ flextable(weight_types)|>
   autofit() 
 
 # Tabulate complete and incomplete length and weight pairs
-count_lw_pairs <- spp_size_prep |>
+count_lw_pairs <- spp_size_calc |>
   dplyr::group_by(island, year, data_source, sector, length_type1, record_type) |>
   dplyr::summarize(
     .groups = "drop",
     records = n()
   )
+flextable(count_lw_pairs)|> 
+  theme_box() %>%
+  align(align = "center", part = "all") %>%
+  fontsize(size=8, part="all") %>%
+  autofit() 
 
 # Plot count of complete and incomplete length and weight pairs
 plot_count_lw_pairs <- count_lw_pairs |>
@@ -124,7 +149,7 @@ plot_count_lw_pairs <- count_lw_pairs |>
   )
 
 # Plot length and weight pairs
-plot_lw_pairs <- spp_size_prep |>
+plot_lw_pairs <- spp_size_calc |>
   dplyr::mutate(sector_data_source = paste(sector, data_source)) |>
   dplyr::filter(record_type == "complete") |>
   ggplot2::ggplot(aes(
@@ -140,11 +165,11 @@ plot_lw_pairs <- spp_size_prep |>
   )
 
 # Plot cumulative length by island
-plot_spp_length <- spp_size_prep |>
+plot_spp_length <- spp_size_calc |>
   dplyr::filter(
     data_source == "TIP",
     island != "not coded",
-    length1_cm <= quantile(spp_size_prep$length1_cm, 0.99, na.rm = TRUE)
+    length1_cm <= quantile(spp_size_calc$length1_cm, 0.99, na.rm = TRUE)
   ) |>
   ggplot2::ggplot(aes(x = length1_cm, color = length_type1)) +
   ggplot2::geom_step(stat = "ecdf") +
@@ -155,11 +180,11 @@ plot_spp_length <- spp_size_prep |>
   )
 
 # Plot cumulative length by island and year
-plot_spp_length_year <- spp_size_prep |>
+plot_spp_length_year <- spp_size_calc |>
   filter(
     data_source == "TIP",
     island != "not coded",
-    length1_cm <= quantile(spp_size_prep$length1_cm, 0.99, na.rm = TRUE)
+    length1_cm <= quantile(spp_size_calc$length1_cm, 0.99, na.rm = TRUE)
   ) |>
   ggplot2::ggplot(aes(x = length1_cm, color = factor(year))) +
   ggplot2::geom_step(stat = "ecdf") +
@@ -167,11 +192,11 @@ plot_spp_length_year <- spp_size_prep |>
   ggplot2::theme(legend.position = "none")
 
 # Plot cumulative weight by island
-plot_spp_weight <- spp_size_prep |>
+plot_spp_weight <- spp_size_calc |>
   dplyr::filter(
     data_source == "TIP",
     island != "not coded",
-    obs_weight_kg <= quantile(spp_size_prep$obs_weight_kg, 0.99, na.rm = TRUE)
+    obs_weight_kg <= quantile(spp_size_calc$obs_weight_kg, 0.99, na.rm = TRUE)
   ) |>
   ggplot2::ggplot(aes(x = obs_weight_kg, color = island)) +
   ggplot2::geom_step(stat = "ecdf") +
@@ -181,11 +206,11 @@ plot_spp_weight <- spp_size_prep |>
   )
 
 # Plot cumulative weight by island and year
-plot_spp_weight_year <- spp_size_prep |>
+plot_spp_weight_year <- spp_size_calc |>
   filter(
     data_source == "TIP",
     island != "not coded",
-    obs_weight_kg <= quantile(spp_size_prep$obs_weight_kg, 0.99, na.rm = TRUE),
+    obs_weight_kg <= quantile(spp_size_calc$obs_weight_kg, 0.99, na.rm = TRUE),
   ) |>
   ggplot2::ggplot(aes(x = obs_weight_kg, color = factor(year))) +
   ggplot2::geom_step(stat = "ecdf") +

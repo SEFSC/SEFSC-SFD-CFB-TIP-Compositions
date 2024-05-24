@@ -8,6 +8,11 @@ librarian::shelf(here, tidyverse, measurements)
 tip_rds <- "com_tip_PR_VI_20240409.RDS" # add pull of all CAR region and species
 isl <- "pr"
 spp<- "yts"
+## Range currently set to not drop any obs 
+# note 1984 is first full year for fish, 1980 for USVI and 1981 for PR spiny lobster 
+min_year <- 1984
+max_year <- 2022 
+
 # Read in raw data ####
 tip <- readRDS(here::here("data", "raw", tip_rds))
 
@@ -42,8 +47,12 @@ tip_spp <- tip |>
     # obs_weight_lbs = measurements::conv_unit(obs_weight_kg, "kg", "lbs"),
     # k = 10^5 * obs_weight_kg / length1_cm^3,
     gear = case_when(
-      land_standard_gear_name == "NOT CODED" ~ gearname_1,
+      land_standard_gear_name == "NOT CODED" ~ standardgearname_1,
       TRUE ~ land_standard_gear_name
+    ),
+    area_square = case_when(
+      land_standard_area_name == "NA" ~ standardareaname_1,
+      TRUE ~ land_standard_area_name
     ),
     # Create variable for sector (rec or com)
     sector = dplyr::case_when(
@@ -56,21 +65,82 @@ tip_spp <- tip |>
         "RECREATIONAL",
       is.na(fishing_mode) ~ "UNKNOWN",
       .default = fishing_mode
+    ),
+    # add state v federal denotion
+    area = case_when(
+      land_standard_gear_name == standardgearname_1 & 
+        state_landed == "PUERTO RICO" & 
+        distance_to_shore_miles_1 >= 9 ~ "federal",
+      land_standard_gear_name == standardgearname_1 & 
+        state_landed == "PUERTO RICO" & 
+        distance_to_shore_miles_1 < 9 ~ "state",
+      land_standard_gear_name == standardgearname_1 & 
+        state_landed == "VIRGIN ISLANDS" & 
+        distance_to_shore_miles_1 >= 3 ~ "federal",
+      land_standard_gear_name == standardgearname_1 & 
+        state_landed == "VIRGIN ISLANDS" & 
+        distance_to_shore_miles_1 < 3 ~ "state",
+      land_standard_gear_name == standardgearname_2 & 
+        state_landed == "PUERTO RICO" & 
+        distance_to_shore_miles_2 >= 9 ~ "federal",
+      land_standard_gear_name == standardgearname_2 & 
+        state_landed == "PUERTO RICO" & 
+        distance_to_shore_miles_2 < 9 ~ "state",
+      land_standard_gear_name == standardgearname_2 & 
+        state_landed == "VIRGIN ISLANDS" & 
+        distance_to_shore_miles_2 >= 3 ~ "federal",
+      land_standard_gear_name == standardgearname_2 & 
+        state_landed == "VIRGIN ISLANDS" & 
+        distance_to_shore_miles_2 < 3 ~ "state",
+      land_standard_gear_name == standardgearname_3 & 
+        state_landed == "PUERTO RICO" & 
+        distance_to_shore_miles_3 >= 9 ~ "federal",
+      land_standard_gear_name == standardgearname_3 & 
+        state_landed == "PUERTO RICO" & 
+        distance_to_shore_miles_3 < 9 ~ "state",
+      land_standard_gear_name == standardgearname_3 & 
+        state_landed == "VIRGIN ISLANDS" & 
+        distance_to_shore_miles_3 >= 3 ~ "federal",
+      land_standard_gear_name == standardgearname_3 & 
+        state_landed == "VIRGIN ISLANDS" & 
+        distance_to_shore_miles_3 < 3 ~ "state",
+      land_standard_gear_name == standardgearname_4 & 
+        state_landed == "PUERTO RICO" & 
+        distance_to_shore_miles_4 >= 9 ~ "federal",
+      land_standard_gear_name == standardgearname_4 & 
+        state_landed == "PUERTO RICO" & 
+        distance_to_shore_miles_4 < 9 ~ "state",
+      land_standard_gear_name == standardgearname_4 & 
+        state_landed == "VIRGIN ISLANDS" & 
+        distance_to_shore_miles_4 >= 3 ~ "federal",
+      land_standard_gear_name == standardgearname_4 & 
+        state_landed == "VIRGIN ISLANDS" & 
+        distance_to_shore_miles_4 < 3 ~ "state",
+      land_standard_gear_name == standardgearname_5 & 
+        state_landed == "PUERTO RICO" & 
+        distance_to_shore_miles_5 >= 9 ~ "federal",
+      land_standard_gear_name == standardgearname_5 & 
+        state_landed == "PUERTO RICO" & 
+        distance_to_shore_miles_5 < 9 ~ "state",
+      land_standard_gear_name == standardgearname_5 & 
+        state_landed == "VIRGIN ISLANDS" & 
+        distance_to_shore_miles_5 >= 3 ~ "federal",
+      land_standard_gear_name == standardgearname_5 & 
+        state_landed == "VIRGIN ISLANDS" & 
+        distance_to_shore_miles_5 < 3 ~ "state",
+      .default = "unknown"
     )
   ) |> 
   # Simplify variable names
   dplyr::rename(
     date = interview_date,
     species_code = obs_standard_species_code
+  )|> 
+  # filter to years 
+  dplyr::filter(
+    year < (max_year - 1) & year >= min_year
   )
 
-# Find first year and min/max lengths ####
-min(tip_spp$year,na.rm = TRUE)
-
-# Specify settings ####
-## Range currently set to not drop any obs 
-min_year <- 1979
-max_year <- 2022 
 
 # Select variables relevant to flagging investigation ####
 tip_spp_relevant <- tip_spp |>
@@ -83,10 +153,6 @@ tip_spp_relevant <- tip_spp |>
     state_landed,
     county_landed,
     species_code,
-    # length1_cm, # calculated from length1_mm
-    # length1_inch, # calculated from length1_mm
-    # obs_weight_lbs, # calculated from obs_weight
-    # k, # calculated 01
     sex_name, # male, female, unknown, not sexed
     gear, # gear from land_standard_gear_name subbed w/ gear_1 when unavailable
     length1_mm,
@@ -98,10 +164,7 @@ tip_spp_relevant <- tip_spp |>
     sample_condition,
     sector,
     fishing_mode,
-  ) |> 
-  dplyr::filter(
-    year < 2022
-  )
+  ) 
 
 # Save formatted tip_spp ####
 saveRDS(

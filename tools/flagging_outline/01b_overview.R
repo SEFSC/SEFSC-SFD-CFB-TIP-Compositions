@@ -7,8 +7,8 @@
 librarian::shelf(here, tidyverse, measurements, expss, openxlsx)
 
 # Specify settings ####
-tip_spp_rds <- "pr_yts_format_tip_20240409.rds" # rds from end of 01a script
-spp_itis <- "168907" # find on itis.gov
+tip_spp_rds <- "pr_yts_format_tip_20240524.rds" # rds from end of 01a script
+spp_itis <- "168907" # find on itis.gov 
 spp <- "yts"
 isl <- "pr"
 print_spp <- "Yellowtail Snapper"
@@ -36,47 +36,6 @@ count_spp <- tip_spp |>
     spp_interviews = n_distinct(id),
     spp_records = n()
   ) 
-
-# SKIP if not needed 
-# export raw data of just target species
-    count_spp <- tip_spp |>
-      dplyr::filter(species_code == spp_itis)
-    write.csv(count_spp,
-              file = "data/CSVs/swordfish_tip_05162024.csv",
-              row.names=FALSE)
-
-# SKIP if not needed
-# export xlsx of length counts by island if needed 
-    count_spp_pr <- count_spp |>
-      filter(island == "pr")
-
-    count_spp_sttj <- count_spp |>
-      filter(island == "stt")
-
-    count_spp_stx <- count_spp |>
-      filter(island == "stx")
-
-    total_isl <- count_spp |>
-      group_by(island) |>
-      dplyr::summarise(total_interviews = sum(spp_interviews),
-                    total_records = sum(spp_records))
-    wb = createWorkbook()
-    sh1 = addWorksheet(wb, "total")
-    sh2 = addWorksheet(wb, "pr")
-    sh3 = addWorksheet(wb, "sttj")
-    sh4 = addWorksheet(wb, "stx")
-
-    xl_write(total_isl, wb, sh1)
-    xl_write(count_spp_pr, wb, sh2)
-    xl_write(count_spp_sttj, wb, sh3)
-    xl_write(count_spp_stx, wb, sh4)
-
-    saveWorkbook(wb,
-                 paste0(spp,
-                        "_stats_",
-                        format(Sys.time(), "%Y%m%d"),
-                        ".xlsx"),
-                 overwrite = TRUE)
 
 # summarize both counts
 count_overview <- count_all |>
