@@ -4,13 +4,13 @@
 # same setup as 3.15 to add variable names, create id value (compare_id) and organize
 # set up ####
 librarian::shelf(here, tidyverse, ROracle, keyring, dotenv, lubridate, flextable)
-# load full dataset for oracle and historical
-load("~/SEFSC-SFD-CFB-TIP-Compositions/data/dataframes/pr_historical_1997.Rda")
-load("~/SEFSC-SFD-CFB-TIP-Compositions/data/dataframes/com_tip_PR_1997.Rda")
+# load full formated dataset for oracle and historical
+  load("~/SEFSC-SFD-CFB-TIP-Compositions/data/dataframes/pr_historical_1997.Rda")
+  load("~/SEFSC-SFD-CFB-TIP-Compositions/data/dataframes/com_tip_PR_1997.Rda")
 # load dataset of records with mismatched dates
-load("~/SEFSC-SFD-CFB-TIP-Compositions/data/dataframes/misaligned_dates_1997.Rda")
+  load("~/SEFSC-SFD-CFB-TIP-Compositions/data/dataframes/misaligned_dates_1997.Rda")
 # create function 
-`%notin%` <- Negate(`%in%`)
+  `%notin%` <- Negate(`%in%`)
 
 # remove mismatched dates for easier organisation 
 # filter datasets to not those dates 

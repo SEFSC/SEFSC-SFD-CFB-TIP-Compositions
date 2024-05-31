@@ -1,5 +1,5 @@
-# 02b_spp_size_view
-# plot counties, gears, length/weight pairs
+# 02c_spp_size_island_view
+# plot counties, gears, length/weight pairs specific to island
 
 # Load libraries ####
 librarian::shelf(
@@ -7,7 +7,7 @@ librarian::shelf(
 )
 
 # Specify settings #### 
-tip_spp_rds <- "pr_yts_spp_size_prep_20240410.rds" # rds from end of 02a script
+tip_spp_rds <- "pr_yts_spp_size_prep_20240529.rds" # rds from end of 02a script
 spp_itis <- "168907" # find on itis.gov
 spp <- "yts"
 isl <- "pr"
@@ -17,8 +17,12 @@ print_isl <- "Puerto Rico"
 # Read in formatted data ####
 tip_spp <- readRDS(here::here("data", tip_spp_rds))
 
+# Filter to target island ####
+tip_spp_prep <- tip_spp |>
+  dplyr::filter(island == isl)
+
 # Create count of observed records for each area  ####
-tip_spp_count <- tip_spp |>
+tip_spp_count <- tip_spp_prep |>
   add_count(county_landed) |>
   dplyr::mutate(county_landedn = paste0(county_landed, " (", n, ")")) |>
   select(-n) |>
@@ -90,7 +94,7 @@ weight_time <- tip_spp_count |>
   labs(
     x = "Year", y = "Weight (lbs)",
     title = "Area-time distribution of Weights sampled",
-    color = "COUNTY_SAMPLED (# obs)",
+    color = "Sample Condition (# obs)",
     subtitle = paste("N = ", nrow(tip_spp_count))
   )
 
@@ -107,8 +111,22 @@ length_time <- tip_spp_count |>
   labs(
     x = "Year", y = "Length (cm)",
     title = "Area-time distribution of Lengths sampled",
-    color = "COUNTY_SAMPLED (# obs)",
+    color = "Length Type (# obs)",
     subtitle = paste("N = ", nrow(tip_spp_count))
   )
 
 # do we need to print these graphs? 
+
+# Save formatted tip_spp ####
+saveRDS(
+  tip_spp_count,
+  file = here::here(
+    "data",
+    paste0(
+      isl, "_",
+      spp, "_spp_size_island_view_",
+      format(Sys.time(), "%Y%m%d"),
+      ".rds"
+    )
+  )
+)

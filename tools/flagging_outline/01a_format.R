@@ -152,6 +152,8 @@ tip_spp_relevant <- tip_spp |>
     island, # pr, stt, stx
     state_landed,
     county_landed,
+    area, # state vs federal area
+    area_square,# grid area when available
     species_code,
     sex_name, # male, female, unknown, not sexed
     gear, # gear from land_standard_gear_name subbed w/ gear_1 when unavailable

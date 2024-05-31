@@ -5,7 +5,7 @@ editor: visual
 output-file: historical_comparison_by_yr.docx
 ---
 
-# 1997
+# 2003
 
 The purpose of this document is to compare the data in the Oracle TIP dataset to the data in the historical TIP records by year.
 
@@ -19,11 +19,11 @@ The purpose of this document is to compare the data in the Oracle TIP dataset to
 
 librarian::shelf(here, tidyverse, ROracle, keyring, dotenv, lubridate, flextable)
 # pull year data if needed 
-cr_tip_yr(state_codes = "PR", year = 2003)
+# cr_tip_yr(state_codes = "PR", year = 2003)
 
 # Specify settings ####
-tip_rds <- "com_tip_PR_1997_20231117.RDS"
-yr <- 1997
+tip_rds <- "com_tip_PR_2003_20240304.RDS"
+yr <- 2003
 
 # Read in raw data ####
 tip <- readRDS(here::here("data", "raw", tip_rds))
@@ -33,30 +33,81 @@ tip <- readRDS(here::here("data", "raw", tip_rds))
 # cr_tip_yr(state_codes = "PR", year = "yr")
 
 # Create a comparable table
-tip_skeleton <- tip %>% # select comparable variables
+tip_skeleton <- tip |> 
+  # Standardize variable format
+  janitor::clean_names() |>
+  dplyr::mutate(
+    id = as.character(id),
+    interview_date = lubridate::as_date(interview_date),
+    year = as.numeric(year),
+    gear = case_when(
+      land_standard_gear_name == "NOT CODED" ~ standardgearname_1,
+      TRUE ~ land_standard_gear_name
+    ),
+    area_square = case_when(
+      land_standard_area_name == "NA" ~ standardareaname_1,
+      TRUE ~ land_standard_area_name
+    ),
+    # Create variable for sector (rec or com)
+    sector = dplyr::case_when(
+      fishing_mode %in% c(
+        "HEADBOAT",
+        "PARTY/CHARTER",
+        "PRIVATE RECREATIONAL",
+        "TOURNAMENT"
+      ) ~
+        "RECREATIONAL",
+      is.na(fishing_mode) ~ "UNKNOWN",
+      .default = fishing_mode
+    )
+  ) |> 
+  # Simplify variable names
+  dplyr::rename(
+    species_code = obs_standard_species_code,
+    species_name = obs_standard_species_name
+  ) |> 
+  #select comparable variables
   select(
-    ID, INTERVIEW_DATE, YEAR, REPORTING_AREA_ZIP, SAMPLE_AREA_STATE_CODE,
-    SAMPLE_AREA_COUNTY_CODE, SAMPLE_AREA_ZIP, LANDING_AREA_PLACE_CODE,
-    LANDING_AREA_COUNTY_CODE, SAMPLE_AREA_PLACE_CODE, LAND_STANDARD_GEAR,
-    LAND_STANDARD_GEAR_NAME, GEAR_1, GEARNAME_1,
-    OBS_STANDARD_SPECIES_CODE, OBS_STANDARD_SPECIES_NAME, LENGTH_TYPE1,
-    LENGTH1_MM, OBS_WEIGHT_KG
-  )
+    id, # trip interview id
+    interview_date,
+    year,
+    state_landed,
+    county_landed,
+    sample_area_state_code,
+    sample_area_county_code,
+    sample_area_place_code,
+    sample_area_zip,  # historical data for sample area zip code  
+    area_square,# grid area when available
+    species_code,
+    species_name,
+    sex_name, # male, female, unknown, not sexed
+    gear, # gear from land_standard_gear_name subbed w/ gear_1 when unavailable
+    length1_mm,
+    length_unit1, # original length unit
+    length_type1, # original length type
+    length_type2, # for future comparisons
+    obs_weight_kg,
+    obs_weight_unit, # original weight unit
+    sample_condition,
+    sector,
+    fishing_mode,
+  ) 
+  
 
 # create new filterable date value
-tip_NEWDATE <- tip_skeleton %>%
+tip_fixed_date <- tip_skeleton %>%
   mutate(
-    TEST_DATE = as.Date(ymd_hms(INTERVIEW_DATE)),
-    FINAL_DATE = case_when(
-      is.na(TEST_DATE) ~ INTERVIEW_DATE,
-      TRUE ~ TEST_DATE
+    test_date = as.Date(ymd_hms(interview_date)),
+    date = case_when(
+      is.na(test_date) ~ interview_date,
+      TRUE ~ test_date
     )
   )
 
 tip_ORGANIZED <-
-  tip_NEWDATE[, c(
-    1, 2, 3, 21, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
-    16, 17, 18, 19, 20
+  tip_fixed_date[, c(
+    1, 2, 3, 25, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+    16, 17, 18, 19, 20, 21, 22, 23, 24
   )]
 
 # file is saved in data folder
@@ -74,8 +125,9 @@ save(tip_ORGANIZED,
 
 
 # Load HISTORICAL data ####
+# instert historical csv name
 pr_historical <-
-  read.csv("~/SEFSC-SFD-CFB-TIP-Compositions/data/raw/for_import_97.csv")
+  read.csv("~/SEFSC-SFD-CFB-TIP-Compositions/data/raw/hist_03.csv")
 
 # Format dates to be mm/dd/yyyy
 pr_hist_date <- pr_historical %>%
@@ -111,7 +163,7 @@ save(pr_hist_date,
 
 # ORACLE unique dates and number of occurrences
 com_tip_PR_UNIQUEDATES <- tip_ORGANIZED %>%
-  group_by(FINAL_DATE) %>%
+  group_by(date) %>%
   summarize(count = n())
 com_tip_PR_UNIQUEDATES_updated <- com_tip_PR_UNIQUEDATES %>%
   rename(COUNT_ORACLE = count)
@@ -123,19 +175,19 @@ pr_hist_date_UNIQUEDATES <- pr_hist_date %>%
 pr_hist_date_UNIQUEDATES_updated <- pr_hist_date_UNIQUEDATES %>%
   rename(
     COUNT_HISTORICAL = count,
-    FINAL_DATE = INTDATE
+    date = INTDATE
   )
 
 # combine two tables
 unique_dates_merge <- full_join(com_tip_PR_UNIQUEDATES_updated,
   pr_hist_date_UNIQUEDATES_updated,
-  by = "FINAL_DATE"
+  by = "date"
 )
 # compare
 unique_dates_comparison <- unique_dates_merge %>%
   mutate(COMPARE = (COUNT_ORACLE - COUNT_HISTORICAL))
 
-flextable::flextable(unique_dates_comparison) |>
+flextable(unique_dates_comparison) |>
   theme_box() %>%
   align(align = "center", part = "all") %>%
   fontsize(size = 8, part = "all") %>%
@@ -183,8 +235,8 @@ flextable(total_yr_date_comparison) |>
 # com_tip_PR_1997_corrected_dates <- com_tip_PR_1997_ORGANIZED %>%
 #   mutate(
 #     NEWDATE = case_when(
-#       FINAL_DATE <= "1997-03-31" ~ (FINAL_DATE + days(1)),
-#       TRUE ~ FINAL_DATE
+#       date <= "1997-03-31" ~ (date + days(1)),
+#       TRUE ~ date
 #     ),
 #     NEWDATE = case_when(
 #       NEWDATE > "1997-10-25" ~ (NEWDATE + days(1)),
