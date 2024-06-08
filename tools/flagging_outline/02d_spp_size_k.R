@@ -1,5 +1,5 @@
 # 02d_spp_size_k
-# k stats and flag
+# k stats and flag of all islands
 
 # Load libraries ####
 librarian::shelf(
@@ -60,7 +60,7 @@ k_tip <- spp_k_prep |>
     k_upper = k_q75 + 1.5 * k_iqr
   )
 
-# Obtain lower and upper estimates of k by source and location
+# Obtain lower and upper estimates of k by source and island
 k_summary <- spp_k_prep |>
   dplyr::group_by(data_source, island) |>
   summarize(
@@ -88,26 +88,32 @@ plot_k <- spp_k_prep |>
     )
   ) +
   geom_point()
+plot_k
 
 # Plot k by sector, data source, and island
 plot_k_island <- spp_k_prep |>
   ggplot(aes(x = length1_inch, y = obs_weight_lbs, color = data_source)) +
   geom_point() +
   facet_grid(sector ~ island)
+plot_k_island
 
 # Flagging process ####
 
+# SPECIFY SETTINGS #
+k_range_source  <- "TIP"
 # Obtain k limits from specified source
 k_range_lower <- k_summary |>
-  filter(data_source == k_range_source) |> 
+  filter(data_source == k_range_source,
+         island == isl) |> 
   pull(k_lower)
 
 k_range_upper <- k_summary |>
-  filter(data_source == k_range_source) |> 
+  filter(data_source == k_range_source,
+         island == isl) |> 
   pull(k_upper)
 
 # Flag records outside the range
-spp_size_flag <- spp_size_prep |>
+spp_size_flag <- spp_k_prep |>
   dplyr::mutate(
     k_flag = case_when(
       k >= k_range_lower & k <= k_range_upper ~ "keep",
@@ -135,3 +141,4 @@ plot_count_lw_flag <- count_lw_flag |>
     legend.position = "bottom",
     legend.title = element_blank()
   )
+plot_count_lw_flag
