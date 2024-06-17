@@ -311,4 +311,24 @@ colnames(PR_88_10_place_sample)[1] <- "PLACE_CODE"
 tip_place_code <- full_join(PR_88_10_place_sample, PR_88_10_place_land, by = "PLACE_CODE")
 write.csv(tip_place_code, file = "tools/output/unique_placecode_tip.csv", row.names = FALSE)
 
+# unique place codes in oracle for entire time series 
+ 
+cr_tip_yr2(state_codes = "PR", st_year = "1988", end_year = "2010")
 
+# Specify settings ####
+# these created in historical_comparison_by_yr.qmd
+oracle_all_yr <- "com_tip_PR_1988_2010_20240611.rds"
+
+# Read in raw data ####
+oracle_all <- readRDS(here::here("data", "raw", oracle_all_yr))
+
+oracle_place_codes <- oracle_all |> 
+  janitor::clean_names() |> 
+  group_by(sample_area_county_code, sample_area_place_code) |> 
+  summarise(
+    all_interviews = n_distinct(id),
+    all_records = n())
+
+unique(oracle$sample_area_place_code)
+
+write.csv(oracle_place_codes, file = "tools/output/unique_placecode_oracle.csv", row.names = FALSE)

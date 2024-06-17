@@ -22,11 +22,12 @@ librarian::shelf(here, tidyverse, ROracle, keyring, dotenv, lubridate, flextable
 # cr_tip_yr(state_codes = "PR", year = 2003)
 
 # Specify settings ####
-tip_rds <- "com_tip_PR_2003_20240304.RDS"
+oracle_rds <- "com_tip_PR_2003_20240304.RDS"
+historical_csv <- "hist_03_kg.csv"
 yr <- 2003
 
 # Read in raw data ####
-tip <- readRDS(here::here("data", "raw", tip_rds))
+tip <- readRDS(here::here("data", "raw", oracle_rds))
 
 
 # or extract oracle by yr and state
@@ -132,7 +133,7 @@ saveRDS(
 # Load HISTORICAL data ####
 # instert historical csv name
 pr_historical <-
-  read.csv("~/SEFSC-SFD-CFB-TIP-Compositions/data/raw/hist_03.csv")
+  read.csv(here::here("data", "raw", historical_csv))
 
 # Format dates to be mm/dd/yyyy
 pr_hist_date <- pr_historical %>%
@@ -146,6 +147,7 @@ pr_hist_date <- pr_historical %>%
                   # 3rd is place code, 
                   # if there are 5 #s last 2 are site location
                   # id_code 88-91, areazip 92-07
+         areazip_kg, # edited area when areazip is inaccurate
          gearcode, # gear_code 88-91, gearcode 92-07
          meshsize, # only 92-07
          soaktime, # all yrs

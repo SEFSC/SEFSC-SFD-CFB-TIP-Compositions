@@ -30,15 +30,8 @@ tip_spp <- tip |>
       state_landed == "VIRGIN ISLANDS" &
         county_landed == "ST CROIX" ~ "stx",
       .default = "not coded"
-    )
-  ) |>
-  # Filter to island and species
-  # dplyr::filter(
-  #   island != "not coded"
-    # obs_standard_species_code == spp_itis
-  # ) |>
-  # Simplify interview_date and create fork_length_cm and k
-  dplyr::mutate(
+    ),
+    # Simplify interview_date and create fork_length_cm and k
     id = as.character(id),
     interview_date = lubridate::as_date(interview_date),
     year = as.numeric(year),

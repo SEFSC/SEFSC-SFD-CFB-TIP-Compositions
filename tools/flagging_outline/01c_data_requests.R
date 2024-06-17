@@ -23,14 +23,16 @@ tip_filter <- tip_spp |>
   dplyr::mutate(
     island = dplyr::case_when(
       state_landed == "PUERTO RICO" ~ "pr",
-      state_landed == "VIRGIN ISLANDS" ~ "usvi",
+      # use if stt/stx are non-confidential
+      state_landed == "VIRGIN ISLANDS" &
+        county_landed %in% c("ST JOHN", "ST THOMAS") ~ "stt",
+      state_landed == "VIRGIN ISLANDS" &
+        county_landed == "ST CROIX" ~ "stx",
+      # use if stt/stx are confidential
+      # state_landed == "VIRGIN ISLANDS" ~ "usvi", 
       .default = "not coded"
-    )
-  )
-
-# Convert units and calculate k ####
-spp_size_calc <- tip_filter |>
-  dplyr::mutate(
+    ),
+    # Convert units and calculate k ####
     length1_cm = measurements::conv_unit(length1_mm, "mm", "cm"),
     length1_inch = measurements::conv_unit(length1_mm, "mm", "inch"),
     obs_weight_lbs = measurements::conv_unit(obs_weight_kg, "kg", "lbs"),
@@ -42,14 +44,14 @@ spp_size_calc <- tip_filter |>
   )
 
 # create non-confidential overview table ####
-length_types <- spp_size_calc |>
+length_types <- tip_filter |>
   dplyr::group_by(
     island,
     species_code,
   ) |>
   dplyr::summarize(
     .groups = "drop",
-    n = dplyr::n(),
+    n_records = dplyr::n(),
     first_year = min(year),
     last_year = max(year),
     n_years = dplyr::n_distinct(year),
@@ -63,11 +65,12 @@ flextable(length_types) |>
   theme_box() %>%
   align(align = "center", part = "all") %>%
   fontsize(size = 8, part = "all") %>%
-  autofit()
+  autofit()|>
+  colformat_num(j = c("first_year", "last_year"), big.mark = "")
 
 
 # export raw data of just target species
-write.csv(spp_size_calc,
+write.csv(tip_filter,
   file = here::here(
     "data",
     paste0(
@@ -82,16 +85,16 @@ write.csv(spp_size_calc,
 
 # SKIP if not needed
 # export xlsx of length counts by island if needed
-count_spp_pr <- count_spp |>
+count_spp_pr <- length_types |>
   filter(island == "pr")
 
-count_spp_sttj <- count_spp |>
+count_spp_sttj <- length_types |>
   filter(island == "stt")
 
-count_spp_stx <- count_spp |>
+count_spp_stx <- length_types |>
   filter(island == "stx")
 
-total_isl <- count_spp |>
+total_isl <- length_types |>
   group_by(island) |>
   dplyr::summarise(
     total_interviews = sum(spp_interviews),

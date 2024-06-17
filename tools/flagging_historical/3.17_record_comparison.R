@@ -26,19 +26,22 @@ unique(misaligned_dates$date)
 
 
 # remove mismatched dates for easier organisation #### 
+# replace NA's with 0's
 # oracle
 oracle_aligned <- oracle |> 
-  filter(date %notin% misaligned_dates$date)
+  filter(date %notin% misaligned_dates$date) 
 
 # historical 
 historic_aligned <- historic |> 
-  filter(date %notin% misaligned_dates$date)
+  filter(date %notin% misaligned_dates$date) 
 
 # datasets should have same number of records now 
 
 
 # input area names #### 
 ## create conversion table ####
+#### NEED TO USE COUNTY CODE, NOT PLACE CODE, AS NOT ALL ORACLE HAS PLACE CODE AND 
+# HISTORICAL HAS PLACE CODE NOT MATCHING ORACLE CODES ####
 hist_muni_code <- 
   read_csv("data/CSVs/updated_tip_municodes_coordinates.csv") |> 
   janitor::clean_names()
@@ -52,11 +55,20 @@ oracle_muni_code <-
 oracle_muni_code$place <- 
   tolower(oracle_muni_code$place)
 
-place_code_conversion <- 
+# join based off place name
+place_code_conversion <-
   full_join(oracle_muni_code,
-            hist_muni_code, 
-            by = "place")
-# relationship = "many-to-many" 
+            hist_muni_code,
+            by = "place") |>
+  mutate(historic_code = replace_na(historic_code, 0))
+
+# join based off county name
+# place_code_conversion <-
+#   full_join(oracle_muni_code,
+#             hist_muni_code,
+#             by = "place") |>
+#   mutate(historic_code = replace_na(historic_code, 0))
+
 
 ## oracle ####
 oracle_muni <- oracle_aligned %>%
@@ -67,22 +79,57 @@ oracle_muni <- oracle_aligned %>%
         place_code_conversion$place_id
       )]
   )
+unique(oracle_muni$place_name)
 
 ## historical ####
 historic_muni <- historic_aligned %>%
   mutate(
     hold_name =
       place_code_conversion$place[match(
-        historic_aligned$areazip,
-        place_code_conversion$tip_code
+        historic_aligned$areazip_kg,
+        place_code_conversion$historic_code
       )]
   ) |> 
-  # exploration to see if the longer numbers were place codes that had been 
-  # retroactivly input, change muni_name above to hold_name 
   mutate(place_name = case_when(is.na(hold_name) ~
                                   place_code_conversion$place[match(
                                     historic_aligned$areazip,
-                                    place_code_conversion$place_id )],
+                                    place_code_conversion$historic_code )],
+                                TRUE ~ hold_name))
+  # exploration to see if the longer numbers were place codes that had been 
+  # retroactivly input, change muni_name above to hold_name 
+  # mutate(place_name = case_when(is.na(hold_name) ~
+  #                                 place_code_conversion$place[match(
+  #                                   historic_aligned$areazip,
+  #                                   place_code_conversion$place_id )],
+  #                               TRUE ~ hold_name))
+
+unique(historic_muni$place_name)
+
+# input county names ####
+## oracle ####
+oracle_muni <- oracle_aligned %>%
+  mutate(
+    place_name =
+      place_code_conversion$place[match(
+        oracle_aligned$sample_area_place_code,
+        place_code_conversion$place_id
+      )]
+  )
+unique(oracle_muni$place_name)
+
+## historical ####
+historic_muni <- historic_aligned %>%
+  mutate(
+    hold_name =
+      place_code_conversion$place[match(
+        historic_aligned$areazip_kg,
+        place_code_conversion$historic_code
+      )]
+  ) |> 
+  mutate(place_name = case_when(is.na(hold_name) ~
+                                  place_code_conversion$place[match(
+                                    historic_aligned$areazip,
+                                    place_code_conversion$historic_code )],
                                 TRUE ~ hold_name))
 
 # input gear names #### 
@@ -100,6 +147,7 @@ oracle_gear <- oracle_muni %>%
         gear_codes$pr_gear
       )]
   )
+unique(oracle_gear$gear_name)
 
 ## historical ####
 historic_gear <- historic_muni %>%
@@ -110,6 +158,7 @@ historic_gear <- historic_muni %>%
         gear_codes$pr_gear
       )]
   )
+unique(historic_gear$gear_name)
 
 
 # input species names ####
@@ -132,6 +181,7 @@ oracle_spp <- oracle_gear %>%
         species_codes$standard_species_id
       )]
   )
+unique(oracle_spp$spp_name)
 
 ## historical ####
 historic_spp <- historic_gear %>%
@@ -142,6 +192,7 @@ historic_spp <- historic_gear %>%
         species_codes$id
       )]
   )
+unique(historic_spp$spp_name)
 
 # organize comparable variables ####
 # in order of original comparison script
@@ -166,7 +217,7 @@ historic_reordered <- historic_spp |>
   rename(place = place_name,
          gear = gear_name,
          spp = spp_name)
-
+# organize for best comparison results
 hist_clean <- historic_reordered %>%
   arrange(desc(date), place, gear, spp, length)
 
@@ -177,4 +228,21 @@ hist_clean$compare_id <- seq.int(nrow(hist_clean))
 all_match <- semi_join(oracle_clean, hist_clean,
                        by = c("date", "place", "gear", "spp", "length"))
 
-unique(hist_clean$place)
+## remove previously matched records  ####
+# for easier organisation 
+# filter data sets to not those records 
+## oracle ####
+oracle_1 <- oracle_clean |> 
+  filter(compare_id %notin% all_match$compare_id) |> 
+  select(-compare_id)
+# create new comparison id 
+oracle_1$compare_id <- seq.int(nrow(oracle_1))
+
+
+## historical  ####
+hist_1 <- hist_clean |> 
+  filter(compare_id %notin% all_match$compare_id)|> 
+  select(-compare_id)
+# create new comparison id 
+hist_1$compare_id <- seq.int(nrow(hist_1))
+
