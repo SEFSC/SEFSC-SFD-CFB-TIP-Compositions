@@ -13,7 +13,7 @@ spp <- "yts"
 isl <- "pr"
 print_spp <- "Yellowtail Snapper"
 print_isl <- "Puerto Rico"
-len_type <- "FORK LENGTH"
+len_type <- "FORK LENGTH" # length type will be used for remainder of analysis
 
 # Read in formatted data ####
 tip_spp <- readRDS(here::here("data", tip_spp_rds))
@@ -142,3 +142,17 @@ plot_count_lw_flag <- count_lw_flag |>
     legend.title = element_blank()
   )
 plot_count_lw_flag
+
+
+# Save prepped spp_size_flag ####
+saveRDS(
+  spp_size_flag,
+  file = here::here(
+    "data",
+    paste0(
+      isl, "_",
+      spp, "_spp_size_flag_",
+      format(Sys.time(), "%Y%m%d"), ".rds"
+    )
+  )
+)

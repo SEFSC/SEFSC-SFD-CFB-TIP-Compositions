@@ -39,28 +39,42 @@ historic_aligned <- historic |>
 
 
 # input area names #### 
-## create conversion table ####
 #### NEED TO USE COUNTY CODE, NOT PLACE CODE, AS NOT ALL ORACLE HAS PLACE CODE AND 
 # HISTORICAL HAS PLACE CODE NOT MATCHING ORACLE CODES ####
+
+# # import and clean muni code conversion table
+# muni_code_conversion <- 
+#   read_csv("data/CSVs/PR_municipio_codes.xlsx - Sheet1.csv") |> 
+#   janitor::clean_names()
+# muni_code_conversion$muni_name <- 
+#   tolower(muni_code_conversion$muni_name)
+
+## create place code conversion table ####
 hist_muni_code <- 
   read_csv("data/CSVs/updated_tip_municodes_coordinates.csv") |> 
   janitor::clean_names()
 hist_muni_code$place <- 
   tolower(hist_muni_code$place)
+hist_muni_code$muni <- 
+  tolower(hist_muni_code$muni)
 
 oracle_muni_code <- 
   read_csv("data/CSVs/updated_pr_place_codes_oracle.csv")|> 
   janitor::clean_names()|> 
-  dplyr::rename(place = place_name)
+  dplyr::rename(place = place_name,
+                county = cnty_name) 
 oracle_muni_code$place <- 
   tolower(oracle_muni_code$place)
+oracle_muni_code$county <- 
+  tolower(oracle_muni_code$county)
 
 # join based off place name
 place_code_conversion <-
   full_join(oracle_muni_code,
             hist_muni_code,
             by = "place") |>
-  mutate(historic_code = replace_na(historic_code, 0))
+  mutate(historic_code = replace_na(historic_code, 0),
+         cnty_id = as.numeric(cnty_id))
 
 # join based off county name
 # place_code_conversion <-
@@ -69,29 +83,46 @@ place_code_conversion <-
 #             by = "place") |>
 #   mutate(historic_code = replace_na(historic_code, 0))
 
-
 ## oracle ####
 oracle_muni <- oracle_aligned %>%
+  # mutate(sample_area_county_code = as.numeric(sample_area_county_code)) |> 
   mutate(
-    place_name =
-      place_code_conversion$place[match(
+    # place_name =
+    #   place_code_conversion$place[match(
+    #     oracle_aligned$sample_area_place_code,
+    #     place_code_conversion$place_id
+    #   )]
+    muni_name =
+      place_code_conversion$county[match(
         oracle_aligned$sample_area_place_code,
         place_code_conversion$place_id
       )]
   )
-unique(oracle_muni$place_name)
+unique(oracle_muni$muni_name)
 
 ## historical ####
 historic_muni <- historic_aligned %>%
+  # mutate(
+  #   hold_name =
+  #     place_code_conversion$place[match(
+  #       historic_aligned$areazip_kg,
+  #       place_code_conversion$historic_code
+  #     )]
+  # ) |> 
+  # mutate(place_name = case_when(is.na(hold_name) ~
+  #                                 place_code_conversion$place[match(
+  #                                   historic_aligned$areazip,
+  #                                   place_code_conversion$historic_code )],
+  #                               TRUE ~ hold_name)) |> 
   mutate(
     hold_name =
-      place_code_conversion$place[match(
+      place_code_conversion$muni[match(
         historic_aligned$areazip_kg,
         place_code_conversion$historic_code
       )]
   ) |> 
-  mutate(place_name = case_when(is.na(hold_name) ~
-                                  place_code_conversion$place[match(
+  mutate(muni_name = case_when(is.na(hold_name) ~
+                                  place_code_conversion$muni[match(
                                     historic_aligned$areazip,
                                     place_code_conversion$historic_code )],
                                 TRUE ~ hold_name))
@@ -103,34 +134,7 @@ historic_muni <- historic_aligned %>%
   #                                   place_code_conversion$place_id )],
   #                               TRUE ~ hold_name))
 
-unique(historic_muni$place_name)
-
-# input county names ####
-## oracle ####
-oracle_muni <- oracle_aligned %>%
-  mutate(
-    place_name =
-      place_code_conversion$place[match(
-        oracle_aligned$sample_area_place_code,
-        place_code_conversion$place_id
-      )]
-  )
-unique(oracle_muni$place_name)
-
-## historical ####
-historic_muni <- historic_aligned %>%
-  mutate(
-    hold_name =
-      place_code_conversion$place[match(
-        historic_aligned$areazip_kg,
-        place_code_conversion$historic_code
-      )]
-  ) |> 
-  mutate(place_name = case_when(is.na(hold_name) ~
-                                  place_code_conversion$place[match(
-                                    historic_aligned$areazip,
-                                    place_code_conversion$historic_code )],
-                                TRUE ~ hold_name))
+unique(historic_muni$muni_name)
 
 # input gear names #### 
 ## read in conversion table ####
@@ -200,35 +204,36 @@ unique(historic_spp$spp_name)
 
 ## oracle ####
 oracle_reordered <- oracle_spp |> 
-  select(id, date, place_name, gear_name, spp_name, length) |> 
-  rename(place = place_name,
+  select(id, date, muni_name, gear_name, spp_name, length) |> 
+  rename(place = muni_name,
          gear = gear_name,
          spp = spp_name)
 
 oracle_clean <- oracle_reordered %>%
-  arrange(desc(date), place, gear, spp, length)
+  arrange(desc(date), spp, place, gear, length)
 
 # create compare id to compare individual records
 oracle_clean$compare_id <- seq.int(nrow(oracle_clean))
 
 ## historical ####
 historic_reordered <- historic_spp |> 
-  select(date, place_name, gear_name, spp_name, length)|> 
-  rename(place = place_name,
+  select(date, muni_name, gear_name, spp_name, length)|> 
+  rename(place = muni_name,
          gear = gear_name,
          spp = spp_name)
 # organize for best comparison results
 hist_clean <- historic_reordered %>%
-  arrange(desc(date), place, gear, spp, length)
+  arrange(desc(date), spp, place, gear, length)
 
 # create compare id to compare individual records
 hist_clean$compare_id <- seq.int(nrow(hist_clean))
 
 # records that completely match ####
 all_match <- semi_join(oracle_clean, hist_clean,
-                       by = c("date", "place", "gear", "spp", "length"))
+                       by = c("date", "spp", "place", "gear", "length"))
 
-## remove previously matched records  ####
+# Round 1 - gear ####
+# remove previously matched records  
 # for easier organisation 
 # filter data sets to not those records 
 ## oracle ####
@@ -246,3 +251,94 @@ hist_1 <- hist_clean |>
 # create new comparison id 
 hist_1$compare_id <- seq.int(nrow(hist_1))
 
+## records that match except for gear ####
+gear_mismatch <- merge(oracle_1, hist_1,
+                       by = c("compare_id", "date", "spp", "place", "length"))
+
+# Round 2 - place####
+# remove previously matched records  
+# for easier organisation 
+# filter data sets to not those records 
+## oracle ####
+oracle_2 <- oracle_1 |> 
+  filter(compare_id %notin% gear_mismatch$compare_id) |> 
+  select(-compare_id)
+# create new comparison id 
+oracle_2$compare_id <- seq.int(nrow(oracle_2))
+
+## historical  ####
+hist_2 <- hist_1 |> 
+  filter(compare_id %notin% gear_mismatch$compare_id)|> 
+  select(-compare_id)
+# create new comparison id 
+hist_2$compare_id <- seq.int(nrow(hist_2))
+
+## records that match except for place ####
+place_mismatch <- merge(hist_2, oracle_2,
+                       by = c("compare_id", "date", "spp", "gear", "length"))
+
+# Round 3 - spp ####
+# remove previously matched records  
+# for easier organisation 
+# filter data sets to not those records 
+## oracle ####
+oracle_3 <- oracle_2 |> 
+  filter(compare_id %notin% place_mismatch$compare_id) |> 
+  select(-compare_id)
+# create new comparison id 
+oracle_3$compare_id <- seq.int(nrow(oracle_3))
+
+## historical  ####
+hist_3 <- hist_2 |> 
+  filter(compare_id %notin% place_mismatch$compare_id)|> 
+  select(-compare_id)
+# create new comparison id 
+hist_3$compare_id <- seq.int(nrow(hist_3))
+
+## records that match except for spp ####
+spp_mismatch <- merge(oracle_3, hist_3,
+                        by = c("compare_id", "date", "place", "gear", "length"))
+
+# Round 4 - len ####
+# remove previously matched records  
+# for easier organisation 
+# filter data sets to not those records 
+## oracle ####
+oracle_4 <- oracle_3 |> 
+  filter(compare_id %notin% spp_mismatch$compare_id) |> 
+  select(-compare_id)
+# create new comparison id 
+oracle_4$compare_id <- seq.int(nrow(oracle_4))
+
+## historical  ####
+hist_4 <- hist_3 |> 
+  filter(compare_id %notin% spp_mismatch$compare_id)|> 
+  select(-compare_id)
+# create new comparison id 
+hist_4$compare_id <- seq.int(nrow(hist_4))
+
+## records that match except for len ####
+len_mismatch <- merge(oracle_4, hist_4,
+                      by = c("compare_id", "date", "place", "gear", "spp"))
+
+# Round 5 - remaining ####
+# remove previously matched records  
+# for easier organisation 
+# filter data sets to not those records 
+## oracle ####
+oracle_5 <- oracle_4 |> 
+  filter(compare_id %notin% len_mismatch$compare_id) |> 
+  select(-compare_id)
+# create new comparison id 
+oracle_5$compare_id <- seq.int(nrow(oracle_5))
+
+## historical  ####
+hist_5 <- hist_4 |> 
+  filter(compare_id %notin% len_mismatch$compare_id)|> 
+  select(-compare_id)
+# create new comparison id 
+hist_5$compare_id <- seq.int(nrow(hist_5))
+
+## remaining records matched by compare_id ####
+remaining_mismatch <- merge(oracle_5, hist_5,
+                      by = "compare_id")

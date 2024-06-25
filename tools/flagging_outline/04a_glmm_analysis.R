@@ -1,4 +1,4 @@
-# 04_clean
+# 04_glmm_analysis
 
 #' execute statistical analysis of gear-length relationships (glmm) and
 #' k calculations to determine possible gear groupings and data outliers
@@ -7,7 +7,7 @@
 librarian::shelf(here, tidyverse, flextable, ggplot2, ggpubr, lmerTest, meantables)
 
 # Specify settings ####
-tip_spp_rds <- "pr_yts_prep_tip_20240314.rds" # rds from end of 03 script
+tip_spp_rds <- "pr_yts_spp_size_prep_20240529.rds" # rds from end of 02a script
 spp <- "yts"
 isl <- "pr"
 break_year <- 2012

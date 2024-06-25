@@ -133,6 +133,10 @@ tip_range$length1_cm[1:25]
 tip_range2 <- tip_spp[with(tip_spp,order(length1_cm)),]
 tip_range2$length1_cm[1:25]
 
+# SPECIFY SETTINGS FOR 03_prep.R ####
+min_size <- 5
+max_size <- 125 
+
 # count lengths
 length_count <- tip_spp_count |>
   dplyr::group_by(

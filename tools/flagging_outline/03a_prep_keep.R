@@ -6,15 +6,17 @@
 librarian::shelf(here, tidyverse)
 
 # Specify settings ####
-tip_spp_rds <- "pr_yts_forest_tip_20240314.rds" # rds from end of 02 script
+# if you want just complete l/w pairs use this one
+tip_spp_rds <- "pr_yts_spp_size_flag_20240618.rds" # rds from end of 02d script
+# if you want all lengths regardless of weights use this one 
+tip_spp_rds <- "pr_yts_spp_size_prep_20240529.rds" # rds from end of 02a script
 spp <- "yts"
 isl <- "pr"
-len_type <- "FORK LENGTH"
 len_mode <- "COMMERCIAL"
-min_size <- 1
-max_size <- 122   
-start_yr <- 1983
-end_yr <- 2022 
+# min_size <- 1 # add if there are outliers that need to be removed
+# max_size <- 122
+start_yr <- 1984 # based on 01a settings unless running truncated time series 
+end_yr <- 2022
 print_isl <- "Puerto Rico"
 
 
@@ -22,18 +24,15 @@ print_isl <- "Puerto Rico"
 tip_spp <- readRDS(here::here("data", tip_spp_rds))
 
 # Prep data for analysis ####
-# filter to specified settings 
+# filter to specified settings
 tip_spp_len <- tip_spp |>
   dplyr::filter(
-    length_type1 == len_type,
     sector == len_mode,
-    year <= end_yr,
+    year >= start_yr & year <= end_yr,
     length1_cm > min_size,
-    length1_cm <= max_size
-  ) 
-  # dplyr::mutate(
-  #   k_keep = k >= ext_k_lower & k <= ext_k_upper
-  # )
+    length1_cm <= max_size,
+    k_flag == "keep"
+  )
 
 # Save prepped tip_spp_len ####
 saveRDS(
