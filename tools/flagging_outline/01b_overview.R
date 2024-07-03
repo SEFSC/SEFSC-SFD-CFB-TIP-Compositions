@@ -7,7 +7,7 @@
 librarian::shelf(here, tidyverse, measurements, expss, openxlsx)
 
 # Specify settings ####
-tip_spp_rds <- "pr_yts_format_tip_20240528.rds" # rds from end of 01a script
+tip_spp_rds <- "format_tip_20240703.rds" # rds from end of 01a script
 spp_itis <- "168907" # find on itis.gov 
 spp <- "yts"
 isl <- "pr"

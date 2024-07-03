@@ -5,11 +5,11 @@
 librarian::shelf(here, tidyverse, measurements, expss, openxlsx, flextable)
 
 # Specify settings ####
-tip_spp_rds <- "pr_yts_format_tip_20240409.rds" # rds from end of 01a script
-spp_itis <- "172482" # find on itis.gov 168907
-spp <- "swo"
+tip_spp_rds <- "format_tip_20240703.rds" # rds from end of 01a script
+spp_itis <- "97648" # 97646 97648 find on itis.gov or catalogueoflife.org
+spp <- "csl"
 isl <- "pr_usvi"
-print_spp <- "Swordfish"
+print_spp <- "Caribbean Spiny Lobster"
 print_isl <- "US Caribbean"
 
 # Read in formatted data ####

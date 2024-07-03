@@ -7,7 +7,7 @@
 librarian::shelf(here, tidyverse, flextable, ggplot2, ggpubr, lmerTest, meantables)
 
 # Specify settings ####
-tip_spp_rds <- "pr_yts_spp_size_prep_20240529.rds" # rds from end of 02a script
+tip_spp_rds <- "pr_yts_prep_tip_20240628.rds" # rds from end of 03a script
 spp <- "yts"
 isl <- "pr"
 break_year <- 2012
@@ -19,7 +19,7 @@ tip_spp <- readRDS(here::here("data", tip_spp_rds))
 
 # GLMM model analysis ####
 tip_spp_glm <- tip_spp |>
-  select(year, interview_date, id, island, length1_cm, gear)
+  select(year, date, id, island, length1_cm, gear)
 
 # plot data
 
@@ -38,7 +38,8 @@ box_plot <- ggboxplot(
     title = paste(print_isl, "Length Samples")
   )
 box_plot
-# Create density plot across years
+
+ # Create density plot across years
 density_plot <- ggdensity(
   tip_spp_glm,
   x = "length1_cm",
@@ -61,11 +62,11 @@ allgears_glm_plot <- tip_spp_glm %>%
   group_by(gear) %>%
   filter(n() >= 30) %>%
   ungroup() |>
-  ggplot(aes(x = as.Date(interview_date), y = length1_cm)) +
+  ggplot(aes(x = date, y = length1_cm)) +
   geom_point(aes(colour = gear, shape = gear), size = 1, alpha = 0.5) +
   scale_shape_manual(values = c(
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12,
-    13, 14, 15, 16, 17, 18, 19
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+    13, 14, 15, 16, 17, 18, 21, 22, 23
   )) +
   geom_smooth(method = "lm", formula = "y ~ x", col = "black") +
   # facet_wrap(~ COUNTY_LANDED) +
@@ -79,8 +80,12 @@ allgears_glm_plot <- tip_spp_glm %>%
 allgears_glm_plot
 
 ## Comparing length to date and gear in a gamma full model ####
-mod2 <- glmer(length1_cm ~ scale(interview_date) + gear + (1 | year) + (1 | id),
-  data = tip_spp,
+mod2 <- glmer(length1_cm ~ 
+                # scale(date) + 
+                gear + 
+                (1 | year) + 
+                (1 | id),
+  data = tip_spp_glm,
   family = Gamma(link = log)
 )
 

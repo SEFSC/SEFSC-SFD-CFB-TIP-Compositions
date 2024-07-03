@@ -5,7 +5,7 @@ librarian::shelf(here, tidyverse, measurements)
 # cr_tip(state_codes = c("PR", "VI"))
 
 # Specify settings ####
-tip_rds <- "com_tip_PR_VI_20240409.RDS" # add pull of all CAR region and species
+tip_rds <- "com_tip_PR_VI_20240703.RDS" # add pull of all CAR region and species
 isl <- "pr"
 spp<- "yts"
 ## Range currently set to not drop any obs 
@@ -166,9 +166,7 @@ saveRDS(
   tip_spp_relevant,
   file = here::here(
     "data",
-    paste0(
-      isl, "_",
-      spp, "_format_tip_",
+    paste0( "format_tip_",
       format(Sys.time(), "%Y%m%d"), 
       ".rds"
     )

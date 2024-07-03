@@ -134,7 +134,7 @@ saveRDS(
 # instert historical csv name
 pr_historical <-
   read.csv(here::here("data", "raw", historical_csv))
-
+# 88-91 have weird areazip variables, might need to change which one is used 
 # Format dates to be mm/dd/yyyy
 pr_hist_date <- pr_historical %>%
   janitor::clean_names() |>
@@ -148,17 +148,9 @@ pr_hist_date <- pr_historical %>%
                   # if there are 5 #s last 2 are site location
                   # id_code 88-91, areazip 92-07
          areazip_kg, # edited area when areazip is inaccurate
-         gearcode, # gear_code 88-91, gearcode 92-07
-         meshsize, # only 92-07
-         soaktime, # all yrs
-         areafish_a, # areafish 93-99, areafish_a 00-07
-         stdepth, # fish_depth 88-91, stdepth 92-07
-         enddepth, # only 92-07
-         species_b, # species 88-99, species_b if 00-07
-         nodccode_b, # sp_code 88-91, nodccode 92-99, nodccode_b 00-07 
-         frequency, # only 93-07
-         stlength, # frk_len 88-91, stlength 92-07
-         lengthtype, # tot_len 88-91, lengthtype 92-07
+         gearcode, # gear code
+         species_b, # species code
+         stlength, # fork length
          weight_b, # weight 88-99, weight_b 00-07
          weightype, # wgt_type 88-91, not in 92, weighttype 93-07
          ) |> 
@@ -166,7 +158,6 @@ pr_hist_date <- pr_historical %>%
   rename(date = intdate,
          area_square = areafish_a,
          species_code = species_b,
-         species_code_hist = nodccode_b,
          length = stlength)
 
 # Save ####
