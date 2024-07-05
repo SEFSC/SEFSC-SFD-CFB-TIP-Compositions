@@ -6,7 +6,8 @@ librarian::shelf(here, tidyverse, measurements, expss, openxlsx, flextable)
 
 # Specify settings ####
 tip_spp_rds <- "format_tip_20240703.rds" # rds from end of 01a script
-spp_itis <- "97648" # 97646 97648 find on itis.gov or catalogueoflife.org
+spp_itis <- "097648" # find on itis.gov or catalogueoflife.org
+# if itis is only 5 #'s add a 0 before spp code 
 spp <- "csl"
 isl <- "pr_usvi"
 print_spp <- "Caribbean Spiny Lobster"
@@ -14,6 +15,8 @@ print_isl <- "US Caribbean"
 
 # Read in formatted data ####
 tip_spp <- readRDS(here::here("data", tip_spp_rds))
+
+unique(tip_spp$species_code)
 
 # filter to species ####
 tip_filter <- tip_spp |>
@@ -55,9 +58,9 @@ length_types <- tip_filter |>
     first_year = min(year),
     last_year = max(year),
     n_years = dplyr::n_distinct(year),
-    min_length_cm = min(length1_cm),
-    max_length_cm = max(length1_cm),
-    avg_length_cm = round(mean(length1_cm), 2),
+    min_length_cm = min(length1_cm, na.rm = TRUE),
+    max_length_cm = max(length1_cm, na.rm = TRUE),
+    avg_length_cm = round(mean(length1_cm, na.rm = TRUE), 2),
     na_length_cm = sum(is.na(length1_cm)),
   )
 

@@ -6,7 +6,7 @@
 librarian::shelf(here, tidyverse)
 
 # Specify settings ####
-tip_spp_rds <- "pr_yts_spp_size_prep_20240529.rds" # rds from end of 02a script
+tip_spp_rds <- "pr_yts_spp_size_prep_20240705.rds" # rds from end of 02a script
 spp <- "yts"
 isl <- "pr"
 len_mode <- "COMMERCIAL"
@@ -46,7 +46,7 @@ saveRDS(
     "data",
     paste0(
       isl, "_",
-      spp, "_prep_tip_",
+      spp, "_prep_keep_tip_",
       format(Sys.time(), "%Y%m%d"), ".rds"
     )
   )
