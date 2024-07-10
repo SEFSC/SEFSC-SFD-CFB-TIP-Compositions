@@ -9,11 +9,12 @@ librarian::shelf(here, tidyverse)
 tip_spp_rds <- "pr_yts_spp_size_prep_20240705.rds" # rds from end of 02a script
 spp <- "yts"
 isl <- "pr"
+data_keep <- "TIP"
 len_mode <- "COMMERCIAL"
 len_type <- "FORK LENGTH"
 # min_size <- 1 # add if there are outliers that need to be removed
 # max_size <- 122
-start_yr <- 1984 # based on 01a settings unless running truncated time series 
+start_yr <- 1984 # based on 01a settings unless running truncated time series
 end_yr <- 2022
 print_isl <- "Puerto Rico"
 
@@ -23,14 +24,18 @@ tip_spp <- readRDS(here::here("data", tip_spp_rds))
 
 # Prep data for analysis ####
 # filter to specified settings
-tip_spp_len <- tip_spp |> 
-  group_by(gear) |> 
+tip_spp_len <- tip_spp |>
+  filter(
+    island == isl,
+    # data_source == data_keep
+  ) |>
+  group_by(gear) |>
   dplyr::mutate(n_ID = n_distinct(id)) |>
   dplyr::filter(n_ID >= 3) |>
-  ungroup() |>  
-  group_by(year) |> 
+  ungroup() |>
+  group_by(year) |>
   filter(n() >= 30) |>
-  ungroup()  |> 
+  ungroup() |>
   dplyr::filter(
     sector == len_mode,
     length_type1 == len_type,

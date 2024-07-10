@@ -28,7 +28,8 @@ flextable(count_lw_pairs) |>
   theme_box() %>%
   align(align = "center", part = "all") %>%
   fontsize(size = 8, part = "all") %>%
-  autofit()
+  autofit() |>
+  colformat_num(j = "year", big.mark = "")
 
 # Plot count of complete and incomplete length and weight pairs
 plot_count_lw_pairs <- count_lw_pairs |>
@@ -40,7 +41,7 @@ plot_count_lw_pairs <- count_lw_pairs |>
     legend.title = element_blank()
   )
 
-# Plot length and weight pairs
+# Plot complete length and weight pairs by sector and len type
 plot_lw_pairs <- tip_spp |>
   dplyr::mutate(sector_data_source = paste(sector, data_source)) |>
   dplyr::filter(record_type == "complete") |>

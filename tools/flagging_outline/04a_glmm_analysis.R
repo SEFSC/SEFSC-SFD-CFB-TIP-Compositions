@@ -7,7 +7,7 @@
 librarian::shelf(here, tidyverse, flextable, ggplot2, ggpubr, lmerTest, meantables)
 
 # Specify settings ####
-tip_spp_rds <- "pr_yts_prep_tip_20240628.rds" # rds from end of 03a script
+tip_spp_rds <- "pr_yts_prep_keep_tip_20240709.rds" # rds from end of 03a script
 spp <- "yts"
 isl <- "pr"
 break_year <- 2012
@@ -19,7 +19,8 @@ tip_spp <- readRDS(here::here("data", tip_spp_rds))
 
 # GLMM model analysis ####
 tip_spp_glm <- tip_spp |>
-  select(year, date, id, island, length1_cm, gear)
+  select(year, date, id, island, length1_cm, gear) |>
+  mutate(id = as.character(id))
 
 # plot data
 
@@ -80,13 +81,9 @@ allgears_glm_plot <- tip_spp_glm %>%
 allgears_glm_plot
 
 ## Comparing length to date and gear in a gamma full model ####
-mod2 <- glmer(length1_cm ~ 
-                # scale(date) + 
-                gear + 
-                (1 | year) + 
-                (1 | id),
-  data = tip_spp_glm,
-  family = Gamma(link = log)
+mod2 <- glmer(length1_cm ~ scale(date) + gear + (1 | year) + (1 | id),
+              data = tip_spp_glm,
+              family = Gamma(link = log)
 )
 
 # pairwise comparisons - compares each gear to each other and gives p value
@@ -140,7 +137,7 @@ allgears_multcompcld_final <- allgears_multcompcld_trip |>
     "Fish(n)" = "n",
     "Interview(n)" = "id"
   ) |>
-  dplyr::filter(`Interview(n)` >= 3) |>
+  # dplyr::filter(`Interview(n)` >= 3) |>
   select(
     Gear,
     "Estimated Marginal Mean",
@@ -150,18 +147,18 @@ allgears_multcompcld_final <- allgears_multcompcld_trip |>
     "Fish(n)",
     "Interview(n)",
     Percentage
-  ) |>
+  ) 
   # Add gear groups related to each statistical group given by GLMM
   ### FIX THESE GEAR GROUPINGS
-  mutate("Gear Group" = case_when(
-    Gear == "LINES HAND" ~ "Hand Line",
-    Gear == "POTS AND TRAPS; FISH" ~ "Traps",
-    Gear == "HAUL SEINES" ~ "Hand Line or Traps",
-    Gear == "POTS AND TRAPS; CMB" ~ "Hand Line or Traps",
-    Gear == "POTS AND TRAPS;SPINY LOBSTER" ~ "Hand Line or Traps",
-    Gear == "ROD AND REEL" ~ "Rod and Reel",
-    TRUE ~ "Hand Line, Traps, or Rod and Reel"
-  ))
+  # mutate("Gear Group" = case_when(
+  #   Gear == "LINES HAND" ~ "Hand Line",
+  #   Gear == "POTS AND TRAPS; FISH" ~ "Traps",
+  #   Gear == "HAUL SEINES" ~ "Hand Line or Traps",
+  #   Gear == "POTS AND TRAPS; CMB" ~ "Hand Line or Traps",
+  #   Gear == "POTS AND TRAPS;SPINY LOBSTER" ~ "Hand Line or Traps",
+  #   Gear == "ROD AND REEL" ~ "Rod and Reel",
+  #   TRUE ~ "Hand Line, Traps, or Rod and Reel"
+  # ))
 
 # Create table of means for each gear
 mean_allgears <- tip_spp %>%
@@ -176,25 +173,25 @@ mean_allgears <- tip_spp %>%
   select(Gear, Mean)
 
 # Join means to GLMM/summary stats table
-allgears_multicom_mean <- full_join(mean_allgears,
+allgears_multcom_mean <- full_join(mean_allgears,
   allgears_multcompcld_final,
   by = "Gear"
 )
 
 # Arrange table in decreasing order of gear percent representation
-allgears_multicom_mean_final <- allgears_multicom_mean |>
+allgears_multcom_mean_final <- allgears_multcom_mean |>
   arrange(desc(Percentage))
 # dplyr::filter(`Interview(n)` >= 3)
 
 
-glm_tbl <- flextable(allgears_multicom_mean_final) |>
+glm_tbl <- flextable(allgears_multcom_mean_final) |>
   theme_box() %>%
   align(align = "center", part = "all") %>%
   fontsize(size = 8, part = "all") %>%
   autofit()
 
 # list of gears that represent >2% of lengths each
-grtr2percent_gears <- allgears_multicom_mean_final |>
+grtr2percent_gears <- allgears_multcom_mean_final |>
   filter(Percentage > 2)
 
 ## Save gears >2% representation ####
@@ -309,7 +306,7 @@ allgears_multcompcld_finaL_break <- allgears_multcompcld_trip_break |>
   ))
 
 # create table of means for each gear
-mean_allgears2012 <- length_data_glm_2012 %>%
+mean_allgears_break <- tip_spp_break_year %>%
   group_by(gear) %>%
   dplyr::mutate(n_ID = n_distinct(ID)) |>
   dplyr::filter(n_ID >= 3) |>
@@ -320,58 +317,53 @@ mean_allgears2012 <- length_data_glm_2012 %>%
   ) |>
   select(Gear, Mean)
 
-allgears_multicom_mean2012 <- full_join(mean_allgears2012, 
-                                        allgears_multcompcld_finaL_2012, 
+allgears_multicom_mean_break <- full_join(mean_allgears_break, 
+                                        allgears_multcompcld_finaL_break, 
                                         by = "Gear")
 
-allgears_multicom_mean_final2012 <- allgears_multicom_mean2012 |>
+allgears_multicom_mean_break_final <- allgears_multicom_mean_break |>
   arrange(desc(Percentage))
 
 
-glm_tlb2 <- flextable(allgears_multicom_mean_final2012) |>
+glm_tlb2 <- flextable(allgears_multicom_mean_break_final) |>
   theme_box() %>%
   align(align = "center", part = "all") %>%
   fontsize(size = 8, part = "all") %>%
   autofit()
 
+# list of gears that represent >2% of lengths each
+grtr2percent_gears_break <- allgears_multicom_mean_break_final |>
+  filter(Percentage > 2)
 
-# Create pretty table for export purposes
-glmm_gear_summary_table <- flextable(allgears_multicom_mean_final) |>
-  theme_box() %>%
-  align(align = "center", part = "all") %>%
-  fontsize(size = 8, part = "all") %>%
-  autofit()
+## Save gears >2% representation ####
+saveRDS(
+  grtr2percent_gears_break,
+  file = here::here(
+    "data",
+    paste0(
+      isl, "_",
+      spp, "_clean_gear_list_break_year_",
+      format(Sys.time(), "%Y%m%d"), ".rds"
+    )
+  )
+)
 
-# Obtain lower and upper estimates of k ####
-tip_k_iqr <- IQR(tip_spp$k, na.rm = TRUE)
-tip_k_25q <- quantile(tip_spp$k, 0.25, na.rm = TRUE)
-tip_k_75q <- quantile(tip_spp$k, 0.75, na.rm = TRUE)
-tip_k_lower <- tip_k_25q - 1.5 * tip_k_iqr
-tip_k_upper <- tip_k_75q + 1.5 * tip_k_iqr
+# Implement filtering system to remove unwanted gears ####
+# filtered to gears included in desired level of specification
 
-# list results 
-tip_k_iqr # 0.3245058
-tip_k_25q # 1.359978
-tip_k_75q # 1.684483
-tip_k_lower # 0.8732189
-tip_k_upper # 2.171242
+# filter to desired gears in full time series
+# "allgears_multcom_mean_final" for all gears
+# "grtr2percent_gears" for gears representing greater than 2% individually of length records 
+tip_clean <- tip_spp |> 
+  filter(gear %in% allgears_multcom_mean_final$Gear)
 
-# Implement filtering system to remove outliers ####
-#' For our purposes of the SEDAR 84 size comp, we filtered out interviews with
-#' less than 3 unique interview IDs per gear
-#' Other filters could include removing gears with less than 30 recorded lengths,
-#' years with less than 30 recorded lengths, years with less than 10 unique
-#' interview IDs, or k more or less than upper and lower limits set above
+# filter to desired gears in truncated time series
+#' "allgears_multicom_mean_break_final" for all gears
+#' "grtr2percent_gears_break" for gears representing greater than 2% individually of length records 
+# tip_clean <- tip_spp_break_year |> 
+#   filter(gear %in% allgears_multicom_mean_break_final$Gear)
 
-# filtered to gears with more than 3 unique trip IDs
-tip_clean <- tip_spp %>%
-  group_by(gear) %>%
-  dplyr::mutate(n_ID = n_distinct(id)) |>
-  dplyr::filter(n_ID >= 3) |>
-  ungroup()
-
-
-# Save cleaned tip_clean ####
+# Save cleaned tip_clean ##### 
 saveRDS(
   tip_clean,
   file = here::here(

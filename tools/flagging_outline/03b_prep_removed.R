@@ -23,6 +23,7 @@ tip_spp <- readRDS(here::here("data", tip_spp_rds))
 
 # Create flag to denote removed records ####
 tip_spp_flag <- tip_spp |>
+  filter(island = isl) |> 
   dplyr::mutate(
     remove_flag = case_when(
       length_type1 != len_type ~ "drop",
@@ -43,4 +44,5 @@ tip_settings_removed <- tip_spp_flag |>
 tip_spp_k <- readRDS(here::here("data", tip_spp_rds_k))
 
 tip_settings_removed <- tip_spp_flag |> 
-  filter(remove_flag == "drop")
+  filter(island = isl,
+         remove_flag == "drop")

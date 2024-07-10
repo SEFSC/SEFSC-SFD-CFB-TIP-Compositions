@@ -6,7 +6,7 @@ librarian::shelf(here, tidyverse, measurements, expss, openxlsx, flextable)
 
 # Specify settings ####
 tip_spp_rds <- "format_tip_20240703.rds" # rds from end of 01a script
-spp_itis <- "097648" # find on itis.gov or catalogueoflife.org
+spp_itis <- c("097648", "097646") # find on itis.gov or catalogueoflife.org
 # if itis is only 5 #'s add a 0 before spp code 
 spp <- "csl"
 isl <- "pr_usvi"
@@ -21,7 +21,7 @@ unique(tip_spp$species_code)
 # filter to species ####
 tip_filter <- tip_spp |>
   # Add isl filter if needed
-  dplyr::filter(species_code == spp_itis) |>
+  dplyr::filter(species_code %in% spp_itis) |>
   # Redo variable for island
   dplyr::mutate(
     island = dplyr::case_when(

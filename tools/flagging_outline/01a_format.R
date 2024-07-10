@@ -6,8 +6,6 @@ librarian::shelf(here, tidyverse, measurements)
 
 # Specify settings ####
 tip_rds <- "com_tip_PR_VI_20240703.RDS" # add pull of all CAR region and species
-isl <- "pr"
-spp<- "yts"
 ## Range currently set to not drop any obs 
 # note 1984 is first full year for fish, 1980 for USVI and 1981 for PR spiny lobster 
 min_year <- 1984
@@ -35,10 +33,6 @@ tip_spp <- tip |>
     id = as.character(id),
     interview_date = lubridate::as_date(interview_date),
     year = as.numeric(year),
-    # length1_cm = measurements::conv_unit(length1_mm, "mm", "cm"),
-    # length1_inch = measurements::conv_unit(length1_mm, "mm", "inch"),
-    # obs_weight_lbs = measurements::conv_unit(obs_weight_kg, "kg", "lbs"),
-    # k = 10^5 * obs_weight_kg / length1_cm^3,
     gear = case_when(
       land_standard_gear_name == "NOT CODED" ~ standardgearname_1,
       TRUE ~ land_standard_gear_name

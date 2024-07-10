@@ -8,11 +8,11 @@ librarian::shelf(here, tidyverse, measurements, expss, openxlsx)
 
 # Specify settings ####
 tip_spp_rds <- "format_tip_20240703.rds" # rds from end of 01a script
-spp_itis <- "168907" # find on itis.gov 
-spp <- "yts"
-isl <- "pr"
-print_spp <- "Yellowtail Snapper"
-print_isl <- "Puerto Rico"
+spp_itis <- c("097648", "097646") # find on itis.gov 
+spp <- "csl"
+# isl <- "pr"
+print_spp <- "Caribbean Spiny Lobster"
+print_isl <- "Puerto Rico - USVI"
 
 # Read in formatted data ####
 tip_spp <- readRDS(here::here("data", tip_spp_rds))
@@ -29,7 +29,7 @@ count_all <- tip_spp |>
 
 # count only specific species
 count_spp <- tip_spp |>
-  dplyr::filter(species_code == spp_itis) |>
+  dplyr::filter(species_code %in% spp_itis) |>
   dplyr::group_by(island, year) |>
   dplyr::summarize(
     .groups = "drop",
@@ -63,7 +63,7 @@ percent_overview <- count_overview |>
 # count spp based on sector
 count_spp_sector <- tip_spp |>
   dplyr::filter(
-    species_code == spp_itis,
+    species_code %in% spp_itis,
     length_type1 != "NO LENGTH",
     island != "not coded"
   ) |>
