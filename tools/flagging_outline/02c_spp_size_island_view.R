@@ -7,19 +7,21 @@ librarian::shelf(
 )
 
 # Specify settings #### 
-tip_spp_rds <- "pr_yts_spp_size_prep_20240529.rds" # rds from end of 02a script
-spp_itis <- "168907" # find on itis.gov
-spp <- "yts"
-isl <- "pr"
-print_spp <- "Yellowtail Snapper"
-print_isl <- "Puerto Rico"
+tip_spp_rds <- "prusvi_csl_spp_size_prep_20240711.rds" # rds from end of 02a script
+spp_itis <- c("097648", "097646") # find on itis.gov
+spp <- "csl"
+isl <- c("pr", "stt", "stx") 
+print_spp <- "Caribbean Spiny Lobster"
+print_isl <- "Puerto Rico - USVI"
+save_spp <- "csl"
+save_isl <- "prusvi"
 
 # Read in formatted data ####
 tip_spp <- readRDS(here::here("data", tip_spp_rds))
 
 # Filter to target island ####
 tip_spp_prep <- tip_spp |>
-  dplyr::filter(island == isl)
+  dplyr::filter(island %in% isl)
 
 # Create count of observed records for each area  ####
 tip_spp_count <- tip_spp_prep |>
@@ -34,9 +36,9 @@ tip_spp_count <- tip_spp_prep |>
   select(-n)
 
 # Plot regions sampled over time ####
-## If working with PR ####
+## plots individual counties of PR along with usvi islands 
 county_data <- tip_spp_count |>
-  group_by(year, county_landedn) |>
+  group_by(year, island, county_landedn) |>
   dplyr::summarize(n = n(), .groups = "drop") |>
   mutate(year = as.integer(year))
 
@@ -49,6 +51,7 @@ county_by_year <- county_data |>
              y = county_landedn, 
              color = county_landedn, 
              size = n)) +
+  facet_wrap(~island) +
   geom_point() +
   labs(
     x = "Year", y = "", colour = "", shape = "",
@@ -56,14 +59,14 @@ county_by_year <- county_data |>
   ) +
   theme_bw() +
   theme(
-    legend.position = "null", text = element_text(size = 12),
-    title = element_text(size = 15)
+    legend.position = "null", text = element_text(size = 10),
+    title = element_text(size = 12)
   )
 
 
 # Plot gears used over time ####
 gear_data <- tip_spp_count |>
-  group_by(year, gearn) |>
+  group_by(year, island, gearn) |>
   dplyr::summarize(n = n(), .groups = "drop") |>
   mutate(year = as.integer(year))
 
@@ -71,8 +74,9 @@ gear_by_yr <- gear_data |>
   group_by(gearn) |>
   dplyr::mutate(total_n = sum(n)) |>
   ungroup() |>
-  dplyr::mutate(gearn = fct_reorder(gearn, total_n)) %>%
+  dplyr::mutate(gearn = fct_reorder(gearn, total_n)) |> 
   ggplot(aes(x = year, y = gearn, color = gearn, size = n)) +
+  facet_wrap(~island) +
   geom_point() +
   labs(
     x = "Year", y = "", colour = "", shape = "",
@@ -80,8 +84,8 @@ gear_by_yr <- gear_data |>
   ) +
   theme_bw() +
   theme(
-    legend.position = "null", text = element_text(size = 15),
-    title = element_text(size = 15)
+    legend.position = "null", text = element_text(size = 10),
+    title = element_text(size = 12)
   )
 
 # Plot weight values recorded over time ####
@@ -89,7 +93,8 @@ weight_time <- tip_spp_count |>
   ggplot(aes(x = date, 
              y = obs_weight_lbs, 
              color = sample_condition)) +
-  facet_wrap(~islandn, ncol = 2) + # include if pr
+  # facet_wrap(~islandn, ncol = 2) + 
+  facet_grid(species_code ~ island) +
   geom_point() +
   labs(
     x = "Year", y = "Weight (lbs)",
@@ -106,7 +111,8 @@ length_time <- tip_spp_count |>
     group = island,
     color = length_type1
   )) +
-  facet_wrap(~islandn, ncol = 2) +
+  # facet_wrap(~islandn, ncol = 2) +
+  facet_grid(species_code ~ island) +
   geom_point() +
   labs(
     x = "Year", y = "Length (cm)",
@@ -117,16 +123,16 @@ length_time <- tip_spp_count |>
 
 # do we need to print these graphs? 
 
-# Save formatted tip_spp ####
-saveRDS(
-  tip_spp_count,
-  file = here::here(
-    "data",
-    paste0(
-      isl, "_",
-      spp, "_spp_size_island_view_",
-      format(Sys.time(), "%Y%m%d"),
-      ".rds"
-    )
-  )
-)
+# # Save formatted tip_spp ####
+# saveRDS(
+#   tip_spp_count,
+#   file = here::here(
+#     "data",
+#     paste0(
+#       isl, "_",
+#       spp, "_spp_size_island_view_",
+#       format(Sys.time(), "%Y%m%d"),
+#       ".rds"
+#     )
+#   )
+# )

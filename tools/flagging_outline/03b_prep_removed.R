@@ -43,6 +43,33 @@ tip_settings_removed <- tip_spp_flag |>
 # Read in k data ####
 tip_spp_k <- readRDS(here::here("data", tip_spp_rds_k))
 
-tip_settings_removed <- tip_spp_flag |> 
+tip_settings_removed_k <- tip_spp_flag |> 
   filter(island = isl,
          remove_flag == "drop")
+
+
+# Save general rds ####
+saveRDS(
+  tip_settings_removed,
+  file = here::here(
+    "data",
+    paste0(
+      isl, "_",
+      spp, "_prep_remove_tip_",
+      format(Sys.time(), "%Y%m%d"), ".rds"
+    )
+  )
+)
+
+# Save k rds ####
+saveRDS(
+  tip_settings_removed_k,
+  file = here::here(
+    "data",
+    paste0(
+      isl, "_",
+      spp, "_prep_remove_tip_",
+      format(Sys.time(), "%Y%m%d"), ".rds"
+    )
+  )
+)

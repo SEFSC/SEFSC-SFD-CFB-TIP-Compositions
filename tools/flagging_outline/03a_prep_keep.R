@@ -6,12 +6,12 @@
 librarian::shelf(here, tidyverse)
 
 # Specify settings ####
-tip_spp_rds <- "pr_yts_spp_size_prep_20240705.rds" # rds from end of 02a script
-spp <- "yts"
-isl <- "pr"
+tip_spp_rds <- "prusvi_csl_spp_size_prep_20240711.rds" # rds from end of 02a script
+spp <- "csl"
+isl <- "pr" # from here on chose one island to work with moving forward
 data_keep <- "TIP"
 len_mode <- "COMMERCIAL"
-len_type <- "FORK LENGTH"
+len_type <- "CARAPACE LENGTH"
 # min_size <- 1 # add if there are outliers that need to be removed
 # max_size <- 122
 start_yr <- 1984 # based on 01a settings unless running truncated time series

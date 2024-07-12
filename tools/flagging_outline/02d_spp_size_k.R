@@ -7,13 +7,16 @@ librarian::shelf(
 )
 
 # Specify settings #### 
-tip_spp_rds <- "pr_yts_spp_size_prep_20240529.rds" # rds from end of 02a script
-spp_itis <- "168907" # find on itis.gov
-spp <- "yts"
-isl <- "pr"
-print_spp <- "Yellowtail Snapper"
-print_isl <- "Puerto Rico"
-len_type <- "FORK LENGTH" # length type will be used for remainder of analysis
+tip_spp_rds <- "prusvi_csl_spp_size_prep_20240711.rds" # rds from end of 02a script
+spp_itis <- c("097648", "097646") # find on itis.gov
+spp <- "csl"
+isl <- c("pr", "stt", "stx")
+print_spp <- "Caribbean Spiny Lobster"
+print_isl <- "Puerto Rico - USVI"
+# length type should be the one used for remainder of analysis
+len_type <- "CARAPACE LENGTH" 
+save_spp <- "csl"
+save_isl <- "prusvi"
 
 # Read in formatted data ####
 tip_spp <- readRDS(here::here("data", tip_spp_rds))
@@ -101,15 +104,16 @@ plot_k_island
 
 # SPECIFY SETTINGS #
 k_range_source  <- "TIP"
+k_isl <- "pr"
 # Obtain k limits from specified source
 k_range_lower <- k_summary |>
   filter(data_source == k_range_source,
-         island == isl) |> 
+         island == k_isl) |> 
   pull(k_lower)
 
 k_range_upper <- k_summary |>
   filter(data_source == k_range_source,
-         island == isl) |> 
+         island == k_isl) |> 
   pull(k_upper)
 
 # Flag records outside the range
@@ -150,8 +154,8 @@ saveRDS(
   file = here::here(
     "data",
     paste0(
-      isl, "_",
-      spp, "_spp_size_flag_",
+      save_isl, "_",
+      save_spp, "_spp_size_flag_",
       format(Sys.time(), "%Y%m%d"), ".rds"
     )
   )

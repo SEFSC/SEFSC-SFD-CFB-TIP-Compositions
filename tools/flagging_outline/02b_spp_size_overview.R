@@ -7,12 +7,12 @@ librarian::shelf(
 )
 
 # Specify settings #### 
-tip_spp_rds <- "pr_yts_spp_size_prep_20240529.rds" # rds from end of 02a script
-spp_itis <- "168907" # find on itis.gov
-spp <- "yts"
-isl <- "pr"
-print_spp <- "Yellowtail Snapper"
-print_isl <- "Puerto Rico"
+tip_spp_rds <- "prusvi_csl_spp_size_prep_20240711.rds" # rds from end of 02a script
+spp_itis <- c("097648", "097646") # find on itis.gov
+spp <- "csl"
+isl <- c("pr", "stt", "stx")
+print_spp <- "Caribbean Spiny Lobster"
+print_isl <- "Puerto Rico - USVI"
 
 # Read in formatted data ####
 tip_spp <- readRDS(here::here("data", tip_spp_rds))

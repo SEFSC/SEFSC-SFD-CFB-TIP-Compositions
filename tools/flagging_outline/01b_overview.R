@@ -10,7 +10,7 @@ librarian::shelf(here, tidyverse, measurements, expss, openxlsx)
 tip_spp_rds <- "format_tip_20240703.rds" # rds from end of 01a script
 spp_itis <- c("097648", "097646") # find on itis.gov 
 spp <- "csl"
-# isl <- "pr"
+isl <- c("pr", "stt", "stx")
 print_spp <- "Caribbean Spiny Lobster"
 print_isl <- "Puerto Rico - USVI"
 

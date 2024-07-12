@@ -10,18 +10,20 @@ librarian::shelf(
 
 # Specify settings ####
 tip_spp_rds <- "format_tip_20240703.rds" # rds from end of 01a script
-spp_itis <- "168907" # find on itis.gov
-spp <- "yts"
-isl <- "pr"
-print_spp <- "Yellowtail Snapper"
-print_isl <- "Puerto Rico"
+spp_itis <- c("097648", "097646") # find on itis.gov
+spp <- "csl"
+isl <- c("pr", "stt", "stx")
+print_spp <- "Caribbean Spiny Lobster"
+print_isl <- "Puerto Rico - USVI"
+save_spp <- "csl"
+save_isl <- "prusvi"
 
 # Read in formatted data ####
 tip_spp <- readRDS(here::here("data", tip_spp_rds))
 
 # Filter to target species ####
 tip_spp_prep <- tip_spp |>
-  dplyr::filter(species_code == spp_itis)
+  dplyr::filter(species_code %in% spp_itis)
 
 # Convert units and calculate k ####
 spp_size_calc <- tip_spp_prep |>
@@ -141,8 +143,8 @@ saveRDS(
   file = here::here(
     "data",
     paste0(
-      isl, "_",
-      spp, "_spp_size_prep_",
+      save_isl, "_",
+      save_spp, "_spp_size_prep_",
       format(Sys.time(), "%Y%m%d"),
       ".rds"
     )

@@ -9,7 +9,7 @@
 librarian::shelf(here, tidyverse, flextable, ggplot2, janitor)
 
 # Specify settings ####
-tip_spp_rds <- "pr_yts_clean_tip_20240307.rds" # rds from end of 04 script
+tip_spp_rds <- "pr_yts_clean_filtered_20240711.rds" # rds from end of 05a script
 clean_gear <- "pr_yts_clean_gear_list_20240328.rds" # gears representing >2%
 spp <- "yts"
 isl <- "pr"
@@ -20,8 +20,20 @@ break_year = 2012
 tip_spp <- readRDS(here::here("data", tip_spp_rds))
 gear_2percent <- readRDS(here::here("data", clean_gear))
 
+# Create count of observed records for each area  ####
+tip_spp_count <- tip_spp |>
+  add_count(county_landed) |>
+  dplyr::mutate(county_landedn = paste0(county_landed, " (", n, ")")) |>
+  select(-n) |>
+  add_count(gear) |>
+  dplyr::mutate(gearn = paste0(gear, " (", n, ")")) |>
+  select(-n)|>
+  add_count(island) |>
+  dplyr::mutate(islandn = paste0(island, " (", n, ")")) |>
+  select(-n)
+
 # Plot gears by number of fish measured used over time ####
-gear_data <- tip_spp |>
+gear_data <- tip_spp_count |>
   group_by(year, gearn) |>
   dplyr::summarize(n = n(), .groups = "drop") |>
   mutate(year = as.integer(year))
@@ -46,7 +58,7 @@ gear_by_yr <- gear_data |>
 abc1 = gear_by_yr
 
 # Plot gears by number of unqiue interviews over time ####
-gant_data_id <- tip_spp %>% 
+gear_data_id <- tip_spp_count %>% 
   group_by(gear) %>% 
   dplyr::mutate(n_ID = n_distinct(id)) |> 
   dplyr::filter(n_ID >= 3) %>% ungroup %>%
@@ -54,7 +66,7 @@ gant_data_id <- tip_spp %>%
   dplyr::summarize(n_ID = n_distinct(id), .groups = "drop") |> 
   mutate(year = as.integer(year))
 
-gear_by_id <- gant_data_id |>
+gear_by_id <- gear_data_id |>
   # filter(YEAR > 2011) |> 
   group_by(gear) |>
   dplyr::mutate(total_n = sum(n_ID)) |> 
@@ -124,8 +136,7 @@ abc3 = agr_den_NOgears
 
 ### GEAR INDIVIDUALS ####
 tip_spp_top_gears <- tip_spp %>% # filter to gears >2% reported
-  filter(gear %in% c("LINES HAND", "POTS AND TRAPS; FISH",
-                     "HAUL SEINES", "BOTTOM LINE")) 
+  filter(gear %in% gear_2percent$Gear) 
 
 ycounts =tip_spp_top_gears %>% 
   tabyl("gear") %>%
@@ -201,15 +212,15 @@ abc5 = agr_den_break
 ## Annual Density plots ####
 
 ### top gears together ####
-ann_den_top_gears <- tip_spp|> 
-  filter(gear %in% gear_2percent$Gear)
+# ann_den_top_gears <- tip_spp|> 
+#   filter(gear %in% gear_2percent$Gear)
 
-fcounts = ann_den_top_gears %>%  group_by(year) %>% filter(n() >= 30) %>% ungroup %>%
-  tabyl(gear) %>%
-  mutate(n_labels = paste0(gear, " (n= ", n, ")" ))
+# fcounts = ann_den_top_gears %>%  group_by(year) %>% filter(n() >= 30) %>% ungroup %>%
+#   tabyl(gear) %>%
+#   mutate(n_labels = paste0(gear, " (n= ", n, ")" ))
 
 plot_ann_den <-
-  ann_den_top_gears %>%  group_by(year) %>% filter(n() >= 30) %>% ungroup %>%
+  tip_spp_top_gears %>%  group_by(year) %>% filter(n() >= 30) %>% ungroup %>%
   group_by(year) %>%
   dplyr::mutate(year_labs = paste0(year, "\n n = ", n())) %>%
   ggplot(aes(length1_cm))+
@@ -219,27 +230,27 @@ plot_ann_den <-
   #scale_color_manual(values = gearcols, labels = counts$n_labels)+
   # scale_color_hue(labels=fcounts$n_labels)+
   labs(x = "Fork Length (cm)", 
-       title = paste0(print_isl,  "\n (N = ", sum(fcounts$n), ")"))+
+       title = paste0(print_isl,  "\n (N = ", sum(ycounts$n), ")"))+
   facet_wrap(~year_labs, ncol = 7)
 
 abc6 = plot_ann_den
 
 ### top gears separated ####
-fcounts = ann_den_top_gears %>%  group_by(year) %>% filter(n() >= 30) %>% ungroup %>%
-  tabyl(gear) %>%
-  mutate(n_labels = paste0(gear, " (n= ", n, ")" ))
+# fcounts = ann_den_top_gears %>%  group_by(year) %>% filter(n() >= 30) %>% ungroup %>%
+#   tabyl(gear) %>%
+#   mutate(n_labels = paste0(gear, " (n= ", n, ")" ))
 
 plot_ann_den_separate <-
-  ann_den_top_gears %>%  group_by(year) %>% filter(n() >= 30) %>% ungroup %>%
+  tip_spp_top_gears %>%  group_by(year) %>% filter(n() >= 30) %>% ungroup %>%
   group_by(year) %>%
   dplyr::mutate(year_labs = paste0(year, "\n n = ", n())) %>%
   ggplot(aes(length1_cm, color = gear))+
   geom_density(linewidth = 0.75)+
   #scale_color_manual(values = gearcols, labels = counts$n_labels)+
-  scale_color_hue(labels=fcounts$n_labels)+
+  scale_color_hue(labels=ycounts$n_labels)+
   labs(color = "Gear Type", 
        x = "Fork Length (cm)", 
-       title = paste0(print_isl,  "\n (N = ", sum(fcounts$n), ")"))+
+       title = paste0(print_isl,  "\n (N = ", sum(ycounts$n), ")"))+
   facet_wrap(~year_labs, ncol = 7)+
   # theme_minimal()
   guides(color=guide_legend(ncol = 2))+
@@ -249,15 +260,17 @@ plot_ann_den_separate <-
 
 abc7 = all_car_gearsSTTJ
 
-# Aggregated cummulative density ####
+# Aggregated cumulative density ####
 
 counts = tip_spp %>%
   tabyl(gear) %>%
   mutate(n_labels = paste0(gear, " (n= ", n, ")" ))
 
-abc20 = tip_spp %>%
+cumulative_den <- tip_spp %>%
   ggplot(aes(length1_cm))+
   stat_ecdf()+
   labs(x = "Fork Length (cm)",
        title = paste0(print_isl,  "\n (N = ", sum(counts$n), ")"))+
   theme_minimal()
+ 
+abc20 = cumulative_den

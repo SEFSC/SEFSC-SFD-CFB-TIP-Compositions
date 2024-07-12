@@ -347,31 +347,3 @@ saveRDS(
     )
   )
 )
-
-# Implement filtering system to remove unwanted gears ####
-# filtered to gears included in desired level of specification
-
-# filter to desired gears in full time series
-# "allgears_multcom_mean_final" for all gears
-# "grtr2percent_gears" for gears representing greater than 2% individually of length records 
-tip_clean <- tip_spp |> 
-  filter(gear %in% allgears_multcom_mean_final$Gear)
-
-# filter to desired gears in truncated time series
-#' "allgears_multicom_mean_break_final" for all gears
-#' "grtr2percent_gears_break" for gears representing greater than 2% individually of length records 
-# tip_clean <- tip_spp_break_year |> 
-#   filter(gear %in% allgears_multicom_mean_break_final$Gear)
-
-# Save cleaned tip_clean ##### 
-saveRDS(
-  tip_clean,
-  file = here::here(
-    "data",
-    paste0(
-      isl, "_",
-      spp, "_clean_tip_",
-      format(Sys.time(), "%Y%m%d"), ".rds"
-    )
-  )
-)
