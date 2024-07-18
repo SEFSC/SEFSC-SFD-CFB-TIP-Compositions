@@ -84,7 +84,7 @@ plot_count_overview <- count_overview |>
   labs(x = "Year", 
        y = "Count",
        title = paste0(print_spp, 
-                      " Subset Comparison of Interviews and Records by Year"))
+                      " vs. All Species Combined in TIP"))
 
 plot_percent_overview <- percent_overview |>
   ggplot2::ggplot(aes(x = year, y = percent)) +
