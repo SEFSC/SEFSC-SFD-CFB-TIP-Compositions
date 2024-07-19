@@ -62,11 +62,11 @@ county_by_year <- county_data |>
     legend.position = "null", text = element_text(size = 10),
     title = element_text(size = 12)
   )
-
+county_by_year
 
 # Plot gears used over time ####
 gear_data <- tip_spp_count |>
-  group_by(year, island, gearn) |>
+  group_by(year, island, species_code, gearn) |>
   dplyr::summarize(n = n(), .groups = "drop") |>
   mutate(year = as.integer(year))
 
@@ -76,7 +76,7 @@ gear_by_yr <- gear_data |>
   ungroup() |>
   dplyr::mutate(gearn = fct_reorder(gearn, total_n)) |> 
   ggplot(aes(x = year, y = gearn, color = gearn, size = n)) +
-  facet_wrap(~island) +
+  facet_grid(species_code ~ island) +
   geom_point() +
   labs(
     x = "Year", y = "", colour = "", shape = "",
@@ -87,6 +87,7 @@ gear_by_yr <- gear_data |>
     legend.position = "null", text = element_text(size = 10),
     title = element_text(size = 12)
   )
+gear_by_yr
 
 # Plot weight values recorded over time ####
 weight_time <- tip_spp_count |>
@@ -102,6 +103,7 @@ weight_time <- tip_spp_count |>
     color = "Sample Condition (# obs)",
     subtitle = paste("N = ", nrow(tip_spp_count))
   )
+weight_time
 
 # Plot length values recorded over time ####
 length_time <- tip_spp_count |>
@@ -120,6 +122,7 @@ length_time <- tip_spp_count |>
     color = "Length Type (# obs)",
     subtitle = paste("N = ", nrow(tip_spp_count))
   )
+length_time
 
 # do we need to print these graphs? 
 
