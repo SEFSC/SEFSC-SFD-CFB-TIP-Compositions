@@ -1,7 +1,7 @@
 # 1b_evaluate
 
 # Load libraries ####
-  librarian::shelf(here, tidyverse, measurements, flextable, ggplot2)
+  librarian::shelf(here, tidyverse, measurements, flextable, ggplot2, reshape2)
 
 # Specify settings ####
   tip_pr <- "pr_format_tip_20240731.rds" # add formatted data
@@ -139,12 +139,22 @@
       e_records = n()
     )
   
+  count_c <- tip_regions |>
+    dplyr::filter(region %in% "C") |>
+    dplyr::group_by(st_yr) |>
+    dplyr::summarize(
+      .groups = "drop",
+      c_interviews = n_distinct(id),
+      c_records = n()
+    )
+  
 ## summarize both counts ####
   count_overview <- count_all |>
     dplyr::left_join(count_w, by = join_by(st_yr)) |>
     dplyr::left_join(count_s, by = join_by(st_yr)) |>
     dplyr::left_join(count_n, by = join_by(st_yr)) |>
     dplyr::left_join(count_e, by = join_by(st_yr)) |>
+    dplyr::left_join(count_c, by = join_by(st_yr)) |>
     dplyr::mutate(
       across(everything(), ~ replace_na(.x, 0))
     ) |>
@@ -165,7 +175,8 @@
       w_percent = round(100 * w / all, 2),
       s_percent = round(100 * s / all, 2),
       n_percent = round(100 * n / all, 2),
-      e_percent = round(100 * e / all, 2)
+      e_percent = round(100 * e / all, 2),
+      c_percent = round(100 * c / all, 2),
     )
 
 ## count year grouping based on sector ####
@@ -183,13 +194,18 @@
 ## format dataframe to interview specific variables   
   percent_int <- percent_overview |>
     filter(category == "interviews", ) |>
-    select(st_yr, w_percent, n_percent, e_percent, s_percent)
-  percent_plot <- melt(percent_int, id.vars = "st_yr", variable.name = "region") |>
+    select(st_yr, w_percent, n_percent, e_percent, s_percent, c_percent)
+  percent_plot <- melt(percent_int, 
+                       id.vars = "st_yr", 
+                       variable.name = "region"
+                       ) |>
     rename(percent = value) |>
-    mutate(region_name = case_when(region == "w_percent" ~ "West",
+    mutate(region_name = case_when(
+      region == "w_percent" ~ "West",
       region == "n_percent" ~ "North",
       region == "e_percent" ~ "East",
       region == "s_percent" ~ "South",
+      region == "c_percent" ~ "Central",
       .default = "not coded"
     ))
 
@@ -202,10 +218,10 @@
     labs(
       color = "Gear Type",
       x = "Fork Length (cm)",
-      title = paste0(print_isl, "\n (N = ", sum(ycounts$n), ")")
+      title = "Interview Count by Region"
     ) +
     theme(
-      legend.title = element_text(size = 14),
+      # legend.title = element_text(size = 14),
       legend.text = element_text(size = 12),
       legend.position = "bottom",
       legend.title = element_blank()
@@ -287,37 +303,47 @@
       s1_percent = round(100 * S1 / all, 2),
       s2_percent = round(100 * S2 / all, 2),
       s3_percent = round(100 * S3 / all, 2)
-    )
+    ) |>
+    mutate(region_name = case_when(
+      region == "W" ~ "West",
+      region == "N" ~ "North",
+      region == "E" ~ "East",
+      region == "S" ~ "South",
+      region == "C" ~ "Central",
+      .default = "not coded"
+    ))
   
 # plot number of interviews by region ####
 ## format dataframe to interview specific variables   
-  percent_int <- percent_overview_season |>
+  percent_int_season <- percent_overview_season |>
     filter(category == "interviews", ) |>
-    select(st_yr, w_percent, n_percent, e_percent, s_percent)
-  percent_plot <- melt(percent_int, id.vars = "st_yr", variable.name = "region") |>
+    select(st_yr, region_name, s1_percent, s2_percent, s3_percent)
+  percent_season_plot <- melt(percent_int_season, 
+                              id.vars = c("st_yr", "region_name") , 
+                              variable.name = "season"
+                              ) |>
     rename(percent = value) |>
-    mutate(region_name = case_when(region == "w_percent" ~ "West",
-                                   region == "n_percent" ~ "North",
-                                   region == "e_percent" ~ "East",
-                                   region == "s_percent" ~ "South",
+    mutate(season_name = case_when(season == "s1_percent" ~ "Jan_Apr",
+                                   season == "s2_percent" ~ "May_Aug",
+                                   season == "s3_percent" ~ "Sep_Dec",
                                    .default = "not coded"
     ))
   
-## plot ####  
-  plot_int_region <- percent_plot |>
-    ggplot(aes(x = st_yr, y = percent, group = region_name)) +
-    geom_line(aes(color = region_name)) +
-    geom_point(aes(color = region_name)) +
-    ggplot2::facet_grid(category ~ island)+
-    # ggplot2::facet_grid(record_type ~ island) +
+  ## plot ####  
+  plot_int_season <- percent_season_plot |>
+    ggplot(aes(x = st_yr, y = percent, group = season_name)) +
+    geom_line(aes(color = season_name)) +
+    geom_point(aes(color = season_name)) +
+    ggplot2::facet_wrap( ~ region_name) +
     labs(
       color = "Gear Type",
       x = "Fork Length (cm)",
-      title = paste0(print_isl, "\n (N = ", sum(ycounts$n), ")")
+      title = "Interview Count by Region and Season"
     ) +
     theme(
-      legend.title = element_text(size = 14),
+      # legend.title = element_text(size = 14),
       legend.text = element_text(size = 12),
       legend.position = "bottom",
       legend.title = element_blank()
-    )  
+    )
+  

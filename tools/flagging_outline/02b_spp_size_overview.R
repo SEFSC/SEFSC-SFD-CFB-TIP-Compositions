@@ -24,6 +24,8 @@ count_lw_pairs <- tip_spp |>
     .groups = "drop",
     records = n()
   )
+
+# create formatted table of length/weight pair completion 
 flextable(count_lw_pairs) |>
   theme_box() %>%
   align(align = "center", part = "all") %>%

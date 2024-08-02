@@ -54,13 +54,15 @@ table(tip_spp_prep$length_type2, useNA = "always")
 min(spp_size_calc$length1_cm, na.rm = TRUE)
 max(spp_size_calc$length1_cm, na.rm = TRUE)
 
+# view largest 25 length values
 tip_range <- spp_size_calc[with(spp_size_calc, order(-length1_cm)), ]
 tip_range$length1_cm[1:25]
 
+# view smallest 25 length values
 tip_range2 <- spp_size_calc[with(spp_size_calc, order(length1_cm)), ]
 tip_range2$length1_cm[1:25]
 
-# Tabulate lengths and weights ####
+# Tabulate lengths, weights, and k stats ####
 length_count <- spp_size_calc |>
   dplyr::group_by(
     island,
@@ -93,13 +95,14 @@ length_count <- spp_size_calc |>
     min_weight_lbs = round(min(obs_weight_lbs, na.rm = TRUE), 1),
     max_weight_lbs = round(min(obs_weight_lbs, na.rm = TRUE), 1),
     avg_weight_lbs = round(min(obs_weight_lbs, na.rm = TRUE), 1),
-    # min_k_cm = round(min(k, na.rm = TRUE), 2),
-    # max_k_cm = round(max(k, na.rm = TRUE), 2),
-    # avg_k_cm = round(mean(k, na.rm = TRUE), 2),
-    # n_k_keep = sum(k_keep == FALSE, na.rm = TRUE),
-    # percent_k_keep = round(n_k_keep / dplyr::n() * 100, 1)
+    min_k_cm = round(min(k, na.rm = TRUE), 2),
+    max_k_cm = round(max(k, na.rm = TRUE), 2),
+    avg_k_cm = round(mean(k, na.rm = TRUE), 2),
+    n_k_keep = sum(k_keep == FALSE, na.rm = TRUE),
+    percent_k_keep = round(n_k_keep / dplyr::n() * 100, 1)
   )
 
+# create formated table of length, weight, and k stats
 flextable(length_count) |>
   theme_box() %>%
   align(align = "center", part = "all") %>%
@@ -130,6 +133,8 @@ weight_types <- spp_size_calc |>
     max_weight_lbs = round(min(obs_weight_lbs, na.rm = TRUE), 1),
     avg_weight_lbs = round(min(obs_weight_lbs, na.rm = TRUE), 1),
   )
+
+# create formated table of weight types 
 flextable(weight_types) |>
   theme_box() %>%
   align(align = "center", part = "all") %>%
