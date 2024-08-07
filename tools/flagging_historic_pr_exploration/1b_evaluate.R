@@ -88,13 +88,18 @@
         )]
     )
 
-## check for na's  
+## check for na's  ####
   tip_regions_na <- tip_regions |>
     filter(is.na(region))
-
+  unique(tip_regions_na$county_landed)
+  
+## filter out na's ####
+  tip_regions_clean <- tip_regions |> 
+    filter(!is.na(region))
+  
 # Tabulate TIP interviews and records by year grouping and region ####
 ## count all records and interviews ####
-  count_all <- tip_regions |>
+  count_all <- tip_regions_clean |>
     dplyr::group_by(st_yr) |>
     dplyr::summarize(
       .groups = "drop",
@@ -103,7 +108,7 @@
     )
 
 ## count only specific region ####
-  count_w <- tip_regions |>
+  count_w <- tip_regions_clean |>
     dplyr::filter(region %in% "W") |>
     dplyr::group_by(st_yr) |>
     dplyr::summarize(
@@ -112,7 +117,7 @@
       w_records = n()
     )
   
-  count_s <- tip_regions |>
+  count_s <- tip_regions_clean |>
     dplyr::filter(region %in% "S") |>
     dplyr::group_by(st_yr) |>
     dplyr::summarize(
@@ -121,7 +126,7 @@
       s_records = n()
     )
   
-  count_n <- tip_regions |>
+  count_n <- tip_regions_clean |>
     dplyr::filter(region %in% "N") |>
     dplyr::group_by(st_yr) |>
     dplyr::summarize(
@@ -130,7 +135,7 @@
       n_records = n()
     )
   
-  count_e <- tip_regions |>
+  count_e <- tip_regions_clean |>
     dplyr::filter(region %in% "E") |>
     dplyr::group_by(st_yr) |>
     dplyr::summarize(
@@ -139,14 +144,6 @@
       e_records = n()
     )
   
-  count_c <- tip_regions |>
-    dplyr::filter(region %in% "C") |>
-    dplyr::group_by(st_yr) |>
-    dplyr::summarize(
-      .groups = "drop",
-      c_interviews = n_distinct(id),
-      c_records = n()
-    )
   
 ## summarize both counts ####
   count_overview <- count_all |>
@@ -154,7 +151,6 @@
     dplyr::left_join(count_s, by = join_by(st_yr)) |>
     dplyr::left_join(count_n, by = join_by(st_yr)) |>
     dplyr::left_join(count_e, by = join_by(st_yr)) |>
-    dplyr::left_join(count_c, by = join_by(st_yr)) |>
     dplyr::mutate(
       across(everything(), ~ replace_na(.x, 0))
     ) |>
@@ -176,11 +172,10 @@
       s_percent = round(100 * s / all, 2),
       n_percent = round(100 * n / all, 2),
       e_percent = round(100 * e / all, 2),
-      c_percent = round(100 * c / all, 2),
     )
 
 ## count year grouping based on sector ####
-  count_sector <- tip_regions |>
+  count_sector <- tip_regions_clean |>
     dplyr::filter(
       length_type1 != "NO LENGTH",
     ) |>
@@ -194,7 +189,7 @@
 ## format dataframe to interview specific variables   
   percent_int <- percent_overview |>
     filter(category == "interviews", ) |>
-    select(st_yr, w_percent, n_percent, e_percent, s_percent, c_percent)
+    select(st_yr, w_percent, n_percent, e_percent, s_percent)
   percent_plot <- melt(percent_int, 
                        id.vars = "st_yr", 
                        variable.name = "region"
@@ -205,7 +200,6 @@
       region == "n_percent" ~ "North",
       region == "e_percent" ~ "East",
       region == "s_percent" ~ "South",
-      region == "c_percent" ~ "Central",
       .default = "not coded"
     ))
 
@@ -229,7 +223,7 @@
 
 # Seasons analysis ####
 ## designate 4 month seasons ####
-  tip_seasons <- tip_regions |> 
+  tip_seasons <- tip_regions_clean |> 
     mutate(
       mon = month(date),
       season = case_when(mon %in% c(1, 2, 3, 4) ~ "S1",
@@ -309,7 +303,6 @@
       region == "N" ~ "North",
       region == "E" ~ "East",
       region == "S" ~ "South",
-      region == "C" ~ "Central",
       .default = "not coded"
     ))
   
@@ -346,4 +339,17 @@
       legend.position = "bottom",
       legend.title = element_blank()
     )
+  
+  
+# Save formatted tip_spp ####
+  saveRDS(
+    tip_seasons,
+    file = here::here(
+      "data",
+      paste0( "pr_time_grouped_tip_",
+              format(Sys.time(), "%Y%m%d"), 
+              ".rds"
+      )
+    )
+  )
   
