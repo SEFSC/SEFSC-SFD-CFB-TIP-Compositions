@@ -8,7 +8,7 @@ librarian::shelf(here, tidyverse, measurements)
 tip_rds <- "com_tip_PR_VI_20240703.RDS" # add pull of all CAR region and species
 ## Range currently set to not drop any obs 
 # note 1984 is first full year for fish, 1980 for USVI and 1981 for PR spiny lobster 
-min_year <- 1984
+min_year <- 1983
 max_year <- 2022 
 
 # Read in raw data ####
@@ -121,7 +121,8 @@ tip_spp <- tip |>
   # Simplify variable names
   dplyr::rename(
     date = interview_date,
-    species_code = obs_standard_species_code
+    species_code = obs_standard_species_code, 
+    species_name = obs_standard_species_name
   )|> 
   # filter to years 
   dplyr::filter(
@@ -142,6 +143,7 @@ tip_spp_relevant <- tip_spp |>
     area, # state vs federal area
     area_square,# grid area when available
     species_code,
+    species_name,
     sex_name, # male, female, unknown, not sexed
     gear, # gear from land_standard_gear_name subbed w/ gear_1 when unavailable
     length1_mm,
