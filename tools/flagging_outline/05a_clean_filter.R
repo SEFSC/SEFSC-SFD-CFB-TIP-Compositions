@@ -6,13 +6,13 @@ librarian::shelf(here, tidyverse)
 
 # Specify settings ####
 # if k is being used to filter, specify this script
-tip_spp_rds_k <- "pr_yts_spp_size_flag_20240618.rds" # rds from end of 02d script
+tip_spp_rds_k <- "prusvi_csl_spp_size_flag_20240711.rds" # rds from end of 02d script
 # if k is not being used to filter, specify this script  
-tip_spp_rds <- "pr_yts_prep_keep_tip_20240709.rds" # rds from end of 03a script
+tip_spp_rds <- "pr_csl_prep_keep_tip_20240821.rds" # rds from end of 03a script
 # 2% gear list from correct time series 
-gear_list <- "pr_yts_clean_gear_list_20240328.rds" # rds from end of 04a script
+gear_list <- "pr_csl_clean_gear_list_20240821.rds" # rds from end of 04a script
 script <- tip_spp_rds
-spp <- "yts"
+spp <- "csl"
 isl <- "pr"
 print_isl <- "Puerto Rico"
 break_yr <- "2012"

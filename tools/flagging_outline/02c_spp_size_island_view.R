@@ -23,6 +23,11 @@ tip_spp <- readRDS(here::here("data", tip_spp_rds))
 tip_spp_prep <- tip_spp |>
   dplyr::filter(island %in% isl)
 
+# check for gears with same name but grammatical differences
+unique(tip_spp_prep$gear)
+# replace "," with ";"
+tip_spp_prep$gear <- str_replace(tip_spp_prep$gear, ",", ";")
+
 # Create count of observed records for each area  ####
 tip_spp_count <- tip_spp_prep |>
   add_count(county_landed) |>

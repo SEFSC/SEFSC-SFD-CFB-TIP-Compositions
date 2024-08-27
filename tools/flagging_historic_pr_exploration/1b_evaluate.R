@@ -4,7 +4,7 @@
   librarian::shelf(here, tidyverse, measurements, flextable, ggplot2, reshape2)
 
 # Specify settings ####
-  tip_pr <- "pr_format_tip_20240731.rds" # add formatted data
+  tip_pr <- "pr_format_tip_20240822.rds" # add formatted data
 
 # Read in raw data ####
   tip <- readRDS(here::here("data", tip_pr))
@@ -25,22 +25,22 @@
 
 ## Group into 5 yr groups
   tip_yr_groups <- size_calc |>
-    mutate(yr_group = case_when(year < 1985 ~ "g_1980",
-      year > 1984 & year < 1990 ~ "g_1985",
-      year > 1989 & year < 1995 ~ "g_1990",
-      year > 1994 & year < 2000 ~ "g_1995",
-      year > 1999 & year < 2005 ~ "g_2000",
-      year > 2004 & year < 2010 ~ "g_2005",
-      year > 2009 & year < 2015 ~ "g_2010",
-      year > 2014 & year < 2020 ~ "g_2015",
-      year > 2019 ~ "g_2020",
+    mutate(st_yr = case_when(year < 1985 ~ "1980",
+      year > 1984 & year < 1990 ~ "1985",
+      year > 1989 & year < 1995 ~ "1990",
+      year > 1994 & year < 2000 ~ "1995",
+      year > 1999 & year < 2005 ~ "2000",
+      year > 2004 & year < 2010 ~ "2005",
+      year > 2009 & year < 2015 ~ "2010",
+      year > 2014 & year < 2020 ~ "2015",
+      year > 2019 ~ "2020",
       .default = "not coded"
     ), )
-  tip_yr_groups$st_yr <- str_sub(tip_yr_groups$yr_group, 3)
+  # tip_yr_groups$st_yr <- str_sub(tip_yr_groups$yr_group, 3)
 
 ## overview stats ####
   tip_yr_summary <- tip_yr_groups |>
-    group_by(yr_group) |>
+    group_by(st_yr) |>
     summarise(
       .groups = "drop",
       n = dplyr::n(),
@@ -58,6 +58,11 @@
     ggplot(aes(x = st_yr, y = n_id)) +
     geom_point() +
     # ggplot2::facet_grid(record_type ~ island) +
+    labs(
+      x = "Start year",
+      y = "# unique interviews",
+      title = "Number of unique interviews per 5 year group in Puerto Rico"
+    ) +
     theme(
       legend.position = "bottom",
       legend.title = element_blank()
@@ -97,6 +102,14 @@
   tip_regions_clean <- tip_regions |> 
     filter(!is.na(region))
   
+# Create count of total observed unique interviews for each region  ####
+  tip_regions_id_count <- tip_regions_clean |>
+    group_by(region)|>
+    dplyr::summarize(
+      .groups = "drop",
+      region_id = n_distinct(id),
+    )
+  
 # Tabulate TIP interviews and records by year grouping and region ####
 ## count all records and interviews ####
   count_all <- tip_regions_clean |>
@@ -109,39 +122,39 @@
 
 ## count only specific region ####
   count_w <- tip_regions_clean |>
-    dplyr::filter(region %in% "W") |>
+    dplyr::filter(region %in% "West") |>
     dplyr::group_by(st_yr) |>
     dplyr::summarize(
       .groups = "drop",
-      w_interviews = n_distinct(id),
-      w_records = n()
+      west_interviews = n_distinct(id),
+      west_records = n()
     )
   
   count_s <- tip_regions_clean |>
-    dplyr::filter(region %in% "S") |>
+    dplyr::filter(region %in% "South") |>
     dplyr::group_by(st_yr) |>
     dplyr::summarize(
       .groups = "drop",
-      s_interviews = n_distinct(id),
-      s_records = n()
+      south_interviews = n_distinct(id),
+      south_records = n()
     )
   
   count_n <- tip_regions_clean |>
-    dplyr::filter(region %in% "N") |>
+    dplyr::filter(region %in% "North") |>
     dplyr::group_by(st_yr) |>
     dplyr::summarize(
       .groups = "drop",
-      n_interviews = n_distinct(id),
-      n_records = n()
+      north_interviews = n_distinct(id),
+      north_records = n()
     )
   
   count_e <- tip_regions_clean |>
-    dplyr::filter(region %in% "E") |>
+    dplyr::filter(region %in% "East") |>
     dplyr::group_by(st_yr) |>
     dplyr::summarize(
       .groups = "drop",
-      e_interviews = n_distinct(id),
-      e_records = n()
+      east_interviews = n_distinct(id),
+      east_records = n()
     )
   
   
@@ -168,10 +181,10 @@
       values_from = count
     ) |>
     dplyr::mutate(
-      w_percent = round(100 * w / all, 2),
-      s_percent = round(100 * s / all, 2),
-      n_percent = round(100 * n / all, 2),
-      e_percent = round(100 * e / all, 2),
+      west_percent = round(100 * west / all, 2),
+      south_percent = round(100 * south / all, 2),
+      north_percent = round(100 * north / all, 2),
+      east_percent = round(100 * east / all, 2),
     )
 
 ## count year grouping based on sector ####
@@ -189,37 +202,51 @@
 ## format dataframe to interview specific variables   
   percent_int <- percent_overview |>
     filter(category == "interviews", ) |>
-    select(st_yr, w_percent, n_percent, e_percent, s_percent)
+    select(st_yr, west_percent, north_percent, east_percent, south_percent)
+  
+## rotate table to plot easier   
   percent_plot <- melt(percent_int, 
                        id.vars = "st_yr", 
                        variable.name = "region"
                        ) |>
     rename(percent = value) |>
     mutate(region_name = case_when(
-      region == "w_percent" ~ "West",
-      region == "n_percent" ~ "North",
-      region == "e_percent" ~ "East",
-      region == "s_percent" ~ "South",
+      region == "west_percent" ~ "West",
+      region == "north_percent" ~ "North",
+      region == "east_percent" ~ "East",
+      region == "south_percent" ~ "South",
       .default = "not coded"
-    ))
+    ))  
+  
+## add counts to table    
+  percent_plot_count <- percent_plot |> 
+    dplyr::mutate(
+      region_count =
+        tip_regions_id_count$region_id[match(
+          percent_plot$region_name,
+          tip_regions_id_count$region
+        )]) |> 
+    dplyr::mutate(region_id = paste0(region_name, " (", region_count, ")"))
 
 ## plot ####  
-  plot_int_region <- percent_plot |>
-    ggplot(aes(x = st_yr, y = percent, group = region_name)) +
-    geom_line(aes(color = region_name)) +
-    geom_point(aes(color = region_name)) +
+  plot_int_region <- percent_plot_count |>
+    ggplot(aes(x = st_yr, y = percent, group = region_id)) +
+    geom_line(aes(color = region_id)) +
+    geom_point(aes(color = region_id)) +
     # ggplot2::facet_grid(record_type ~ island) +
     labs(
-      color = "Gear Type",
-      x = "Fork Length (cm)",
-      title = "Interview Count by Region"
+      color = "Region (# interviews)",
+      x = "Start Year",
+      y = "Percent Representation", 
+      title = "Puerto Rico Region Representation of Each 5 Year Grouping"
     ) +
     theme(
-      # legend.title = element_text(size = 14),
-      legend.text = element_text(size = 12),
+      legend.title = element_text(size = 12),
+      legend.text = element_text(size = 10),
       legend.position = "bottom",
-      legend.title = element_blank()
-    )
+      # legend.title = element_blank()
+    )+
+    guides(col = guide_legend(title.position = "top",title.hjust =0.5)) 
 
 # Seasons analysis ####
 ## designate 4 month seasons ####
@@ -232,6 +259,20 @@
                          .default = "not coded"
                          )
       )
+
+# Create count of total observed unique interviews for each season  ####
+  tip_seasons_id_count <- tip_seasons |>
+    group_by(season)|>
+    dplyr::summarize(
+      .groups = "drop",
+      season_count = n_distinct(id),
+    )|>
+    mutate(season_name = case_when(season == "S1" ~ "Jan_Apr",
+                                   season == "S2" ~ "May_Aug",
+                                   season == "S3" ~ "Sep_Dec",
+                                   .default = "not coded"
+    ))|> 
+    dplyr::mutate(season_id = paste0(season_name, " (", season_count, ")"))
 
 ## calculate percent representation by season by region  
 ## count all records and interviews ####
@@ -297,22 +338,16 @@
       s1_percent = round(100 * S1 / all, 2),
       s2_percent = round(100 * S2 / all, 2),
       s3_percent = round(100 * S3 / all, 2)
-    ) |>
-    mutate(region_name = case_when(
-      region == "W" ~ "West",
-      region == "N" ~ "North",
-      region == "E" ~ "East",
-      region == "S" ~ "South",
-      .default = "not coded"
-    ))
+    ) 
   
 # plot number of interviews by region ####
 ## format dataframe to interview specific variables   
   percent_int_season <- percent_overview_season |>
     filter(category == "interviews", ) |>
-    select(st_yr, region_name, s1_percent, s2_percent, s3_percent)
+    select(st_yr, region, s1_percent, s2_percent, s3_percent)
+
   percent_season_plot <- melt(percent_int_season, 
-                              id.vars = c("st_yr", "region_name") , 
+                              id.vars = c("st_yr", "region") , 
                               variable.name = "season"
                               ) |>
     rename(percent = value) |>
@@ -322,23 +357,45 @@
                                    .default = "not coded"
     ))
   
-  ## plot ####  
-  plot_int_season <- percent_season_plot |>
-    ggplot(aes(x = st_yr, y = percent, group = season_name)) +
-    geom_line(aes(color = season_name)) +
-    geom_point(aes(color = season_name)) +
-    ggplot2::facet_wrap( ~ region_name) +
+## add season counts to table    
+  percent_season_plot_count <- percent_season_plot |> 
+    dplyr::mutate(
+      season_id =
+        tip_seasons_id_count$season_id[match(
+          percent_season_plot$season_name,
+          tip_seasons_id_count$season_name
+        )])
+  
+## add region counts to table    
+  tip_season_region_count_clean <- percent_season_plot_count |> 
+    dplyr::mutate(
+      region_count =
+        tip_regions_id_count$region_id[match(
+          percent_season_plot_count$region,
+          tip_regions_id_count$region
+        )]) |> 
+    dplyr::mutate(region_id = paste0(region, " (", region_count, ")"))
+  
+  
+## plot ####  
+  plot_int_season <- tip_season_region_count_clean |>
+    ggplot(aes(x = st_yr, y = percent, group = season_id)) +
+    geom_line(aes(color = season_id)) +
+    geom_point(aes(color = season_id)) +
+    ggplot2::facet_wrap( ~ region_id) +
     labs(
-      color = "Gear Type",
-      x = "Fork Length (cm)",
+      color = "Season",
+      x = "Start Year",
       title = "Interview Count by Region and Season"
     ) +
     theme(
-      # legend.title = element_text(size = 14),
+      legend.title = element_text(size = 14),
       legend.text = element_text(size = 12),
-      legend.position = "bottom",
-      legend.title = element_blank()
-    )
+      legend.position = "right",
+      # legend.title = element_blank()
+    )+
+    guides(col = guide_legend(title.position = "top",title.hjust =0.5)) 
+  
   
   
 # Save formatted tip_spp ####

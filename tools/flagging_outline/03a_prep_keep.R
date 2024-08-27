@@ -27,7 +27,8 @@ tip_spp <- readRDS(here::here("data", tip_spp_rds))
 tip_spp_len <- tip_spp |>
   filter(
     island == isl,
-    # data_source == data_keep
+    # data_source == data_keep,
+    !is.na(length1_mm),
   ) |>
   group_by(gear) |>
   dplyr::mutate(n_ID = n_distinct(id)) |>

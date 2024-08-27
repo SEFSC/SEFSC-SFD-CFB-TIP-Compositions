@@ -9,12 +9,12 @@
 librarian::shelf(here, tidyverse, flextable, ggplot2, janitor)
 
 # Specify settings ####
-tip_spp_rds <- "pr_yts_clean_filtered_20240711.rds" # rds from end of 05a script
-clean_gear <- "pr_yts_clean_gear_list_20240328.rds" # gears representing >2%
-spp <- "yts"
+tip_spp_rds <- "pr_csl_clean_filtered_20240821.rds" # rds from end of 05a script
+clean_gear <- "pr_csl_clean_gear_list_20240821.rds" # gears representing >2%
+spp <- "csl"
 isl <- "pr"
 print_isl <- "Puerto Rico"
-break_year = 2012
+break_year <- 2012
 
 # Read in formatted data ####
 tip_spp <- readRDS(here::here("data", tip_spp_rds))

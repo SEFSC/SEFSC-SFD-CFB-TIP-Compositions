@@ -5,18 +5,28 @@
 librarian::shelf(here, tidyverse, measurements, expss, openxlsx, flextable)
 
 # Specify settings ####
-tip_spp_rds <- "format_tip_20240703.rds" # rds from end of 01a script
-spp_itis <- c("097648", "097646") # find on itis.gov or catalogueoflife.org
+tip_spp_rds <- "format_tip_20240827.rds" # rds from end of 01a script
+spp_itis <- c("172419", "172421", "172409", "550888", "160200", "768126",
+              "159921", "172428", "160307", "160304", "160318", "160318",
+              "172491", "160424", "160502", "160275", "160336", "160206", 
+              "168791", "160604", '168790', '168792', '160268', '160409', 
+              '160515', "160497", '172435', '160433', '172402', '172502', 
+              '159926', '160413', '159977', '160330', '159911', '160178',
+              '172488', '172487', '172486', '160289', '160808', '160807', 
+              '160508', '159785', '159901', '159923', '160267', '159851', 
+              '159915', '159844', '172503', '159924', '160310', '172401',
+              '172400', '159786', '160505', '160401', '172482', '160189', 
+              '172418', '172451', '159903', '159903', '172423'
+              ) 
+# find on itis.gov or catalogueoflife.org
 # if itis is only 5 #'s add a 0 before spp code 
-spp <- "csl"
+spp <- "sharks_pelagics"
 isl <- "pr_usvi"
-print_spp <- "Caribbean Spiny Lobster"
+print_spp <- "Caribbean Pelagics and Sharks"
 print_isl <- "US Caribbean"
 
 # Read in formatted data ####
 tip_spp <- readRDS(here::here("data", tip_spp_rds))
-
-unique(tip_spp$species_code)
 
 # filter to species ####
 tip_filter <- tip_spp |>
@@ -46,15 +56,19 @@ tip_filter <- tip_spp |>
     )
   )
 
+unique(tip_filter$species_name)
+
 # create non-confidential overview table ####
 length_types <- tip_filter |>
   dplyr::group_by(
     island,
     species_code,
+    species_name
   ) |>
   dplyr::summarize(
     .groups = "drop",
     n_records = dplyr::n(),
+    n_id = n_distinct(id),
     first_year = min(year),
     last_year = max(year),
     n_years = dplyr::n_distinct(year),
@@ -100,9 +114,10 @@ count_spp_stx <- length_types |>
 total_isl <- length_types |>
   group_by(island) |>
   dplyr::summarise(
-    total_interviews = sum(spp_interviews),
-    total_records = sum(spp_records)
+    total_interviews = sum(n_id),
+    total_records = sum(n_records)
   )
+
 wb <- createWorkbook()
 sh1 <- addWorksheet(wb, "total")
 sh2 <- addWorksheet(wb, "pr")
@@ -116,7 +131,7 @@ xl_write(count_spp_stx, wb, sh4)
 
 saveWorkbook(wb,
   paste0(
-    spp,
+    isl, "_", spp,
     "_stats_",
     format(Sys.time(), "%Y%m%d"),
     ".xlsx"

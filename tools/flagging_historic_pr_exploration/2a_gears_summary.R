@@ -4,10 +4,17 @@
 librarian::shelf(here, tidyverse, measurements, flextable, ggplot2, reshape2)
 
 # Specify settings ####
-tip_pr <- "pr_time_grouped_tip_20240807.rds" # add formatted data
+tip_pr <- "pr_time_grouped_tip_20240822.rds" # add formatted data
 
 # Read in raw data ####
 tip <- readRDS(here::here("data", tip_pr))
+
+## check for gears with same name but grammatical differences ####
+unique(tip$gear)
+# replace "," with ";"
+tip$gear <- str_replace(tip$gear, ",", ";")
+# recheck that gears have been corrected
+unique(tip$gear)
 
 # read in gear group table ####
 gear_group <- 
@@ -22,6 +29,22 @@ tip_gear_group <- tip %>%
         tip$gear,
         gear_group$gear_name
       )]
+  )
+
+# Create count of total observed unique interviews for each gear and gear group  ####
+## Gear count ####
+tip_gear_id_count <- tip_gear_group |>
+  group_by(gear)|>
+  dplyr::summarize(
+    .groups = "drop",
+    gear_id = n_distinct(id),
+  )
+## Gear grouping count ####
+tip_geargroup_id_count <- tip_gear_group |>
+  group_by(gear_group)|>
+  dplyr::summarize(
+    .groups = "drop",
+    geargroup_id = n_distinct(id),
   )
 
 # Tabulate TIP interviews and records by gear grouping ####
@@ -52,12 +75,28 @@ gear_group_count_notna <- tip_gear_clean |>
     all_records = n()
   )
 
+## add counts to table    
+geargroup_plot_count <- gear_group_count_notna |> 
+  dplyr::mutate(
+    ggroup_count =
+      tip_geargroup_id_count$geargroup_id[match(
+        gear_group_count_notna$gear_group,
+        tip_geargroup_id_count$gear_group
+      )]) |> 
+  dplyr::mutate(ggroup_id = paste0(gear_group, " (", ggroup_count, ")"))
+
 ## plot number of interviews #### 
-plot_gear_int_count <- gear_group_count_notna |>
-  ggplot(aes(x = st_yr, y = all_interviews, group = gear_group)) +
-  geom_line(aes(color = gear_group)) +
-  geom_point(aes(color = gear_group)) +
+plot_gear_int_count <- geargroup_plot_count |>
+  ggplot(aes(x = st_yr, y = all_interviews, group = ggroup_id)) +
+  geom_line(aes(color = ggroup_id)) +
+  geom_point(aes(color = ggroup_id)) +
   # ggplot2::facet_grid(record_type ~ island) +
+  labs(
+    color = "Gear",
+    x = "Start Year",
+    y = "Unique Interviews", 
+    title = "Interview Count Gear Grouping"
+  ) +
   theme(
     legend.position = "bottom",
     legend.title = element_blank()
@@ -79,8 +118,8 @@ count_h <- tip_gear_clean |>
   dplyr::group_by(st_yr, region) |>
   dplyr::summarize(
     .groups = "drop",
-    h_interviews = n_distinct(id),
-    h_records = n()
+    hookline_interviews = n_distinct(id),
+    hookline_records = n()
   )
 
 count_t <- tip_gear_clean |>
@@ -88,8 +127,8 @@ count_t <- tip_gear_clean |>
   dplyr::group_by(st_yr, region) |>
   dplyr::summarize(
     .groups = "drop",
-    t_interviews = n_distinct(id),
-    t_records = n()
+    trap_interviews = n_distinct(id),
+    trap_records = n()
   )
 
 count_d <- tip_gear_clean |>
@@ -97,8 +136,8 @@ count_d <- tip_gear_clean |>
   dplyr::group_by(st_yr, region) |>
   dplyr::summarize(
     .groups = "drop",
-    d_interviews = n_distinct(id),
-    d_records = n()
+    diving_interviews = n_distinct(id),
+    diving_records = n()
   )
 
 count_n <- tip_gear_clean |>
@@ -106,8 +145,8 @@ count_n <- tip_gear_clean |>
   dplyr::group_by(st_yr, region) |>
   dplyr::summarize(
     .groups = "drop",
-    n_interviews = n_distinct(id),
-    n_records = n()
+    net_interviews = n_distinct(id),
+    net_records = n()
   )
 
 ## summarize both counts ####
@@ -133,53 +172,113 @@ gear_percent_overview <- gear_count_overview |>
     values_from = count
   ) |>
   dplyr::mutate(
-    h_percent = round(100 * h / all, 2),
-    t_percent = round(100 * t / all, 2),
-    d_percent = round(100 * d / all, 2),
-    n_percent = round(100 * n / all, 2),
+    hookline_percent = round(100 * hookline / all, 2),
+    trap_percent = round(100 * trap / all, 2),
+    diving_percent = round(100 * diving / all, 2),
+    net_percent = round(100 * net / all, 2),
   )
 
-# plot number of interviews by region ####
-## format dataframe to interview specific variables   
+# prep to plot number of interviews by region ####
+## format dataframe to interview specific variables ####  
 percent_gear_int <- gear_percent_overview |>
   filter(category == "interviews", ) |>
-  select(st_yr, region, h_percent, t_percent, d_percent, n_percent)
+  select(st_yr, region, hookline_percent, trap_percent, diving_percent, net_percent)
 
 percent_gear_plot <- melt(percent_gear_int, 
                      id.vars = c("st_yr", "region"), 
                      variable.name = "gear"
                      ) |>
   rename(percent = value) |>
-  mutate(gear_name = case_when(
-    gear == "h_percent" ~ "Hook-line",
-    gear == "t_percent" ~ "Trap",
-    gear == "d_percent" ~ "Diving",
-    gear == "n_percent" ~ "Net",
-    .default = "not coded"),
-    region_name = case_when(
-      region == "W" ~ "West",
-      region == "N" ~ "North",
-      region == "E" ~ "East",
-      region == "S" ~ "South",
-      .default = "not coded"
-      ))
+  mutate(gear_group = case_when(
+    gear == "hookline_percent" ~ "Hook-line",
+    gear == "trap_percent" ~ "Trap",
+    gear == "diving_percent" ~ "Diving",
+    gear == "net_percent" ~ "Net",
+    .default = "not coded"))
 
-## plot ####  
-plot_int_gear <- percent_gear_plot |>
-  ggplot(aes(x = st_yr, y = percent, group = gear_name)) +
-  geom_line(aes(color = gear_name)) +
-  geom_point(aes(color = gear_name)) +
-  ggplot2::facet_wrap( ~ region_name) +
+# ## Create count of total observed unique interviews for each gear  ####
+# tip_ggroup_region_id_count <- tip_gear_clean |>
+#   group_by(region, gear_group)|>
+#   dplyr::summarize(
+#     .groups = "drop",
+#     ggroup_count = n_distinct(id),
+#   )|>
+#   mutate(gear_name = case_when(gear_group == "diving" ~ "Diving",
+#                                 gear_group == "hook-line" ~ "Hook-line",
+#                                 gear_group == "net" ~ "Net",
+#                                 gear_group == "trap" ~ "Trap",
+#                                  .default = "not coded"
+#   ))|> 
+#   dplyr::mutate(ggroup_id = paste0(region, " ", gear_name, " (", ggroup_count, ")"))
+# 
+# ## add gear counts to table    
+# tip_ggroup_region_id_count_clean <- tip_ggroup_region_id_count |> 
+#   select(region, gear_name, ggroup_id)
+# 
+# percent_gear_region_plot_count <-  
+#   left_join(tip_gear_region_count,
+#             tip_ggroup_region_id_count_clean, 
+#             by = c("region", "gear_name"))
+
+## Create count of total observed unique interviews for each region  ####
+tip_regions_id_count <- tip_gear_clean |>
+  group_by(region)|>
+  dplyr::summarize(
+    .groups = "drop",
+    region_id = n_distinct(id),
+  )
+
+## add region counts to table    
+tip_gear_region_count <- percent_gear_plot |> 
+  dplyr::mutate(
+    region_count =
+      tip_regions_id_count$region_id[match(
+        percent_gear_plot$region,
+        tip_regions_id_count$region
+      )]) |> 
+  dplyr::mutate(region_id = paste0(region, " (", region_count, ")"))
+
+## Gear grouping count ####
+tip_geargroup_id_count <- tip_gear_clean |>
+  group_by(gear_group) |>
+  dplyr::summarize(
+    .groups = "drop",
+    ggroup_count = n_distinct(id),
+  ) |>
+  mutate(gear_group = case_when(
+    gear_group == "diving" ~ "Diving",
+    gear_group == "hook-line" ~ "Hook-line",
+    gear_group == "net" ~ "Net",
+    gear_group == "trap" ~ "Trap",
+    .default = "not coded"
+  )) |>
+  dplyr::mutate(ggroup_id = paste0(gear_group, " (", ggroup_count, ")"))
+
+## add gear counts to table    
+tip_ggroup_region_id_count_clean <- tip_gear_region_count |> 
+  dplyr::mutate(
+    ggroup_id =
+      tip_geargroup_id_count$ggroup_id[match(
+        tip_gear_region_count$gear_group,
+        tip_geargroup_id_count$gear_group
+      )]) 
+
+## plot ####
+plot_int_gear_region <- tip_ggroup_region_id_count_clean |>
+  ggplot(aes(x = st_yr, y = percent, group = ggroup_id)) +
+  geom_line(aes(color = ggroup_id)) +
+  geom_point(aes(color = ggroup_id)) +
+  ggplot2::facet_wrap( ~ region_id) +
   labs(
     color = "Gear Type",
-    x = "Fork Length (cm)",
-    title = "Interview Count by Region and Gear"
+    x = "Start Year",
+    title = "Interview Count by Region and Gear Grouping"
   ) +
   theme(
-    # legend.title = element_text(size = 14),
-    legend.text = element_text(size = 12),
-    legend.position = "bottom",
-    legend.title = element_blank()
+    legend.title = element_text(size = 12),
+    legend.text = element_text(size = 10),
+    legend.position = "right",
+    # legend.title = element_blank()
   )
 
 # Save formatted tip_spp ####
