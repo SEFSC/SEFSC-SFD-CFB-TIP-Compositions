@@ -5,8 +5,8 @@ librarian::shelf(here, tidyverse, measurements, flextable, ggplot2, reshape2)
 
 # Specify settings ####
 tip_pr <- "pr_species_name_tip_20240822.rds" # add formatted data
-spp <- 173139
-print_spp <- "qtf"
+spp <- 167700
+print_spp <- "reh"
 # queen triggerfish qtf 173139, 
 # redtail parrotfish rtp 170864, 
 # stoplight parrotfish slp 170867,

@@ -5,14 +5,16 @@
 librarian::shelf(here, tidyverse, measurements, flextable, ggplot2, reshape2)
 
 # Specify settings ####
-tip_pr <- "pr_filtered_tip_qtf_20240822.rds" # add formatted data
+tip_pr <- "pr_filtered_tip_reh_20240830.rds" # add formatted data
 gr_one <- "trap" # trap, hook-line, net, diving
 gr_one_print <- "Trap" # Hook-line, Trap, Net, Diving
 gr_two <- "net" # trap, hook-line, net, diving
 gr_two_print <- "Net" # Hook-line, Trap, Net, Diving
 gr_three <- "diving" # trap, hook-line, net, diving
 gr_three_print <- "Diving" # Hook-line, Trap, Net, Diving
-spp_print <- "Queen triggerfish"
+region_one <- "South"
+ggroup_one <- c("trap", "diving", "hook-line")
+spp_print <- "Red hind"
 # Queen triggerfish qtf  
 # Redtail parrotfish rtp  
 # Stoplight parrotfish slp 
@@ -27,7 +29,7 @@ spp_print <- "Queen triggerfish"
 
 # Read in raw data ####
 tip <- readRDS(here::here("data", tip_pr))
-
+unique(tip$species_name)
 ## find mode across all gears, time, region ####
 med_all <- median(tip$length1_cm, na.rm = TRUE)
 
@@ -107,7 +109,7 @@ plot_gear_group_two <- spp_region_two_count |>
                outlier.shape = NA) +
   ggplot2::facet_wrap( ~ region_id) +
   # coord_cartesian( ylim = NULL,) +
-  coord_cartesian( ylim = c(15,60)) +
+  coord_cartesian( ylim = c(15,45)) +
   labs(
     color = "Gear Group",
     x = "Start Year",
@@ -169,23 +171,51 @@ plot_gear_group_three <- spp_region_three_count |>
   geom_hline(yintercept = med_all,  
              color = "darkgrey", linewidth=1)
 
-# # Plot gear across regions ####
-# plot_gear <- tip |>
-#   filter(gear %in% gr) |> 
-#   ggplot(aes(x = st_yr, y = length1_cm)) +
-#   geom_boxplot(notch = FALSE) +
-#   ggplot2::facet_wrap( ~ region) +
-#   labs(
-#     color = "Gear",
-#     x = "Year Group",
-#     y = "Length (cm)", 
-#     title = paste(spp_print, gr_print, "Length Samples")
-#   ) +
-#   theme(
-#     # legend.title = element_text(size = 14),
-#     legend.text = element_text(size = 8),
-#     legend.position = "bottom",
-#     legend.title = element_blank()
-#   ) +
-#   geom_hline(yintercept = med_all,  
-#              color = "darkgrey", linewidth=1)
+
+# filter to region ####
+spp_region <- tip |>
+  filter(region %in% region_one,
+         gear_group %in% ggroup_one)
+
+## Create count of total observed unique interviews for each region  ####
+spp_region_ggroup <- spp_region |>
+  group_by(gear_group)|>
+  dplyr::summarize(
+    .groups = "drop",
+    gear_count = n_distinct(id),
+  )|>
+  dplyr::mutate(gear_id = paste0(gear_group, " (", gear_count, ")"))
+
+## add region counts to table    
+spp_region_ggroup_count <- spp_region |> 
+  dplyr::mutate(
+    ggroup_id =
+      spp_region_ggroup$gear_id[match(
+        spp_region$gear_group,
+        spp_region_ggroup$gear_group
+      )]) 
+
+# Plot first gear group across regions ####
+# run and then select ylim
+plot_region_ggroup <- spp_region_ggroup_count |>
+  ggplot(aes(x = st_yr, y = length1_cm)) +
+  geom_boxplot(notch = FALSE,
+               outlier.shape = NA,
+               ) +
+  ggplot2::facet_wrap( ~ ggroup_id) +
+  # coord_cartesian( ylim = NULL,) +
+  coord_cartesian( ylim = c(10,60)) +
+  labs(
+    color = "Gear Group",
+    x = "Start Year",
+    y = "Length (cm)", 
+    title = paste(spp_print, gr_three_print, "Length Samples", " - ", region_one)
+  ) +
+  theme(
+    # legend.title = element_text(size = 14),
+    legend.text = element_text(size = 12),
+    legend.position = "bottom",
+    legend.title = element_blank()
+  ) +
+  geom_hline(yintercept = med_all,  
+             color = "darkgrey", linewidth=1)

@@ -9,7 +9,7 @@ librarian::shelf(
 )
 
 # Specify settings ####
-tip_spp_rds <- "format_tip_20240703.rds" # rds from end of 01a script
+tip_spp_rds <- "format_tip_20240827.rds" # rds from end of 01a script
 spp_itis <- c("097648", "097646") # find on itis.gov
 spp <- "csl"
 isl <- c("pr", "stt", "stx")

@@ -7,7 +7,7 @@ librarian::shelf(
 )
 
 # Specify settings #### 
-tip_spp_rds <- "prusvi_csl_spp_size_prep_20240711.rds" # rds from end of 02a script
+tip_spp_rds <- "prusvi_csl_spp_size_prep_20240828.rds" # rds from end of 02a script
 spp_itis <- c("097648", "097646") # find on itis.gov
 spp <- "csl"
 isl <- c("pr", "stt", "stx")
@@ -84,7 +84,7 @@ plot_spp_length_year <- tip_spp |>
   ggplot2::ggplot(aes(x = length1_cm, color = factor(year))) +
   ggplot2::geom_step(stat = "ecdf") +
   ggplot2::facet_grid(~island) +
-  ggplot2::theme(legend.position = "none")
+  ggplot2::theme(legend.position = "right")
 
 # Plot cumulative weight by island
 plot_spp_weight <- tip_spp |>
@@ -110,4 +110,4 @@ plot_spp_weight_year <- tip_spp |>
   ggplot2::ggplot(aes(x = obs_weight_kg, color = factor(year))) +
   ggplot2::geom_step(stat = "ecdf") +
   ggplot2::facet_grid(~island) +
-  ggplot2::theme(legend.position = "none")
+  ggplot2::theme(legend.position = "right")

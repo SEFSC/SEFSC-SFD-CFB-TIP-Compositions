@@ -56,7 +56,7 @@
 ## plot number of interviews #### 
   plot_int_count <- tip_yr_summary |>
     ggplot(aes(x = st_yr, y = n_id)) +
-    geom_point() +
+    geom_point(size = 3) +
     # ggplot2::facet_grid(record_type ~ island) +
     labs(
       x = "Start year",
@@ -65,7 +65,10 @@
     ) +
     theme(
       legend.position = "bottom",
-      legend.title = element_blank()
+      legend.title = element_blank(),
+      # legend.title = element_text(size = 12),
+      legend.text = element_text(size = 10),
+      text = element_text(size = 12),
     )
 
 # Region designation ####
@@ -109,6 +112,22 @@
       .groups = "drop",
       region_id = n_distinct(id),
     )
+  
+## create table to print   #### 
+  region_tbl_print <- tip_regions_clean |> 
+    group_by(region)|>
+    dplyr::summarize(
+      .groups = "drop",
+      interviews = n_distinct(id),
+    ) |> 
+    mutate(percent = round(100 * interviews / sum(interviews), 2),) |> 
+    select(region, percent)
+  
+  flextable(region_tbl_print) |>
+    theme_box() %>%
+    align(align = "center", part = "all") %>%
+    fontsize(size = 8, part = "all") %>%
+    autofit()
   
 # Tabulate TIP interviews and records by year grouping and region ####
 ## count all records and interviews ####
@@ -273,7 +292,28 @@
                                    .default = "not coded"
     ))|> 
     dplyr::mutate(season_id = paste0(season_name, " (", season_count, ")"))
-
+  
+## create table to print  ####
+  season_tbl_print <- tip_seasons |> 
+    group_by(season)|>
+    dplyr::summarize(
+      .groups = "drop",
+      interviews = n_distinct(id),
+    )|>
+    mutate(season = case_when(season == "S1" ~ "Jan_Apr",
+                                   season == "S2" ~ "May_Aug",
+                                   season == "S3" ~ "Sep_Dec",
+                                   .default = "not coded"
+    ))|> 
+    mutate(percent = round(100 * interviews / sum(interviews), 2),)|> 
+    select(season, percent)
+  
+  flextable(season_tbl_print) |>
+    theme_box() %>%
+    align(align = "center", part = "all") %>%
+    fontsize(size = 8, part = "all") %>%
+    autofit()
+  
 ## calculate percent representation by season by region  
 ## count all records and interviews ####
   count_all_season <- tip_seasons |>

@@ -94,12 +94,13 @@ plot_gear_int_count <- geargroup_plot_count |>
   labs(
     color = "Gear",
     x = "Start Year",
-    y = "Unique Interviews", 
-    title = "Interview Count Gear Grouping"
+    y = "Interviews", 
+    title = "Interview Count by Gear Grouping"
   ) +
   theme(
     legend.position = "bottom",
-    legend.title = element_blank()
+    legend.title = element_blank(),
+    text = element_text(size = 12),
   )
 
 # Percentage calculation of gear by region  ####
@@ -272,13 +273,14 @@ plot_int_gear_region <- tip_ggroup_region_id_count_clean |>
   labs(
     color = "Gear Type",
     x = "Start Year",
+    y = "Percent",
     title = "Interview Count by Region and Gear Grouping"
   ) +
   theme(
-    legend.title = element_text(size = 12),
+    # legend.title = element_text(size = 12),
     legend.text = element_text(size = 10),
-    legend.position = "right",
-    # legend.title = element_blank()
+    legend.position = "bottom",
+    legend.title = element_blank()
   )
 
 # Save formatted tip_spp ####
