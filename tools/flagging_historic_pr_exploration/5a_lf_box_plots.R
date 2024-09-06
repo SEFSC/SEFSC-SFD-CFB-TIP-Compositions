@@ -5,7 +5,7 @@
 librarian::shelf(here, tidyverse, measurements, flextable, ggplot2, reshape2)
 
 # Specify settings ####
-tip_pr <- "pr_filtered_tip_reh_20240830.rds" # add formatted data
+tip_pr <- "pr_filtered_tip_sms_20240829.rds" # add formatted data
 gr_one <- "trap" # trap, hook-line, net, diving
 gr_one_print <- "Trap" # Hook-line, Trap, Net, Diving
 gr_two <- "net" # trap, hook-line, net, diving
@@ -14,7 +14,7 @@ gr_three <- "diving" # trap, hook-line, net, diving
 gr_three_print <- "Diving" # Hook-line, Trap, Net, Diving
 region_one <- "South"
 ggroup_one <- c("trap", "diving", "hook-line")
-spp_print <- "Red hind"
+spp_print <- "Schoolmaster"
 # Queen triggerfish qtf  
 # Redtail parrotfish rtp  
 # Stoplight parrotfish slp 
@@ -209,7 +209,7 @@ plot_region_ggroup <- spp_region_ggroup_count |>
     color = "Gear Group",
     x = "Start Year",
     y = "Length (cm)", 
-    title = paste(spp_print, gr_three_print, "Length Samples", " - ", region_one)
+    title = paste(spp_print, "Length Samples", " - ", region_one)
   ) +
   theme(
     # legend.title = element_text(size = 14),

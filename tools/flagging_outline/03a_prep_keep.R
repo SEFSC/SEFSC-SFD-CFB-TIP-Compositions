@@ -6,7 +6,7 @@
 librarian::shelf(here, tidyverse)
 
 # Specify settings ####
-tip_spp_rds <- "prusvi_csl_spp_size_prep_20240711.rds" # rds from end of 02a script
+tip_spp_rds <- "prusvi_csl_spp_size_prep_20240906.rds" # rds from end of 02a script
 spp <- "csl"
 isl <- "pr" # from here on chose one island to work with moving forward
 data_keep <- "TIP"

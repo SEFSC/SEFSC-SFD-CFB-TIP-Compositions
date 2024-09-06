@@ -7,7 +7,7 @@
 librarian::shelf(here, tidyverse, measurements, expss, openxlsx)
 
 # Specify settings ####
-tip_spp_rds <- "format_tip_20240703.rds" # rds from end of 01a script
+tip_spp_rds <- "format_tip_20240905.rds" # rds from end of 01a script
 spp_itis <- c("097648", "097646") # find on itis.gov 
 spp <- "csl"
 isl <- c("pr", "stt", "stx")
@@ -107,3 +107,4 @@ plot_count_spp_sector <- count_spp_sector |>
     legend.position = "bottom",
     legend.title = element_blank()
   )
+

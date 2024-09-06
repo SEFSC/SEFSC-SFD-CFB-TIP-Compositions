@@ -133,28 +133,29 @@ tip_spp <- tip |>
 # Select variables relevant to flagging investigation ####
 tip_spp_relevant <- tip_spp |>
   select(
-    data_source,
+    data_source, # denotes where data was originally recorded 
     id, # trip interview id
-    date,
-    year,
+    date, # interview month/day/year 
+    year, # interview year
     island, # pr, stt, stx
-    state_landed,
-    county_landed,
+    state_landed, # original state value
+    county_landed, # original county value
     area, # state vs federal area
     area_square,# grid area when available
-    species_code,
-    species_name,
+    species_code, # ITIS code of species 
+    species_name, # common name of species given in TIP
     sex_name, # male, female, unknown, not sexed
     gear, # gear from land_standard_gear_name subbed w/ gear_1 when unavailable
-    length1_mm,
+    length1_mm, # length1 converted by TIP system to mm 
     length_unit1, # original length unit
     length_type1, # original length type
     length_type2, # for future comparisons
-    obs_weight_kg,
+    obs_weight_kg, # weight converted to kg by TIP system
     obs_weight_unit, # original weight unit
-    sample_condition,
-    sector,
-    fishing_mode,
+    quantity, # number of individuals that were weighed/measured 
+    sample_condition, # weight type
+    sector, # denotes recreational or commercial
+    fishing_mode, # original sector value
   ) 
 
 # Save formatted tip_spp ####

@@ -7,7 +7,7 @@ librarian::shelf(
 )
 
 # Specify settings #### 
-tip_spp_rds <- "prusvi_csl_spp_size_prep_20240828.rds" # rds from end of 02a script
+tip_spp_rds <- "prusvi_csl_spp_size_prep_20240906.rds" # rds from end of 02a script
 spp_itis <- c("097648", "097646") # find on itis.gov
 spp <- "csl"
 isl <- c("pr", "stt", "stx")
