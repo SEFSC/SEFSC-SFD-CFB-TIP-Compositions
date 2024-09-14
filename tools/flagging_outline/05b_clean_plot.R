@@ -9,8 +9,8 @@
 librarian::shelf(here, tidyverse, flextable, ggplot2, janitor)
 
 # Specify settings ####
-tip_spp_rds <- "pr_csl_clean_filtered_20240821.rds" # rds from end of 05a script
-clean_gear <- "pr_csl_clean_gear_list_20240821.rds" # gears representing >2%
+tip_spp_rds <- "pr_csl_clean_filtered_20240913.rds" # rds from end of 05a script
+clean_gear <- "pr_csl_clean_gear_list_20240913.rds" # gears representing >2%
 spp <- "csl"
 isl <- "pr"
 print_isl <- "Puerto Rico"

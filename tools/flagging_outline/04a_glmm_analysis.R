@@ -8,7 +8,7 @@
   librarian::shelf(here, tidyverse, flextable, ggplot2, ggpubr, lmerTest, meantables)
 
 # Specify settings ####
-  tip_spp_rds <- "pr_csl_prep_keep_tip_20240821.rds" # rds from end of 03a script
+  tip_spp_rds <- "pr_csl_prep_keep_tip_20240906.rds" # rds from end of 03a script
   spp <- "csl"
   isl <- "pr"
   break_year <- 2012
@@ -31,7 +31,7 @@
     color = "gear",
   ) +
     theme(
-      axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 10),
+      axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 8),
       legend.position = "none"
     ) +
     labs(
@@ -58,13 +58,15 @@
   density_plot
 
 ## Scatter plot with line of smoothed conditional mean ####
-# takes forever to load   
+  # takes forever to load
 #' filtered to gears with 30 or more occurrences for the purposes
 #' of plotting visibility
-  allgears_glm_plot <- tip_spp_glm %>%
+  tip_spp_glm_filtered <- tip_spp_glm %>%
     group_by(gear) %>%
     filter(n() >= 30) %>%
-    ungroup() |>
+    ungroup() 
+    options(repr.plot.width = 5, repr.plot.height =2) 
+  allgears_glm_plot <- tip_spp_glm_filtered |> 
     ggplot(aes(x = date, y = length1_cm)) +
     geom_point(aes(colour = gear, shape = gear), size = 1, alpha = 0.5) +
     scale_shape_manual(values = c(
@@ -211,6 +213,8 @@
       )
     )
   )
+  
+#### IF NOT USING BREAK YEAR, SKIP TO END AND SAVE WORKSPACE #####  
 
 # Repeat GLMM with data after data break year ####
 # filter to break year and select needed variables 
@@ -357,7 +361,8 @@
   save.image(
     file = here::here(
       "tools",
-      "size_comp_outline",
+      "flagging_outline",
       "sedar_clean_tip.RData"
     )
   )
+  
