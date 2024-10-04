@@ -8,14 +8,14 @@
   librarian::shelf(here, tidyverse, flextable, ggplot2, ggpubr, lmerTest, meantables)
 
 # Specify settings ####
-  tip_spp_rds <- "pr_csl_prep_keep_tip_20240906.rds" # rds from end of 03a script
+  tip_spp_rds <- "stx_csl_prep_keep_tip_20240920.rds" # rds from end of 03a script
   spp <- "csl"
-  isl <- "pr"
+  isl <- "stx"
   break_year <- 2012
-  print_isl <- "Puerto Rico"
+  print_isl <- "St. Croix"
+  print_spp <- "Caribbean Spiny Lobster"
 
-
-# Read in formatted data ####
+  # Read in formatted data ####
   tip_spp <- readRDS(here::here("data", tip_spp_rds))
 
 # Filter to needed variables for GLMM ####
@@ -40,7 +40,7 @@
     )
   box_plot
 
-## Create density plot across years ####
+## Create density plot across years and combined gears ####
   density_plot <- ggdensity(
     tip_spp_glm,
     x = "length1_cm",
@@ -55,7 +55,28 @@
       x = "All Gears", y = "Length(cm)", colour = "", shape = "",
       title = paste(print_isl, "Length Samples")
     )
+  
+# view density plot   
   density_plot
+  
+# Create density plot across years with mean line for each gear 
+  density_plot_gear <- ggdensity(
+    tip_spp_glm,
+    x = "length1_cm",
+    add = "mean", rug = TRUE,
+    color = "gear", fill = "gear",
+  ) +
+    theme(
+      axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 10),
+      legend.position = "bottom"
+    ) +
+    labs(
+      x = "All Gears", y = "Length(cm)", colour = "", shape = "",
+      title = paste(print_isl, print_spp, "Length Samples")
+    )
+  
+# view density plot  
+  density_plot_gear
 
 ## Scatter plot with line of smoothed conditional mean ####
   # takes forever to load
@@ -65,7 +86,7 @@
     group_by(gear) %>%
     filter(n() >= 30) %>%
     ungroup() 
-    options(repr.plot.width = 5, repr.plot.height =2) 
+  options(repr.plot.width = 5, repr.plot.height =2) 
   allgears_glm_plot <- tip_spp_glm_filtered |> 
     ggplot(aes(x = date, y = length1_cm)) +
     geom_point(aes(colour = gear, shape = gear), size = 1, alpha = 0.5) +
@@ -155,8 +176,8 @@
       "Interview(n)",
       Percentage
     ) 
-    # Add gear groups related to each statistical group given by GLMM
-    ### FIX THESE GEAR GROUPINGS
+# add groupings based off glmm groupings if requested 
+    ### UPDATE THE GEAR GROUPINGS ###
     # mutate("Gear Group" = case_when(
     #   Gear == "LINES HAND" ~ "Hand Line",
     #   Gear == "POTS AND TRAPS; FISH" ~ "Traps",
@@ -249,18 +270,23 @@
     pairwise ~ "gear",
     adjust = "tukey"
   )
-
-  allgears_multcompcld_break <- multcomp::cld(object = mod_contr$emmeans)
   
+# cld provides gear groupings based on which gears are
+# similar vs significantly different from each other
+  allgears_multcompcld_break <- multcomp::cld(object = mod_contr$emmeans)
+
+# Count number of length records (aka number of fish measured)
   length_data_fishcount_break <- tip_spp_break_year |>
     group_by(gear) |>
     tally()
+# Count number of unique trip interviews (aka unique id)  
   length_data_tripcount_break <- aggregate(
     data = tip_spp_break_year, # Applying aggregate
     ID ~ gear,
     function(id) length(unique(id))
   )
-  
+
+# Add counts to GLMM table    
   allgears_multcompcld_fish_break <-
     full_join(allgears_multcompcld_break,
       tip_spp_break_year,
@@ -301,7 +327,8 @@
       "Interview(n)",
       Percentage
     ) 
-    # # group gears based off of numbered groups from glmmm
+# add groupings based off glmm groupings if requested 
+  ### UPDATE THE GROUPINGS ###
     # mutate("Gear Group" = case_when(
     #   Gear == "LINES HAND" ~ "Hand Line",
     #   Gear == "POTS AND TRAPS; FISH" ~ "Traps",
@@ -362,7 +389,11 @@
     file = here::here(
       "tools",
       "flagging_outline",
-      "sedar_clean_tip.RData"
+      paste0(
+        isl, "_",
+        spp, "_sedar_glmm_",
+        format(Sys.time(), "%Y%m%d"), ".RData"
     )
+  )
   )
   
