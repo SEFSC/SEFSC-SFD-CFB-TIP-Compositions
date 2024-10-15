@@ -388,6 +388,7 @@
   save.image(
     file = here::here(
       "tools",
+      "figures",
       "flagging_outline",
       paste0(
         isl, "_",

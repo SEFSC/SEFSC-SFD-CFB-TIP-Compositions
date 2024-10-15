@@ -403,6 +403,7 @@ plot_ann_den_separate <-
   save.image(
     file = here::here(
       "tools",
+      "figures",
       "flagging_outline",
       paste0(
         isl, "_",
