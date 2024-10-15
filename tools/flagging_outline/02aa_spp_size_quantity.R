@@ -90,3 +90,22 @@
     )
 # view plot  
   quantity_time
+
+# duplicate records with quantity value larger than 1  
+  tip_dup <- uncount(tip_spp, quantity)
+  
+  
+# Save formatted tip_spp ####
+  saveRDS(
+    tip_dup,
+    file = here::here(
+      "data",
+      paste0(
+        save_isl, "_",
+        save_spp, "_spp_quant_check_",
+        format(Sys.time(), "%Y%m%d"),
+        ".rds"
+      )
+    )
+  )
+  

@@ -9,7 +9,7 @@ tip_rds <- "com_tip_PR_VI_20240703.RDS" # add pull of all CAR region and species
 ## Range currently set to not drop any obs 
 # note 1984 is first full year for fish, 1980 for USVI and 1981 for PR spiny lobster 
 min_year <- 1983
-max_year <- 2022 
+max_year <- 2023 
 
 # Read in raw data ####
 tip <- readRDS(here::here("data", "raw", tip_rds))

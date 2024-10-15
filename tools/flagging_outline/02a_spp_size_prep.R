@@ -10,7 +10,7 @@
 
 # Specify settings ####
 # rds from end of 01a script
-  tip_spp_rds <- "format_tip_20240905.rds" 
+  tip_spp_rds <- "format_tip_20241010.rds" 
 # find on itis.gov
   spp_itis <- c("097648", "097646") 
   spp <- "csl"

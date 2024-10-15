@@ -6,8 +6,8 @@
   librarian::shelf(here, tidyverse)
 
 # Specify settings ####
-# rds from end of 02a script
-  tip_spp_rds <- "prusvi_csl_spp_size_prep_20240906.rds" 
+# rds from end of 02aa script
+  tip_spp_rds <- "prusvi_csl_spp_quant_check_20241010.rds" 
   spp <- "csl"
 # from here on chose one island to work with moving forward
   isl <- "stx" 
