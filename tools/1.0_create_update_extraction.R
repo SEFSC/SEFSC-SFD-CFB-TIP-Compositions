@@ -16,3 +16,6 @@
   # SEDAR 84 ####
     cr_tip_sp(state_codes = c('PR', 'VI'), sp_codes =168907)
     
+  # SEDARs moving forward ###
+    cr_tip(state_codes = c("PR", "VI"))
+    

@@ -8,27 +8,27 @@
 
 # Specify settings #### 
 # rds from end of 02aa script
-tip_spp_rds <- "prusvi_csl_spp_quant_check_20241010.rds" 
+  date <- "20241024" 
 # find on itis.gov
   spp_itis <- c("097648", "097646") 
   spp <- "csl"
-  isl <- c("pr", "stt", "stx") 
+# chose island platform to focus on   
+  isl <- "stt" 
   print_spp <- "Caribbean Spiny Lobster"
-  print_isl <- "Puerto Rico - USVI"
-  save_spp <- "csl"
-  save_isl <- "prusvi"
-
+  print_isl <- "St. Thomas"
+  sedar <- "sedar91"
+  
+# create folder structure for sedar overall data
+  if (!dir.exists(here("data", sedar, "figure", spp, isl))){ dir.create(here("data", sedar, "figure", spp, isl)) }
+  if (!dir.exists(here("data", sedar, "rds", spp, isl))){ dir.create(here("data", sedar, "rds", spp, isl)) }
+  
 # Read in formatted data ####
-  tip_spp <- readRDS(here::here("data", tip_spp_rds))
+  tip_spp_rds <- paste0("prusvi_csl_spp_size_quantity_", date, ".rds" )
+  tip_spp <- readRDS(here::here("data", sedar, "rds", spp, "all", tip_spp_rds))
 
 # Filter to target island ####
   tip_spp_prep <- tip_spp |>
     dplyr::filter(island %in% isl)
-
-# check for gears with same name but grammatical differences
-  unique(tip_spp_prep$gear)
-# replace "," with ";"
-  tip_spp_prep$gear <- str_replace(tip_spp_prep$gear, ",", ";")
 
 # Create count of observed records for each area  ####
   tip_spp_count <- tip_spp_prep |>
@@ -42,8 +42,8 @@ tip_spp_rds <- "prusvi_csl_spp_quant_check_20241010.rds"
     dplyr::mutate(islandn = paste0(island, " (", n, ")")) |>
     select(-n)
 
-# Plot regions sampled over time ####
-## plots individual counties of PR along with usvi islands 
+# FOR PUERTO RICO plot counties sampled over time ####
+  # skip if working with USVI
   county_data <- tip_spp_count |>
     group_by(year, island, county_landedn) |>
     dplyr::summarize(n = n(), .groups = "drop") |>
@@ -71,6 +71,11 @@ tip_spp_rds <- "prusvi_csl_spp_quant_check_20241010.rds"
     )
 # view plot  
   county_by_year
+# save   
+  ggsave(filename = 
+           here::here("data", sedar, "figure", spp, isl, "county_by_year.png"),
+         width = 14, height = 8)
+  
 
 # Plot gears used over time ####
   gear_data <- tip_spp_count |>
@@ -97,6 +102,10 @@ tip_spp_rds <- "prusvi_csl_spp_quant_check_20241010.rds"
     )
 # view plot  
   gear_by_yr
+# save   
+  ggsave(filename = 
+           here::here("data", sedar, "figure", spp, isl, "gear_by_yr.png"),
+         width = 14, height = 8)
 
 # Plot weight values recorded over time ####
   weight_time <- tip_spp_count |>
@@ -114,6 +123,10 @@ tip_spp_rds <- "prusvi_csl_spp_quant_check_20241010.rds"
     )
 # view plot  
   weight_time
+# save  
+  ggsave(filename = 
+           here::here("data", sedar, "figure", spp, isl, "weight_time.png"),
+         width = 14, height = 8)
 
 # Plot length values recorded over time ####
   length_time <- tip_spp_count |>
@@ -134,18 +147,25 @@ tip_spp_rds <- "prusvi_csl_spp_quant_check_20241010.rds"
     )
 # view plot  
   length_time
+# save
+  ggsave(filename = 
+           here::here("data", sedar, "figure", spp, isl, "length_time.png"),
+         width = 14, height = 8)
 
-
-# # Save formatted tip_spp ####
-# saveRDS(
-#   tip_spp_count,
-#   file = here::here(
-#     "data",
-#     paste0(
-#       isl, "_",
-#       spp, "_spp_size_island_view_",
-#       format(Sys.time(), "%Y%m%d"),
-#       ".rds"
-#     )
-#   )
-# )
+# Save formatted tip_spp ####
+  saveRDS(
+    tip_spp_count,
+    file = here::here(
+      "data",
+      sedar,
+      "rds",
+      spp, 
+      isl,
+      paste0(
+        isl, "_",
+        spp, "_spp_size_island_view_",
+        format(Sys.time(), "%Y%m%d"),
+        ".rds"
+      )
+    )
+  )

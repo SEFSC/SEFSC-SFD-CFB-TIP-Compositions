@@ -6,11 +6,17 @@ librarian::shelf(here, tidyverse, measurements)
 # cr_tip(state_codes = "PR")
 
 # Specify settings ####
-tip_rds <- "com_tip_PR_VI_20240703.RDS" # add pull of all CAR region and species
+tip_rds <- "com_tip_PR_VI_20241016.RDS" # add pull of all CAR region and species
 ## Range currently set to not drop any obs 
 # note 1984 is first full year for fish, 1980 for USVI and 1981 for PR spiny lobster 
 min_year <- 1985
 max_year <- 2019 
+
+# create folder structure for "historic" overall data
+if (!dir.exists(here("data", "historic"))){ dir.create(here("data", "historic")) }
+if (!dir.exists(here("data", "historic", "figure"))){ dir.create(here("data", "historic", "figure")) }
+if (!dir.exists(here("data", "historic", "rds"))){ dir.create(here("data", "historic", "rds")) }
+if (!dir.exists(here("data", "historic", "figure", "all"))){ dir.create(here("data", "historic", "figure", "all")) }
 
 # Read in raw data ####
 tip <- readRDS(here::here("data", "raw", tip_rds))
@@ -21,7 +27,15 @@ tip_spp <- tip |>
   janitor::clean_names() |>
   # Create variable for island
   dplyr::mutate(
+# clarify variables    
     data_source = "TIP",
+    id = as.character(id),
+    specimen_id = sample_id, 
+    interview_date = lubridate::as_date(interview_date),
+    month = format(as.Date(interview_date,format="%Y-%m-%d"), format = "%m"),
+    day = format(as.Date(interview_date,format="%Y-%m-%d"), format = "%d"),
+    year = as.numeric(year),
+# create new variables    
     island = dplyr::case_when(
       state_landed == "PUERTO RICO" ~ "pr",
       state_landed == "VIRGIN ISLANDS" &
@@ -30,10 +44,6 @@ tip_spp <- tip |>
         county_landed == "ST CROIX" ~ "stx",
       .default = "not coded"
     ),
-    # Simplify interview_date and create fork_length_cm and k
-    id = as.character(id),
-    interview_date = lubridate::as_date(interview_date),
-    year = as.numeric(year),
     gear = case_when(
       land_standard_gear_name == "NOT CODED" ~ standardgearname_1,
       TRUE ~ land_standard_gear_name
@@ -122,13 +132,21 @@ tip_spp <- tip |>
   # Simplify variable names
   dplyr::rename(
     date = interview_date,
-    species_code = obs_standard_species_code
+    species_code = obs_standard_species_code,
+    species_name = obs_standard_species_name,
   )|> 
   # filter to years 
   dplyr::filter(
     year < (max_year - 1) & year >= min_year,
     island == "pr"
   )
+
+# check gears for grammatic errors
+  unique(tip_spp$gear)
+# replace "," with ";"
+  tip_spp$gear <- str_replace(tip_spp$gear, ",", ";")  
+# check gears again
+  unique(tip_spp$gear)
 
 # Select variables relevant to flagging investigation ####
 tip_spp_relevant <- tip_spp |>
@@ -143,6 +161,7 @@ tip_spp_relevant <- tip_spp |>
     area, # state vs federal area
     area_square,# grid area when available
     species_code,
+    species_name,
     sex_name, # male, female, unknown, not sexed
     gear, # gear from land_standard_gear_name subbed w/ gear_1 when unavailable
     length1_mm,
@@ -161,6 +180,8 @@ saveRDS(
   tip_spp_relevant,
   file = here::here(
     "data",
+    "historic",
+    "rds",
     paste0( "pr_format_tip_",
             format(Sys.time(), "%Y%m%d"), 
             ".rds"

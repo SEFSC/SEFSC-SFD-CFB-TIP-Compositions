@@ -9,16 +9,18 @@
 
 # Specify settings #### 
 # rds from end of 02a script
-  tip_spp_rds <- "prusvi_csl_spp_size_prep_20240906.rds" 
+  date <- "20241024" 
 # find on itis.gov
   spp_itis <- c("097648", "097646") 
   spp <- "csl"
   isl <- c("pr", "stt", "stx")
   print_spp <- "Caribbean Spiny Lobster"
   print_isl <- "Puerto Rico - USVI"
-
+  sedar <- "sedar91"
+  
 # Read in formatted data ####
-  tip_spp <- readRDS(here::here("data", tip_spp_rds))
+  tip_spp_rds <- paste0("prusvi_csl_spp_size_prep_", date, ".rds" )
+  tip_spp <- readRDS(here::here("data", sedar, "rds", spp, "all", tip_spp_rds))
 
 # View records that have "quantity" variable ####
   tip_quantity <- tip_spp |> 
@@ -26,7 +28,7 @@
     group_by(species_code, island, quantity) |> 
     summarise(
       .groups = "drop",
-      interviews = n_distinct(id),
+      interviews = n_distinct(sampling_unit_id),
       records = n())
   
   tip_quantity_total <- tip_quantity |> 
@@ -45,7 +47,7 @@
 # Tabulate complete and incomplete length and weight pairs
   count_lw_pairs <- tip_spp |>
     filter(quantity > 1) |> 
-    dplyr::group_by(island, year, data_source, sector, length_type1, record_type) |>
+    dplyr::group_by(island, year, sampling_program, fishery, length_type1, record_type) |>
     dplyr::summarize(
       .groups = "drop",
       records = n()
@@ -60,14 +62,32 @@
     colformat_num(j = "year", big.mark = "")
 
 # create variable counts 
-  tip_spp_count <- tip_spp |>
+  tip_spp_quant_count <- tip_spp |>
     filter(quantity > 1) |> 
     add_count(island) |>
     dplyr::mutate(islandn = paste0(island, " (", n, ")")) |>
     select(-n)
+  
+# Save dataframe of just records with quantity >1 ####
+  saveRDS(
+    tip_spp_quant_count,
+    file = here::here(
+      "data",
+      sedar,
+      "rds",
+      spp, 
+      "all",
+      paste0(
+        save_isl, "_",
+        save_spp, "_spp_quant_count_",
+        format(Sys.time(), "%Y%m%d"),
+        ".rds"
+      )
+    )
+  )
 
 # Plot length values recorded by quantity ####
-  quantity_time <- tip_spp_count |>
+  quantity_time <- tip_spp_quant_count |>
     # filter(quantity > 1) |> 
     ggplot(aes(x = date, 
                y = length1_cm, 
@@ -86,23 +106,31 @@
       x = "Year", y = "Length (cm)",
       title = "Quantity distribution of Lengths sampled",
       color = "Quantity Value",
-      subtitle = paste("Total N = ", nrow(tip_spp))
+      subtitle = paste("Total N = ", nrow(tip_spp_count))
     )
 # view plot  
   quantity_time
+  
+  ggsave(filename = 
+           here::here("data", sedar, "figure", spp, "all", "quantity_time.png"),
+         width = 14, height = 8)
+  
 
 # duplicate records with quantity value larger than 1  
   tip_dup <- uncount(tip_spp, quantity)
-  
-  
+    
 # Save formatted tip_spp ####
   saveRDS(
     tip_dup,
     file = here::here(
       "data",
+      sedar,
+      "rds",
+      spp, 
+      "all",
       paste0(
         save_isl, "_",
-        save_spp, "_spp_quant_check_",
+        save_spp, "_spp_size_quantity_",
         format(Sys.time(), "%Y%m%d"),
         ".rds"
       )

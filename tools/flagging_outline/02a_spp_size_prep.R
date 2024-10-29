@@ -10,7 +10,7 @@
 
 # Specify settings ####
 # rds from end of 01a script
-  tip_spp_rds <- "format_tip_20241010.rds" 
+  date <- "20241024" 
 # find on itis.gov
   spp_itis <- c("097648", "097646") 
   spp <- "csl"
@@ -19,9 +19,17 @@
   print_isl <- "Puerto Rico - USVI"
   save_spp <- "csl"
   save_isl <- "prusvi"
+  sedar <- "sedar91"
+  
+# create folder structure for sedar overall data
+  if (!dir.exists(here("data", sedar, "figure", spp))){ dir.create(here("data", sedar, "figure", spp)) }
+  if (!dir.exists(here("data", sedar, "rds", spp))){ dir.create(here("data", sedar, "rds", spp)) }
+  if (!dir.exists(here("data", sedar, "figure", spp, "all"))){ dir.create(here("data", sedar, "figure", spp, "all")) }
+  if (!dir.exists(here("data", sedar, "rds", spp, "all"))){ dir.create(here("data", sedar, "rds", spp, "all")) }
 
 # Read in formatted data ####
-  tip_spp <- readRDS(here::here("data", tip_spp_rds))
+  tip_spp_rds <- paste0("format_tip_", date, ".rds" )
+  tip_spp <- readRDS(here::here("data", sedar, "rds", tip_spp_rds))
 
 # Filter to target species ####
   tip_spp_prep <- tip_spp |>
@@ -41,6 +49,7 @@
     )
 
 # Find upper and lower estimates of k ####
+# dont need k for lobster  
   tip_k_iqr <- IQR(spp_size_calc$k, na.rm = TRUE)
   tip_k_25q <- quantile(spp_size_calc$k, 0.25, na.rm = TRUE)
   tip_k_75q <- quantile(spp_size_calc$k, 0.75, na.rm = TRUE)
@@ -56,14 +65,30 @@
   min(spp_size_calc$length1_cm, na.rm = TRUE)
   max(spp_size_calc$length1_cm, na.rm = TRUE)
 
-# view largest 25 length values
+# view largest 25 length values (cm)
   tip_range <- spp_size_calc[with(spp_size_calc, order(-length1_cm)), ]
   tip_range$length1_cm[1:25]
+  
+# view largest 25 length values (in)
+  tip_range11 <- spp_size_calc[with(spp_size_calc, order(-length1_inch)), ]
+  tip_range11$length1_inch[1:25]   
+  
+# view largest 50 length values (in)
+  tip_range12 <- spp_size_calc[with(spp_size_calc, order(-length1_inch)), ]
+  tip_range12$length1_inch[1:50] 
 
-# view smallest 25 length values
+# view smallest 25 length values (cm)
   tip_range2 <- spp_size_calc[with(spp_size_calc, order(length1_cm)), ]
   tip_range2$length1_cm[1:25]
-
+  
+# view smallest 25 length values (in)
+  tip_range3 <- spp_size_calc[with(spp_size_calc, order(length1_inch)), ]
+  tip_range3$length1_inch[1:25]
+  
+# view smallest 50 length values (in)
+  tip_range4 <- spp_size_calc[with(spp_size_calc, order(length1_inch)), ]
+  tip_range4$length1_inch[1:50]
+  
 # Tabulate lengths, weights, and k stats ####
     # when table returns "inf" or "-inf" it means the calculation 
     # had no non-zero values to calculate
@@ -72,7 +97,7 @@
       island,
       species_code,
       length_type1,
-      sector
+      fishery
     ) |>
     dplyr::summarize(
       .groups = "drop",
@@ -151,6 +176,10 @@
     spp_size_calc,
     file = here::here(
       "data",
+      sedar,
+      "rds",
+      spp, 
+      "all",
       paste0(
         save_isl, "_",
         save_spp, "_spp_size_prep_",

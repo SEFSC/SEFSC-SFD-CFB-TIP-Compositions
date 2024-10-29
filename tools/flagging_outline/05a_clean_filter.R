@@ -8,21 +8,26 @@
 # if k is being used to filter, specify this script
   # tip_spp_rds <- "prusvi_csl_spp_size_flag_20240711.rds" # rds from end of 02d script
 # if k is not being used to filter, specify this script  
-  tip_spp_rds <- "stx_csl_prep_keep_tip_20240920.rds" # rds from end of 03a script
+# date from end of 03a script
+  date <- "20241025" 
 # 2% gear list from correct time series 
-  gear_list <- "stx_csl_clean_gear_list_20241003.rds" # rds from end of 04a script
+# date from end of 04a script
+  gear_date <- "20241025" 
   spp <- "csl"
-  isl <- "stx"
-  print_isl <- "St. Croix"
+  isl <- "stt"
+  print_isl <- "St. Thomas"
   break_yr <- "2012"
+  sedar <- "sedar91"
 
 # reminder: variables that have already been filtered for in 03a - 
 # Island, Data_source, Len_mode, Len_type, Year, Min and max size, 
 # Gears  with > 3 unique trip ids, Years with >= 30 length samples
 
 # Read in formatted data ####
-  tip_spp <- readRDS(here::here("data", tip_spp_rds))
-  glmm_gear <- readRDS(here::here("data", gear_list))
+  tip_spp_rds <- paste0(isl, "_", spp, "_prep_keep_tip_", date, ".rds" )
+  gear_list <- paste0(isl, "_", spp, "_clean_gear_list_", gear_date, ".rds" )
+  tip_spp <- readRDS(here::here("data", sedar, "rds", spp, isl, tip_spp_rds))
+  glmm_gear <- readRDS(here::here("data", sedar, "rds", spp, isl, gear_list))
 
 # Not using k: Prep data for analysis ####
   tip_spp_len <- tip_spp |> 
@@ -49,6 +54,10 @@
     tip_spp_len,
     file = here::here(
       "data",
+      sedar,
+      "rds",
+      spp, 
+      isl,
       paste0(
         isl, "_",
         spp, "_clean_filtered_",

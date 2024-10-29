@@ -8,7 +8,7 @@
 
 # Specify settings #### 
 # rds from end of 02aa script
-tip_spp_rds <- "prusvi_csl_spp_quant_check_20241010.rds" 
+  date <- "20241024" 
 # find on itis.gov
   spp_itis <- c("097648", "097646") 
   spp <- "csl"
@@ -19,9 +19,11 @@ tip_spp_rds <- "prusvi_csl_spp_quant_check_20241010.rds"
   len_type <- "CARAPACE LENGTH" 
   save_spp <- "csl"
   save_isl <- "prusvi"
+  sedar <- "sedar91"
 
 # Read in formatted data ####
-  tip_spp <- readRDS(here::here("data", tip_spp_rds))
+  tip_spp_rds <- paste0("prusvi_csl_spp_size_quantity_", date, ".rds" )
+  tip_spp <- readRDS(here::here("data", sedar, "rds", spp, "all", tip_spp_rds))
 
 # Filter to length type and complete records
   spp_k_prep <- tip_spp |>
@@ -40,7 +42,7 @@ tip_spp_rds <- "prusvi_csl_spp_quant_check_20241010.rds"
       k_q75 = quantile(k, 0.75, na.rm = TRUE),
     ) |>
     dplyr::mutate(
-      data_source = "all",
+      sampling_program = "all",
       years = "all",
       island = "all",
       k_lower = k_q25 - 1.5 * k_iqr,
@@ -49,7 +51,7 @@ tip_spp_rds <- "prusvi_csl_spp_quant_check_20241010.rds"
 
 # Obtain lower and upper estimates of k across all TIP data
   k_tip <- spp_k_prep |>
-    dplyr::filter(data_source == "TIP") |>
+    dplyr::filter(sampling_program == "TIP") |>
     dplyr::summarize(
       .groups = "drop",
       n = n(),
@@ -58,7 +60,7 @@ tip_spp_rds <- "prusvi_csl_spp_quant_check_20241010.rds"
       k_q75 = quantile(k, 0.75, na.rm = TRUE),
     ) |>
     dplyr::mutate(
-      data_source = "TIP",
+      sampling_program = "TIP",
       years = "all",
       island = "all",
       k_lower = k_q25 - 1.5 * k_iqr,
@@ -67,7 +69,7 @@ tip_spp_rds <- "prusvi_csl_spp_quant_check_20241010.rds"
 
 # Obtain lower and upper estimates of k by source and island
   k_summary <- spp_k_prep |>
-    dplyr::group_by(data_source, island) |>
+    dplyr::group_by(sampling_program, island) |>
     summarize(
       .groups = "drop",
       years = "all",
@@ -82,25 +84,25 @@ tip_spp_rds <- "prusvi_csl_spp_quant_check_20241010.rds"
     ) |>
     dplyr::bind_rows(k_tip, k_overall)
 
-# Plot k by sector and data source
+# Plot k by fishery and data source
   plot_k <- spp_k_prep |>
-    mutate(sector_data_source = paste(sector, data_source)) |>
+    mutate(fishery_sampling_program = paste(fishery, sampling_program)) |>
     ggplot(
       aes(
         x = length1_inch,
         y = obs_weight_lbs,
-        color = sector_data_source
+        color = fishery_sampling_program
       )
     ) +
     geom_point()
 # view plot  
   plot_k
 
-# Plot k by sector, data source, and island
+# Plot k by fishery, data source, and island
   plot_k_island <- spp_k_prep |>
-    ggplot(aes(x = length1_inch, y = obs_weight_lbs, color = data_source)) +
+    ggplot(aes(x = length1_inch, y = obs_weight_lbs, color = sampling_program)) +
     geom_point() +
-    facet_grid(sector ~ island)
+    facet_grid(fishery ~ island)
 # view plot  
   plot_k_island
 
@@ -111,12 +113,12 @@ tip_spp_rds <- "prusvi_csl_spp_quant_check_20241010.rds"
   k_isl <- "pr"
 # Obtain k limits from specified source
   k_range_lower <- k_summary |>
-    filter(data_source == k_range_source,
+    filter(sampling_program == k_range_source,
            island == k_isl) |> 
     pull(k_lower)
   
   k_range_upper <- k_summary |>
-    filter(data_source == k_range_source,
+    filter(sampling_program == k_range_source,
            island == k_isl) |> 
     pull(k_upper)
 
@@ -133,8 +135,8 @@ tip_spp_rds <- "prusvi_csl_spp_quant_check_20241010.rds"
 
 # Tabulate flagged length and weight pairs
   count_lw_flag <- spp_size_flag |>
-    dplyr::filter(data_source == "TIP") |>
-    dplyr::group_by(island, year, data_source, sector, length_type1, k_flag) |>
+    dplyr::filter(sampling_program == "TIP") |>
+    dplyr::group_by(island, year, sampling_program, fishery, length_type1, k_flag) |>
     dplyr::summarize(
       .groups = "drop",
       records = n()
@@ -158,6 +160,10 @@ tip_spp_rds <- "prusvi_csl_spp_quant_check_20241010.rds"
     spp_size_flag,
     file = here::here(
       "data",
+      sedar,
+      "rds",
+      spp, 
+      "all",
       paste0(
         save_isl, "_",
         save_spp, "_spp_size_flag_",

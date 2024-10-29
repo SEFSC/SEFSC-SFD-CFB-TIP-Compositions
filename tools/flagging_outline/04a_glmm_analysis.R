@@ -8,24 +8,33 @@
   librarian::shelf(here, tidyverse, flextable, ggplot2, ggpubr, lmerTest, meantables)
 
 # Specify settings ####
-  tip_spp_rds <- "stx_csl_prep_keep_tip_20240920.rds" # rds from end of 03a script
+# date from end of 03a script
+  date <- "20241025" 
   spp <- "csl"
-  isl <- "stx"
-  break_year <- 2012
-  print_isl <- "St. Croix"
+  isl <- "stt"
+  # break_year <- 2012
+  print_isl <- "St. Thomas"
   print_spp <- "Caribbean Spiny Lobster"
+  sedar <- "sedar91"
+  
+# create folder structure for sedar overall data
+  if (!dir.exists(here("data", sedar, "rdata"))){ dir.create(here("data", sedar, "rdata")) }
+  if (!dir.exists(here("data", sedar, "rdata", spp))){ dir.create(here("data", sedar, "rdata", spp)) }
+  if (!dir.exists(here("data", sedar, "rdata", spp, isl))){ dir.create(here("data", sedar, "rdata", spp, isl)) }
+  
 
-  # Read in formatted data ####
-  tip_spp <- readRDS(here::here("data", tip_spp_rds))
+# Read in formatted data ####
+  tip_spp_rds <- paste0(isl, "_", spp, "_prep_keep_tip_", date, ".rds" )
+  tip_spp <- readRDS(here::here("data", sedar, "rds", spp, isl, tip_spp_rds))
 
 # Filter to needed variables for GLMM ####
   tip_spp_glm <- tip_spp |>
-    select(year, date, id, island, length1_cm, gear) |>
-    mutate(id = as.character(id))
+    select(year, date, sampling_unit_id, island, length1_cm, gear) |>
+    mutate(id = as.character(sampling_unit_id))
 
 # plot data ####
 ## Create box plot across years ####
-  box_plot <- ggboxplot(
+  glmm_box_plot <- ggboxplot(
     tip_spp_glm,
     x = "gear", y = "length1_cm",
     color = "gear",
@@ -38,14 +47,18 @@
       x = "Gear", y = "Length(cm)", colour = "", shape = "",
       title = paste(print_isl, "Length Samples")
     )
-  box_plot
+# view box plot  
+  glmm_box_plot
+# save  
+  ggsave(filename = 
+           here::here("data", sedar, "figure", spp, isl, "glmm_box_plot.png"),
+         width = 14, height = 8)
 
 ## Create density plot across years and combined gears ####
-  density_plot <- ggdensity(
+  glmm_density_plot <- ggdensity(
     tip_spp_glm,
     x = "length1_cm",
-    add = "mean", rug = TRUE
-    # color = "gear", fill = "gear",
+    add = "mean", rug = TRUE,
   ) +
     theme(
       axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 10),
@@ -57,10 +70,14 @@
     )
   
 # view density plot   
-  density_plot
+  glmm_density_plot
+# save  
+  ggsave(filename = 
+           here::here("data", sedar, "figure", spp, isl, "glmm_density_plot.png"),
+         width = 14, height = 8)
   
 # Create density plot across years with mean line for each gear 
-  density_plot_gear <- ggdensity(
+  glmm_density_plot_gear <- ggdensity(
     tip_spp_glm,
     x = "length1_cm",
     add = "mean", rug = TRUE,
@@ -76,18 +93,22 @@
     )
   
 # view density plot  
-  density_plot_gear
-
+  glmm_density_plot_gear
+# save  
+  ggsave(filename = 
+           here::here("data", sedar, "figure", spp, isl, "glmm_density_plot_gear.png"),
+         width = 14, height = 8)
+  
 ## Scatter plot with line of smoothed conditional mean ####
   # takes forever to load
 #' filtered to gears with 30 or more occurrences for the purposes
 #' of plotting visibility
-  tip_spp_glm_filtered <- tip_spp_glm %>%
-    group_by(gear) %>%
-    filter(n() >= 30) %>%
-    ungroup() 
-  options(repr.plot.width = 5, repr.plot.height =2) 
-  allgears_glm_plot <- tip_spp_glm_filtered |> 
+  # tip_spp_glm_filtered <- tip_spp_glm %>%
+  #   group_by(gear) %>%
+  #   filter(n() >= 30) %>%
+  #   ungroup() 
+  # options(repr.plot.width = 5, repr.plot.height =2) 
+  allgears_glm_plot <- tip_spp_glm |> 
     ggplot(aes(x = date, y = length1_cm)) +
     geom_point(aes(colour = gear, shape = gear), size = 1, alpha = 0.5) +
     scale_shape_manual(values = c(
@@ -103,7 +124,12 @@
       legend.box.spacing = unit(0, "npc"), panel.grid = element_blank()
     ) +
     guides(colour = guide_legend(override.aes = list(size = 2)))
+# view   
   allgears_glm_plot
+# save  
+  ggsave(filename = 
+           here::here("data", sedar, "figure", spp, isl, "allgears_glm_plot.png"),
+         width = 14, height = 8)
   
 # GLMM model analysis ####
 # Comparing length to date and gear in a gamma full model 
@@ -130,11 +156,11 @@
     group_by(gear) |>
     tally()
 # Count number of unique trip interviews (aka unique id)
-  length_data_tripcount <- aggregate(
-    data = tip_spp, # Applying aggregate
-    id ~ gear,
-    function(id) length(unique(id))
-  )
+  length_data_tripcount <- tip_spp |>
+    group_by(gear) |> 
+    dplyr::summarize(
+      all_interviews = n_distinct(sampling_unit_id),
+    )
 
 # Add counts to GLMM table
   allgears_multcompcld_fish <- full_join(allgears_multcompcld,
@@ -163,7 +189,7 @@
       "LCL" = "asymp.LCL",
       "UCL" = "asymp.UCL",
       "Fish(n)" = "n",
-      "Interview(n)" = "id"
+      "Interview(n)" = "all_interviews"
     ) |>
     # dplyr::filter(`Interview(n)` >= 3) |>
     select(
@@ -191,7 +217,7 @@
 # Create table of means for each gear
   mean_allgears <- tip_spp %>%
     group_by(gear) %>%
-    dplyr::mutate(n_ID = n_distinct(id)) |>
+    dplyr::mutate(n_ID = n_distinct(sampling_unit_id)) |>
     dplyr::filter(n_ID >= 3) |>
     mean_table(length1_cm) |>
     dplyr::rename(
@@ -217,6 +243,11 @@
     align(align = "center", part = "all") %>%
     fontsize(size = 8, part = "all") %>%
     autofit()
+# view  
+  glm_tbl
+# save  
+  save_as_image(x = glm_tbl, path =  
+                  here::here("data", sedar, "figure", spp, isl, "glm_tbl.png"))
 
 # list of gears that represent >2% of lengths each
   grtr2percent_gears <- allgears_multcom_mean_final |>
@@ -227,6 +258,10 @@
     grtr2percent_gears,
     file = here::here(
       "data",
+      sedar,
+      "rds",
+      spp, 
+      isl,
       paste0(
         isl, "_",
         spp, "_clean_gear_list_",
@@ -374,6 +409,10 @@
     grtr2percent_gears_break,
     file = here::here(
       "data",
+      sedar,
+      "rds",
+      spp, 
+      isl,
       paste0(
         isl, "_",
         spp, "_clean_gear_list_break_year_",
@@ -387,9 +426,11 @@
   # workspace needed when pulling values into quarto document  
   save.image(
     file = here::here(
-      "tools",
-      "figures",
-      "flagging_outline",
+      "data",
+      sedar,
+      "rdata",
+      spp, 
+      isl,
       paste0(
         isl, "_",
         spp, "_sedar_glmm_",

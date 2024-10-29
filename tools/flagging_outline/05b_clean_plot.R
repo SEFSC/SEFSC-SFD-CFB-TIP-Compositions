@@ -9,24 +9,49 @@
   librarian::shelf(here, tidyverse, flextable, ggplot2, janitor)
 
 # Specify settings ####
-# rds from end of 05a script
-  tip_spp_rds <- "stx_csl_clean_filtered_20241003.rds" 
-# gears representing >2% (rds from 04a)
-  clean_gear <- "stx_csl_clean_gear_list_20241003.rds" 
+# date from end of 05a script
+  date <- "20241025" 
+# date from gears representing >2% (rds from 04a)
+  gear_date <- "20241025" 
+# date of 02c
+  unfiltered_date <- "20241025"
 # gears representing >2% after break year (rds from 04a)
   # clean_gear_bkyr <- "stx_csl_clean_gear_list_break_year_20241003.rds" 
   spp <- "csl"
-  isl <- "stx"
-  print_isl <- "St. Croix"
+  isl <- "stt"
+  print_isl <- "St. Thomas"
   print_spp <- "Caribbean Spiny Lobster"
   break_year <- 2012
-  min_year <- 1984
+  min_year <- 1981
   max_year <- 2022
+  len_type <- "CARAPACE LENGTH"
+  sedar <- "sedar91"
 
 # Read in formatted data ####
-  tip_spp <- readRDS(here::here("data", tip_spp_rds))
-  gear_2percent <- readRDS(here::here("data", clean_gear))
-  # gear_2percent_bkyr <- readRDS(here::here("data", clean_gear_bkyr))
+  tip_spp_rds <- paste0(isl, "_", spp, "_clean_filtered_", date, ".rds" )
+  tip_spp <- readRDS(here::here("data",  sedar, "rds", spp, isl, tip_spp_rds))
+  
+  gear_list <- paste0(isl, "_", spp, "_clean_gear_list_", gear_date, ".rds" )
+  gear_2percent <- readRDS(here::here("data",  sedar, "rds", spp, isl, gear_list))
+  
+  # gear_list_bkyr <- paste0(isl, "_", spp, "_clean_gear_list_break_year_", clean_gear_bkyr, ".rds" )
+  # gear_2percent_bkyr <- readRDS(here::here("data",  sedar, "rds", spp, isl, gear_list_bkyr))
+  
+  unfiltered <- paste0(isl, "_", spp, "_spp_size_island_view_", unfiltered_date, ".rds" )
+  unfiltered_isl <- readRDS(here::here("data",  sedar, "rds", spp, isl, unfiltered))
+
+# Summary stats ####    
+# calculate stats on all available target species/island data
+# total number of target length type measurements before filtering
+  n_target_len <- sum(unfiltered_isl$length_type1 == len_type)
+# total number of all lengths measured before filtering  
+  n_all_len <- length(unfiltered_isl$length_type1)
+# percent representation of fork lengths   
+  p_target_len <- round(n_target_len / n_all_len, 3) * 100
+# total number of unique interviews before filtering   
+  trip_id_unique <- as.data.frame(table(unfiltered_isl$sampling_unit_id, useNA = "always"))
+  total_trip_id_unique <- nrow(trip_id_unique)
+  
   
 # Create count of observed records for each area  ####
   tip_spp_count <- tip_spp |>
@@ -62,17 +87,22 @@
       legend.position = "null", text = element_text(size = 15),
       title = element_text(size = 15)
     )
-
+# view  
+  gear_by_yr
+# save  
+  ggsave(filename = 
+           here::here("data", sedar, "figure", spp, isl, "gear_by_yr.png"),
+         width = 14, height = 8)
 # save figure under alphanumeric identifier    
   abc1 = gear_by_yr
 
 # Plot gears by number of unqiue interviews over time ####
   gear_data_id <- tip_spp_count %>% 
     group_by(gear) %>% 
-    dplyr::mutate(n_ID = n_distinct(id)) |> 
+    dplyr::mutate(n_ID = n_distinct(sampling_unit_id)) |> 
     dplyr::filter(n_ID >= 3) %>% ungroup %>%
     group_by(year, gear) |>
-    dplyr::summarize(n_ID = n_distinct(id), .groups = "drop") |> 
+    dplyr::summarize(n_ID = n_distinct(sampling_unit_id), .groups = "drop") |> 
     mutate(year = as.integer(year))
   
   gear_by_id <- gear_data_id |>
@@ -91,7 +121,12 @@
 # add line at breakyear if needed 
     # geom_vline(xintercept = (break_year - 0.5),  
     #            color = "darkgrey", linewidth=1.5)
-
+# view  
+  gear_by_id
+# save  
+  ggsave(filename = 
+           here::here("data", sedar, "figure", spp, isl, "gear_by_id.png"),
+         width = 14, height = 8)
 # save figure under alphanumeric identifier    
   abc2 = gear_by_id
 
@@ -101,7 +136,7 @@
 ### overlay time periods 
 
 # calculate mean of all lengths  
-full_mean = round(mean(tip_spp$length1_cm), 2)
+  full_mean = round(mean(tip_spp$length1_cm), 2)
 
 # filter years after break year  
   tip_spp_break <- tip_spp |>
@@ -145,6 +180,12 @@ full_mean = round(mean(tip_spp$length1_cm), 2)
           axis.title.x = element_text( size = 20),
           axis.title.y = element_text( size = 20),
           title = element_text(size = 20))
+# view  
+  agr_den_NOgears_compare
+# save  
+  ggsave(filename = 
+           here::here("data", sedar, "figure", spp, isl, "agr_den_NOgears_compare.png"),
+         width = 14, height = 8)
   
 # save figure under alphanumeric identifier    
   abc3 = agr_den_NOgears_compare
@@ -176,6 +217,12 @@ full_mean = round(mean(tip_spp$length1_cm), 2)
           axis.title.x = element_text( size = 20),
           axis.title.y = element_text( size = 20),
           title = element_text(size = 20))
+# view
+  agr_den_NOgears_full
+# save  
+  ggsave(filename = 
+           here::here("data", sedar, "figure", spp, isl, "agr_den_NOgears_full.png"),
+         width = 14, height = 8)
   
 # save figure under alphanumeric identifier    
   abc4 = agr_den_NOgears_full  
@@ -216,6 +263,12 @@ full_mean = round(mean(tip_spp$length1_cm), 2)
     guides(color=guide_legend(ncol = 2))+
     geom_vline(data=muv, aes(xintercept=grp.mean, color=gear),
                linetype="dashed")
+# view  
+  agr_den_all_gears
+# save  
+  ggsave(filename = 
+           here::here("data", sedar, "figure", spp, isl, "agr_den_all_gears.png"),
+         width = 14, height = 8)
   
 # save figure under alphanumeric identifier    
   abc5 = agr_den_all_gears
@@ -261,11 +314,17 @@ full_mean = round(mean(tip_spp$length1_cm), 2)
     guides(color=guide_legend(ncol = 2))+
     geom_vline(data=muv, aes(xintercept=grp.mean, color=gear),
                linetype="dashed")
-
+# view
+  agr_den_top_gears
+# save  
+  ggsave(filename = 
+           here::here("data", sedar, "figure", spp, isl, "agr_den_top_gears.png"),
+         width = 14, height = 8)
+  
 # save figure under alphanumeric identifier    
   abc6 = agr_den_top_gears
 
-##### if using time break continue, if not: skip to next figure #####  
+##### if using time break continue, IF NOT - SKIP to next figure #####  
 ### top gears after time break #### 
 # filter to gears representing >2% of records
   tip_spp_break_gears <- tip_spp_break |> 
@@ -301,11 +360,17 @@ full_mean = round(mean(tip_spp$length1_cm), 2)
     guides(color=guide_legend(ncol = 2))+
     geom_vline(data=muv12, aes(xintercept=grp.mean, color=gear),
                linetype="dashed")
+# view
+  agr_den_break
+# save
+  ggsave(filename = 
+           here::here("data", sedar, "figure", spp, isl, "agr_den_break.png"),
+         width = 14, height = 8)
   
 # save figure under alphanumeric identifier    
   abc7 = agr_den_break
   
-
+#### SKIP TO HERE ####
 ## Annual Density plots ####
 
 ### gears together ####
@@ -323,7 +388,13 @@ plot_ann_den_full <-
   labs(x = "Fork Length (cm)", 
        title = paste0(print_isl," ", print_spp,  "\n (N = ", sum(ycounts_all$n), ")"))+
   facet_wrap(~year_labs, ncol = 7)
-
+# view  
+  plot_ann_den_full
+# save  
+  ggsave(filename = 
+           here::here("data", sedar, "figure", spp, isl, "plot_ann_den_full.png"),
+         width = 14, height = 8)
+  
 # save figure under alphanumeric identifier    
   abc8 = plot_ann_den_full
   
@@ -348,9 +419,15 @@ plot_ann_den_full <-
     #scale_color_manual(values = gearcols, labels = counts$n_labels)+
     # scale_color_hue(labels=fcounts$n_labels)+
     labs(x = "Fork Length (cm)", 
-         title = paste0(print_isl, " ", print_spp, "\n (N = ", sum(ycounts_top$n), ")"))+
+         title = paste0(print_isl, " ", print_spp, "Top Gears", "\n (N = ", sum(ycounts_top$n), ")"))+
     facet_wrap(~year_labs, ncol = 7)  
-
+# view 
+  plot_ann_den_top
+# save
+  ggsave(filename = 
+           here::here("data", sedar, "figure", spp, isl, "plot_ann_den_top.png"),
+         width = 14, height = 8)
+  
 # save figure under alphanumeric identifier    
   abc9 = plot_ann_den_top
   
@@ -376,7 +453,13 @@ plot_ann_den_separate <-
   theme(legend.title = element_text(size=14), 
         legend.text = element_text(size=12),
         legend.position = "bottom")
-
+# view 
+  plot_ann_den_separate
+# save
+  ggsave(filename = 
+           here::here("data", sedar, "figure", spp, isl, "plot_ann_den_separate.png"),
+         width = 14, height = 8)
+  
 # save figure under alphanumeric identifier     
   abc10 = plot_ann_den_separate
 
@@ -393,7 +476,13 @@ plot_ann_den_separate <-
     labs(x = "Fork Length (cm)",
          title = paste0(print_isl, " ", print_spp, "\n (N = ", sum(counts$n), ")"))+
     theme_minimal()
-
+# view  
+  cumulative_den
+# save
+  ggsave(filename = 
+           here::here("data", sedar, "figure", spp, isl, "cumulative_den.png"),
+         width = 14, height = 8)
+  
 # save figure under alphanumeric identifier    
   abc20 = cumulative_den
 
@@ -402,9 +491,11 @@ plot_ann_den_separate <-
 # workspace needed when pulling values into quarto document  
   save.image(
     file = here::here(
-      "tools",
-      "figures",
-      "flagging_outline",
+      "data",
+      sedar,
+      "rdata",
+      spp, 
+      isl,
       paste0(
         isl, "_",
         spp, "_sedar_figures_",

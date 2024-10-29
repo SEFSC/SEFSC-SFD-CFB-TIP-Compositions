@@ -9,13 +9,6 @@ tip_pr <- "pr_time_grouped_tip_20240822.rds" # add formatted data
 # Read in raw data ####
 tip <- readRDS(here::here("data", tip_pr))
 
-## check for gears with same name but grammatical differences ####
-unique(tip$gear)
-# replace "," with ";"
-tip$gear <- str_replace(tip$gear, ",", ";")
-# recheck that gears have been corrected
-unique(tip$gear)
-
 # read in gear group table ####
 gear_group <- 
   read_csv("~/SEFSC-SFD-CFB-TIP-Compositions/data/CSVs/gear_groups_pr.csv")|> 

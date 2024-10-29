@@ -24,9 +24,10 @@ spp <- "sharks_pelagics"
 isl <- "pr_usvi"
 print_spp <- "Caribbean Pelagics and Sharks"
 print_isl <- "US Caribbean"
+sedar <- "sedar91"
 
 # Read in formatted data ####
-tip_spp <- readRDS(here::here("data", tip_spp_rds))
+tip_spp <- readRDS(here::here("data", sedar, "rds", tip_spp_rds))
 
 # filter to species ####
 tip_filter <- tip_spp |>
@@ -90,6 +91,7 @@ flextable(length_types) |>
 write.csv(tip_filter,
   file = here::here(
     "data",
+    "data_request",
     paste0(
       isl, "_",
       spp, "_data_request_",
@@ -130,11 +132,15 @@ xl_write(count_spp_sttj, wb, sh3)
 xl_write(count_spp_stx, wb, sh4)
 
 saveWorkbook(wb,
-  paste0(
-    isl, "_", spp,
-    "_stats_",
-    format(Sys.time(), "%Y%m%d"),
-    ".xlsx"
-  ),
-  overwrite = TRUE
+             file = here::here(
+               "data",
+               "data_request",
+               paste0(
+                isl, "_", spp,
+                "_stats_",
+                format(Sys.time(), "%Y%m%d"),
+                ".xlsx"
+              ),
+              overwrite = TRUE
+            )
 )
