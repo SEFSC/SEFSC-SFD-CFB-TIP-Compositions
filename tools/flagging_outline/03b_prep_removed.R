@@ -11,7 +11,7 @@
   # tip_spp_rds_k <- "pr_yts_spp_size_flag_20240618.rds" 
   spp <- "csl"
 # from here on chose one island to work with moving forward
-  isl <- "stt"
+  isl <- "pr"
   data_keep <- "TIP"
   len_mode <- "COMMERCIAL"
   len_type <- "CARAPACE LENGTH"

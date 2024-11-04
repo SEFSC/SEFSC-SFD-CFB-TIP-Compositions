@@ -9,11 +9,11 @@
 
 # Specify settings ####
 # date from end of 03a script
-  date <- "20241025" 
+  date <- "20241029" 
   spp <- "csl"
-  isl <- "stt"
+  isl <- "pr"
   # break_year <- 2012
-  print_isl <- "St. Thomas"
+  print_isl <- "Puerto Rico"
   print_spp <- "Caribbean Spiny Lobster"
   sedar <- "sedar91"
   
@@ -65,7 +65,7 @@
       legend.position = "none"
     ) +
     labs(
-      x = "All Gears", y = "Length(cm)", colour = "", shape = "",
+      x = "Lengths (cm) of All Gears",  colour = "", shape = "",
       title = paste(print_isl, "Length Samples")
     )
   
@@ -88,7 +88,7 @@
       legend.position = "bottom"
     ) +
     labs(
-      x = "All Gears", y = "Length(cm)", colour = "", shape = "",
+      x = "Length (cm)", colour = "", shape = "",
       title = paste(print_isl, print_spp, "Length Samples")
     )
   
@@ -123,7 +123,12 @@
       legend.position = "bottom", legend.text = element_text(size = 7),
       legend.box.spacing = unit(0, "npc"), panel.grid = element_blank()
     ) +
-    guides(colour = guide_legend(override.aes = list(size = 2)))
+    guides(colour = guide_legend(override.aes = list(size = 2))) +
+    labs(
+      x = "Year", y = "Length(cm)", colour = "", shape = "",
+      title = paste(print_isl, print_spp, "Length Samples")
+    )
+  
 # view   
   allgears_glm_plot
 # save  

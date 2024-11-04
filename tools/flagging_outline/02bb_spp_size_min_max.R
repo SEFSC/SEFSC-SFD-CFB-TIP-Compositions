@@ -126,6 +126,48 @@
   ggsave(filename = 
            here::here("data", sedar, "figure", spp, "all", "min_length_gear_date.png"),
          width = 14, height = 8)
+  
+  
+# set minimum size
+  min_size <- 2.5
+  
+# extra data falling below min_size limit to send to Sarah for investigation 
+  tip_min <- tip_spp |> 
+    filter(length1_cm < min_size)
+  
+# save dataframe 
+  saveRDS(
+    tip_min,
+    file = here::here(
+      "data",
+      sedar,
+      "rds",
+      spp, 
+      "all",
+      paste0(
+        spp, "_spp_size_min_",
+        format(Sys.time(), "%Y%m%d"), ".rds"
+      )
+    )
+  )
+  
+# write csv
+  write.csv(tip_min,
+            file = here::here(
+              "data",
+              sedar,
+              "rds",
+              spp, 
+              "all",
+              paste0(
+                spp, "_spp_size_min_",
+                format(Sys.time(), "%Y%m%d"),
+                ".csv"
+              )
+            ),
+            row.names = FALSE
+  )
+  
  
 # filter to lengths larger than maximum ####
   spp_max <- tip_spp |> 
@@ -222,10 +264,50 @@
       legend.position = "none", text = element_text(size = 10),
       title = element_text(size = 12)
     )
- # view plot  
+# view plot  
   max_length_gear_date
 # save
   ggsave(filename = 
            here::here("data", sedar, "figure", spp, "all", "max_length_gear_date.png"),
          width = 14, height = 8)
+  
+# set minimum size
+  max_size <- 25
+  
+# extra data falling below min_size limit to send to Sarah for investigation 
+  tip_max <- tip_spp |> 
+    filter(length1_cm > max_size)
+  
+# save dataframe 
+  saveRDS(
+    tip_max,
+    file = here::here(
+      "data",
+      sedar,
+      "rds",
+      spp, 
+      "all",
+      paste0(
+        spp, "_spp_size_max_",
+        format(Sys.time(), "%Y%m%d"), ".rds"
+      )
+    )
+  )
+  
+# write csv
+  write.csv(tip_max,
+            file = here::here(
+              "data",
+              sedar,
+              "rds",
+              spp, 
+              "all",
+              paste0(
+                spp, "_spp_size_max_",
+                format(Sys.time(), "%Y%m%d"),
+                ".csv"
+              )
+            ),
+            row.names = FALSE
+  )
   

@@ -1,8 +1,8 @@
 ---
-title: "SEDAR 91 Trip Interview Program (TIP) Size Composition Analysis of Caribbean Spiny Lobster (Panulirus argus) in St. Thomas, U.S. Caribbean, 1981-2022"
+title: "SEDAR 91 Trip Interview Program (TIP) Size Composition Analysis of Caribbean Spiny Lobster (Panulirus argus) in Puerto Rico, U.S. Caribbean, 1981-2022"
 format: docx
 editor: visual
-output-file: sedar_91_csl_stt.docx
+output-file: sedar_91_csl_pr_len_comp.docx
 bibliography: references.bib
 nocite: '@*'
 execute:
@@ -11,7 +11,7 @@ execute:
 
 #### Katherine Godwin^1^, Adyan Rios^2^
 
-#### January 9, 2024
+#### October 31, 2024
 
 ###### ^1^*Cooperative Institute for Marine & Atmospheric Studies, Rosenstiel School of Marine, Atmospheric, and Earth Science, University of Miami, 4600 Rickenbacker Causeway, Miami, FL 33149*
 
@@ -36,17 +36,19 @@ execute:
 librarian::shelf(here, knitr)
 
 # specify settings 
-figures_date <- "20241029"
-glmm_date <- "20241025"
-isl <- "stt"
+figures_date <- "20241031"
+glmm_date <- "20241030"
 spp <- "csl"
-print_isl <- "St. Thomas"
+isl <- "pr"
+print_isl <- "Puerto Rico"
 print_spp <- "Caribbean spiny lobster"
-st_yr <- 1982
-end_yr <- 2023
-stat_dif_gears <- "LINES HAND/BOTTOM LINE, HAUL SEINES, and TRAMMEL NETS"
+st_yr <- 1981
+end_yr <- 2022
+stat_dif_gears <- "'lines hand' and all other gears"
 number <- "91"
 sedar <- "sedar91"
+target_len_type <- "carapace length"
+
 # load data spaces for TIP calculations/figures and landings comparison stats
 # Read in formatted data ####
   figures <- paste0(isl, "_", spp, "_sedar_figures_", figures_date, ".RData" )
@@ -55,12 +57,15 @@ sedar <- "sedar91"
   load(here::here('data', sedar, "rdata", spp, isl, glmm))
 
 
-
 ```
 
 In preparation for SouthEast Data, Assessment, and Review (SEDAR) `r number` Benchmark assessment of `r print_spp` in `r print_isl`; the Southeast Fisheries Science Center, Sustainable Fisheries Division (SEFSC), Caribbean Fisheries Branch conducted a size composition analysis of the Trip Interview Program (TIP) data. This document summarizes data collected from `r st_yr` to `r end_yr`.
 
-The TIP data pertaining to `r print_spp` in `r print_isl` are comprised of `r n_all_len` length observations across `r total_trip_id_unique` unique port sampling interviews. There are `r n_target_len` fork length observations (`r p_target_len`%). Two analyses are described in this document. First, gear groupings were established among gears based upon `r print_spp` size composition differences among gears. Gear groups were identified based on a generalized linear mixed model (GLMM) analysis using a gamma-distributed dependent variable and a covariate to account for changes in mean size over time. Random effects for interview ID and categorical year were included to account for non-independence of observations. Second, the aggregate density of the lengths was determined based on time series and gear representation within the data.The GLMM analysis of the full time series reported a statistical difference in the size of measured fish between `r stat_dif_gears`.
+The TIP data pertaining to `r print_spp` in `r print_isl` are comprised of `r n_all_len` length observations across `r total_trip_id_unique` unique port sampling interviews. There are `r n_target_len` `r target_len_type` observations (`r p_target_len`%). Two analyses are described in this document. First, gear groupings were established among gears based upon `r print_spp` size composition differences among gears. Gear groups were identified based on a generalized linear mixed model (GLMM) analysis using a gamma-distributed dependent variable and a covariate to account for changes in mean size over time. Random effects for interview ID and categorical year were included to account for non-independence of observations. Second, the aggregate density of the lengths was determined based on time series and gear representation within the data. The GLMM analysis of the full time series reported a statistical difference in the size of measured fish between `r stat_dif_gears`.
+
+<!-- The GLMM analysis of the full time series reported no statistical differences in the size of measured fish between gears.  -->
+
+<!-- The GLMM analysis of the full time series reported a statistical difference in the size of measured fish between `r stat_dif_gears`. -->
 
 To understand the frequency with which trips are sampled, the number of interviews associated with main gears in the TIP data would have been compared to the number of trips reported in the Caribbean Commercial Landings logbook system. Due to the idiosyncrasies of the `r print_isl` trip frequency recordings in the commercial landings logbook, the percent of trips sampled by TIP requires further investigation.
 
@@ -72,15 +77,19 @@ The Trip Interview Program (TIP) collects length and weight data from fish lande
 
 ## Generalized Linear Mixed Model (GLMM) Analysis
 
-The GLMM analysis of landed `r print_spp` size composition among commercial fishing gears was conducted on the time series as a whole from 1983-2022 (@fig-abc1). The analyses of the time series displays the statistical similarity of all available gears with respect to the mean size of fish caught throughout the time series. The GLMM analysis of the full time series reported a statistical difference between the `r stat_dif_gears` gears (@tbl-tbl1).
+The GLMM analysis of landed `r print_spp` size composition among commercial fishing gears was conducted on the time series as a whole from `r st_yr`-`r end_yr` (@fig-abc1). The analyses of the time series displays the statistical similarity of all available gears with respect to the mean size of fish caught throughout the time series. The GLMM analysis of the full time series reported a statistical difference between the `r stat_dif_gears` (@tbl-glm_tbl).
+
+<!-- The GLMM analysis of the full time series reported no statistical differences between the gears (@tbl-glm_tbl). -->
+
+
+<!-- The GLMM analysis of the full time series reported a statistical difference between the `r stat_dif_gears` gears (@tbl-glm_tbl). -->
 
 \newpage
 
 ```{r all lengths GLMM}
 #| echo: false
 #| label: fig-abc1
-#| fig-cap: |
-#|  !expr paste('Plot showing relative number of ', print_spp, 'lengths in', print_isl, 'across time collected. Each point is color specific to the gear it represents. Gears are arranged from most to least abundant.')
+#| fig-cap: !expr paste('Plot showing relative number of ', print_spp, 'lengths in', print_isl, 'across time collected. Each point is color specific to the gear it represents. Gears are arranged from most to least abundant.')
 #| fig-width: 11
 #| fig-height: 6 
 
@@ -94,8 +103,7 @@ abc1
 #| echo: false
 #| warning: false
 #| label: tbl-glm_tbl
-#| tbl-cap: |
-#|   !expr paste('GLMM analysis summary results for', print_isl, 'TIP', print_spp,  'lengths(cm) from', st_yr, 'to', end_yr, '. The column titled “group” indicates the group(s) where mean lengths are not statistically different from other gears with matching group number(s). The "n" column indicates the number of unique lengths recorded for each gear. The "Percentage" column indicates the percent of the total recorded lengths for each gear.')
+#| tbl-cap: !expr paste('GLMM analysis summary results for', print_isl, 'TIP', print_spp,  'lengths(cm) from', st_yr, 'to', end_yr,'. The column titled “group” indicates the group(s) where mean lengths are not statistically different from other gears with matching group number(s). The "n" column indicates the number of unique lengths recorded for each gear. The "Percentage" column indicates the percent of the total recorded lengths for each gear.')
 library(knitr)
 kable("")
 
@@ -120,8 +128,7 @@ The aggregated densities of `r print_spp` lengths(cm) in `r print_isl` are plott
 ```{r}
 #| echo: false
 #| label: fig-abc14
-#| fig-cap: |
-#|   Aggregated density plot of lengths(cm) of Yellowtail Snapper in Puerto Rico, all gears combined. Dotted line represents mean length.
+#| fig-cap: !expr paste('Aggregated density plot of lengths(cm) of', print_spp, 'in', print_isl, ', all gears combined. Dotted line represents mean length.')
 #| fig-width: 12
 #| fig-height: 8
   
@@ -134,8 +141,7 @@ abc4
 ```{r diving agd}
 #| echo: false
 #| label: fig-abc15
-#| fig-cap: |
-#|   Aggregated density plot of lengths(cm) of gears with greater than 2% representation for Yellowtail Snapper in Puerto Rico from 1983 to 2022. Dotted line represents mean length. Mean lengths can be found in @tbl-glm_tbl.
+#| fig-cap: !expr paste('Aggregated density plot of lengths(cm) of gears with greater than 2% representation for', print_spp, 'in', print_isl, ' from', st_yr, 'to ', end_yr, '. Dotted line represents mean length. Mean lengths can be found in @tbl-glm_tbl.')
 #| fig-width: 12
 #| fig-height: 8
 

@@ -10,7 +10,8 @@
   date <- "20241024" 
   spp <- "csl"
 # from here on chose one island to work with moving forward
-  isl <- "stt" 
+  isl <- "pr" 
+  print_isl <- "Puerto Rico"
   data_keep <- "TIP"
   len_mode <- "COMMERCIAL"
   len_type <- "CARAPACE LENGTH"
@@ -19,8 +20,7 @@
   max_size <- 25
 # all complete years unless running truncated time series
   start_yr <- 1981 
-  end_yr <- 2022
-  print_isl <- "St. Thomas"
+  end_yr <- 2023
   sedar <- "sedar91"
   
 #### make sure you have run 02c so you have the correct file structure to save ####

@@ -12,10 +12,10 @@
 # find on itis.gov
   spp_itis <- c("097648", "097646") 
   spp <- "csl"
-# chose island platform to focus on   
-  isl <- "stt" 
   print_spp <- "Caribbean Spiny Lobster"
-  print_isl <- "St. Thomas"
+# chose island platform to focus on   
+  isl <- "pr" 
+  print_isl <- "Puerto Rico"
   sedar <- "sedar91"
   
 # create folder structure for sedar overall data

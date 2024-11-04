@@ -9,13 +9,13 @@
   # tip_spp_rds <- "prusvi_csl_spp_size_flag_20240711.rds" # rds from end of 02d script
 # if k is not being used to filter, specify this script  
 # date from end of 03a script
-  date <- "20241025" 
+  date <- "20241029" 
 # 2% gear list from correct time series 
 # date from end of 04a script
-  gear_date <- "20241025" 
+  gear_date <- "20241030" 
   spp <- "csl"
-  isl <- "stt"
-  print_isl <- "St. Thomas"
+  isl <- "pr"
+  print_isl <- "Puerto Rico"
   break_yr <- "2012"
   sedar <- "sedar91"
 

@@ -12,15 +12,15 @@
 # date from end of 05a script
   date <- "20241025" 
 # date from gears representing >2% (rds from 04a)
-  gear_date <- "20241025" 
+  gear_date <- "20241029" 
 # date of 02c
   unfiltered_date <- "20241025"
 # gears representing >2% after break year (rds from 04a)
   # clean_gear_bkyr <- "stx_csl_clean_gear_list_break_year_20241003.rds" 
   spp <- "csl"
+  print_spp <- "Caribbean Spiny Lobster"
   isl <- "stt"
   print_isl <- "St. Thomas"
-  print_spp <- "Caribbean Spiny Lobster"
   break_year <- 2012
   min_year <- 1981
   max_year <- 2022
@@ -80,7 +80,8 @@
     geom_point() +
     labs(
       x = "Year", y = "", colour = "", shape = "",
-      title = paste(print_isl, "Length Samples")
+      title = paste(print_isl, "Length Samples"),
+      caption = "Gears with less than three unique trip IDs were removed."
     ) +
     theme_bw() +
     theme(
@@ -114,7 +115,8 @@
     ggplot(aes(x = year, y = gear, color = gear, size = n_ID)) +
     geom_point()  +
     labs(x = "Year", y = "", colour = "", shape = "", 
-         title = paste(print_isl, " Unique Interviews")) +
+         title = paste(print_isl, "Unique Interviews"),
+         caption = "Gears with less than three unique trip IDs were removed.") +
     theme_bw() + 
     theme(legend.position="null", text = element_text(size = 20), 
           title = element_text(size = 15))
