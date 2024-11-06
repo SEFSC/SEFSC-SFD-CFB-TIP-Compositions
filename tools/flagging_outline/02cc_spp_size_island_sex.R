@@ -8,14 +8,14 @@
 
 # Specify settings #### 
 # rds from end of 02c script
-  date <- "20241029" 
+  date <- "20241105" 
 # find on itis.gov
   spp_itis <- c("097648", "097646") 
   spp <- "csl"
   print_spp <- "Caribbean Spiny Lobster"
 # chose island platform to focus on   
-  isl <- "pr" 
-  print_isl <- "Puerto Rico"
+  isl <- "stx" 
+  print_isl <- "St. Croix"
   sedar <- "sedar91"
 
 # Read in formatted data ####
@@ -35,7 +35,9 @@
     align(align = "center", part = "all") %>%
     fontsize(size = 8, part = "all") %>%
     autofit()
-  
+
+# view  
+  tip_sex_tbl
 # save  
   save_as_image(x = tip_sex_tbl, path =  
                   here::here("data", sedar, "figure", spp, isl, "tip_sex_tbl.png"))
@@ -50,7 +52,7 @@
       names_from = sex_name,
       values_from = n
       )
-  tip_sex_year$total_n_records <- rowSums(tip_sex_year[ , c(2,3,4,5,6)], na.rm=TRUE)
+  tip_sex_year$total_n_records <- rowSums(tip_sex_year[ , c(2,3,4,5)], na.rm=TRUE)
     
 
 # create formatted table 
@@ -60,7 +62,8 @@
     fontsize(size = 8, part = "all") %>%
     autofit() |>
     colformat_num(j = c("year"), big.mark = "")
-
+# view 
+  tip_sex_year_tbl
 # save  
   save_as_image(x = tip_sex_year_tbl, path =  
                   here::here("data", sedar, "figure", spp, isl, "tip_sex_year_tbl.png"))

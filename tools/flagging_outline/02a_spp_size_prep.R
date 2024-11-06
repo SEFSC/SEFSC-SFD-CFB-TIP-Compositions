@@ -10,9 +10,9 @@
 
 # Specify settings ####
 # rds from end of 01a script
-  date <- "20241024" 
-# find on itis.gov
-  spp_itis <- c("097648", "097646") 
+  date <- "20241104" 
+# find on itis.gov - all spp itis codes that could be assiciated with target species
+  spp_itis <- c("097648", "097646", "097651") 
   spp <- "csl"
   isl <- c("pr", "stt", "stx")
   print_spp <- "Caribbean Spiny Lobster"
@@ -132,13 +132,18 @@
     )
 
 # create formated table of length, weight, and k stats
-  flextable(length_count) |>
+  len_count_tbl <- flextable(length_count) |>
     theme_box() %>%
     align(align = "center", part = "all") %>%
     fontsize(size = 8, part = "all") %>%
     autofit() |>
     colformat_num(j = c("first_year", "last_year"), big.mark = "")
 
+# view 
+  len_count_tbl
+# save  
+  save_as_image(x = len_count_tbl, path =  
+                  here::here("data", sedar, "figure", spp, "all", "length_count_tbl.png"))  
 
 # Tabulate weight types ####
   weight_types <- spp_size_calc |>
@@ -164,16 +169,28 @@
     )
 
 # create formated table of weight types 
-  flextable(weight_types) |>
+  weight_type_tbl <- flextable(weight_types) |>
     theme_box() %>%
     align(align = "center", part = "all") %>%
     fontsize(size = 8, part = "all") %>%
     autofit() |>
     colformat_num(j = c("first_year", "last_year"), big.mark = "")
-
+# view 
+  weight_type_tbl
+# save  
+  save_as_image(x = weight_type_tbl, path =  
+                  here::here("data", sedar, "figure", spp, "all", "weight_type_tbl.png"))  
+  
+# filter to final spp codes that we want to continue with 
+# specifiy ITIS codes
+  spp_itis_final <- c("097648", "097646")
+# filter to species code                
+  spp_filtered <- spp_size_calc |>
+    dplyr::filter(species_code %in% spp_itis_final)
+  
 # Save formatted tip_spp ####
   saveRDS(
-    spp_size_calc,
+    spp_filtered,
     file = here::here(
       "data",
       sedar,

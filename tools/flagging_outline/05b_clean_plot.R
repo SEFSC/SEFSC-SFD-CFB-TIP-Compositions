@@ -10,22 +10,24 @@
 
 # Specify settings ####
 # date from end of 05a script
-  date <- "20241025" 
+  date <- "20241106" 
 # date from gears representing >2% (rds from 04a)
-  gear_date <- "20241029" 
+  gear_date <- "20241105" 
 # date of 02c
-  unfiltered_date <- "20241025"
+  unfiltered_date <- "20241104"
 # gears representing >2% after break year (rds from 04a)
   # clean_gear_bkyr <- "stx_csl_clean_gear_list_break_year_20241003.rds" 
   spp <- "csl"
   print_spp <- "Caribbean Spiny Lobster"
-  isl <- "stt"
-  print_isl <- "St. Thomas"
+  isl <- "pr"
+  print_isl <- "Puerto Rico"
   break_year <- 2012
   min_year <- 1981
-  max_year <- 2022
+  max_year <- 2023
   len_type <- "CARAPACE LENGTH"
+  target_len <- "Carapace Length"
   sedar <- "sedar91"
+  disclaimer <- "Gears with less than three unique trip IDs or 30 records per year were removed."
 
 # Read in formatted data ####
   tip_spp_rds <- paste0(isl, "_", spp, "_clean_filtered_", date, ".rds" )
@@ -46,7 +48,7 @@
   n_target_len <- sum(unfiltered_isl$length_type1 == len_type)
 # total number of all lengths measured before filtering  
   n_all_len <- length(unfiltered_isl$length_type1)
-# percent representation of fork lengths   
+# percent representation of target lengths   
   p_target_len <- round(n_target_len / n_all_len, 3) * 100
 # total number of unique interviews before filtering   
   trip_id_unique <- as.data.frame(table(unfiltered_isl$sampling_unit_id, useNA = "always"))
@@ -81,7 +83,7 @@
     labs(
       x = "Year", y = "", colour = "", shape = "",
       title = paste(print_isl, "Length Samples"),
-      caption = "Gears with less than three unique trip IDs were removed."
+      caption = disclaimer
     ) +
     theme_bw() +
     theme(
@@ -116,7 +118,7 @@
     geom_point()  +
     labs(x = "Year", y = "", colour = "", shape = "", 
          title = paste(print_isl, "Unique Interviews"),
-         caption = "Gears with less than three unique trip IDs were removed.") +
+         caption = disclaimer) +
     theme_bw() + 
     theme(legend.position="null", text = element_text(size = 20), 
           title = element_text(size = 15))
@@ -167,7 +169,7 @@
                aes(xintercept=mean(length1_cm), 
                    color = "tip_spp_break"),
                linetype="dashed", linewidth=1) +
-    labs(x = "Fork Length (cm)", 
+    labs(x = paste0(target_len, " (cm)"), 
          title = paste0(print_isl, " ", print_spp,
                         " aggregated length density"))+
     guides(color=guide_legend(title="Years-Mean"))+
@@ -205,7 +207,7 @@
                aes(xintercept=mean(length1_cm), 
                    color = "tip_spp"),
                linetype="dashed", linewidth=1) +
-    labs(x = "Fork Length (cm)", 
+    labs(x = paste0(target_len, " (cm)"), 
          title = paste0(print_isl, " ", print_spp, 
                         " aggregated length density"))+
     guides(color=guide_legend(title="Mean"))+
@@ -250,7 +252,7 @@
                  linewidth = 0.75)+
     scale_color_hue(labels=ycounts_all$n_labels)+
     labs(color = "Gear" , 
-         x = "Fork Length (cm)", 
+         x = paste0(target_len, " (cm)"), 
          title = paste0(print_isl, " ", print_spp, " all gears"))+ 
     #title = paste0(county,  "\n (N = ", sum(ycounts$n), ")"))+
     # theme_minimal()
@@ -301,7 +303,7 @@
                  linewidth = 0.75)+
     scale_color_hue(labels=ycounts_top$n_labels)+
     labs(color = "Gear" , 
-         x = "Fork Length (cm)", 
+         x = paste0(target_len, " (cm)"), 
          title = paste0(print_isl, " ", print_spp, " relevant gears"))+ 
     #title = paste0(county,  "\n (N = ", sum(ycounts$n), ")"))+
     # theme_minimal()
@@ -349,7 +351,7 @@
     ggplot(aes(length1_cm))+
     geom_density(aes(color = gear),linewidth = 0.75)+
     scale_color_hue(labels=ycounts_bkyr$n_labels)+
-    labs(color = "Gear" , x = "Fork Length (cm)", title = print_isl)+ 
+    labs(color = "Gear" , x = paste0(target_len, " (cm)"), title = print_isl)+ 
     #title = paste0(print_isl,  "\n (N = ", sum(ycounts$n), ")"))+
     theme(legend.title = element_text(size=20), 
           legend.text = element_text(size=20),
@@ -387,7 +389,7 @@ plot_ann_den_full <-
   # linetype="dashed", linewidth=1)+
   #scale_color_manual(values = gearcols, labels = counts$n_labels)+
   # scale_color_hue(labels=fcounts$n_labels)+
-  labs(x = "Fork Length (cm)", 
+  labs(x = paste0(target_len, " (cm)"), 
        title = paste0(print_isl," ", print_spp,  "\n (N = ", sum(ycounts_all$n), ")"))+
   facet_wrap(~year_labs, ncol = 7)
 # view  
@@ -420,7 +422,7 @@ plot_ann_den_full <-
     # linetype="dashed", linewidth=1)+
     #scale_color_manual(values = gearcols, labels = counts$n_labels)+
     # scale_color_hue(labels=fcounts$n_labels)+
-    labs(x = "Fork Length (cm)", 
+    labs(x = paste0(target_len, " (cm)"), 
          title = paste0(print_isl, " ", print_spp, "Top Gears", "\n (N = ", sum(ycounts_top$n), ")"))+
     facet_wrap(~year_labs, ncol = 7)  
 # view 
@@ -447,7 +449,7 @@ plot_ann_den_separate <-
   #scale_color_manual(values = gearcols, labels = counts$n_labels)+
   scale_color_hue(labels=ycounts_top$n_labels)+
   labs(color = "Gear Type", 
-       x = "Fork Length (cm)", 
+       x = paste0(target_len, " (cm)"), 
        title = paste0(print_isl, " ", print_spp, "\n (N = ", sum(ycounts_top$n), ")"))+
   facet_wrap(~year_labs, ncol = 7)+
   # theme_minimal()
@@ -475,7 +477,7 @@ plot_ann_den_separate <-
   cumulative_den <- tip_spp %>%
     ggplot(aes(length1_cm))+
     stat_ecdf()+
-    labs(x = "Fork Length (cm)",
+    labs(x = paste0(target_len, " (cm)"),
          title = paste0(print_isl, " ", print_spp, "\n (N = ", sum(counts$n), ")"))+
     theme_minimal()
 # view  

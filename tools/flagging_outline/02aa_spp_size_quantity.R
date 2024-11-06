@@ -9,13 +9,14 @@
 
 # Specify settings #### 
 # rds from end of 02a script
-  date <- "20241024" 
+  date <- "20241104" 
 # find on itis.gov
   spp_itis <- c("097648", "097646") 
   spp <- "csl"
   isl <- c("pr", "stt", "stx")
   print_spp <- "Caribbean Spiny Lobster"
   print_isl <- "Puerto Rico - USVI"
+  save_isl <- "prusvi"
   sedar <- "sedar91"
   
 # Read in formatted data ####
@@ -38,12 +39,18 @@
       all_records = sum(records))
 
 # create formatted table of quantity variables  
-  flextable(tip_quantity) |>
+ tip_quantity_tbl <- flextable(tip_quantity) |>
     theme_box() %>%
     align(align = "center", part = "all") %>%
     fontsize(size = 8, part = "all") %>%
     autofit() 
-
+  
+# view 
+ tip_quantity_tbl
+# save  
+  save_as_image(x = tip_quantity_tbl, path =  
+                  here::here("data", sedar, "figure", spp, "all", "tip_quantity_tbl.png"))  
+  
 # Tabulate complete and incomplete length and weight pairs
   count_lw_pairs <- tip_spp |>
     filter(quantity > 1) |> 
@@ -54,14 +61,19 @@
     )
 
 # create formatted table of length/weight pair completion 
-  flextable(count_lw_pairs) |>
+  count_lw_pairs_tbl <- flextable(count_lw_pairs) |>
     theme_box() %>%
     align(align = "center", part = "all") %>%
     fontsize(size = 8, part = "all") %>%
     autofit() |>
     colformat_num(j = "year", big.mark = "")
-
-# create variable counts 
+# view 
+  count_lw_pairs_tbl
+# save  
+  save_as_image(x = count_lw_pairs_tbl, path =  
+                  here::here("data", sedar, "figure", spp, "all", "count_lw_pairs_tbl.png"))  
+  
+# create variable counts by isl 
   tip_spp_quant_count <- tip_spp |>
     filter(quantity > 1) |> 
     add_count(island) |>
@@ -79,7 +91,7 @@
       "all",
       paste0(
         save_isl, "_",
-        save_spp, "_spp_quant_count_",
+        spp, "_spp_quant_count_",
         format(Sys.time(), "%Y%m%d"),
         ".rds"
       )
@@ -106,11 +118,11 @@
       x = "Year", y = "Length (cm)",
       title = "Quantity distribution of Lengths sampled",
       color = "Quantity Value",
-      subtitle = paste("Total N = ", nrow(tip_spp_count))
+      subtitle = paste("Total N = ", nrow(tip_spp_quant_count))
     )
 # view plot  
   quantity_time
-  
+# save  
   ggsave(filename = 
            here::here("data", sedar, "figure", spp, "all", "quantity_time.png"),
          width = 14, height = 8)
@@ -130,7 +142,7 @@
       "all",
       paste0(
         save_isl, "_",
-        save_spp, "_spp_size_quantity_",
+        spp, "_spp_size_quantity_",
         format(Sys.time(), "%Y%m%d"),
         ".rds"
       )

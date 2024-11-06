@@ -6,7 +6,7 @@
 
 # Specify settings ####
 # specify date of extraction of all CAR region and species
-  date <- "20241016" 
+  date <- "20241104" 
 ## Range currently set to not drop any obs 
 # note 1984 is first full year for fish, 1980 for USVI and 1981 for PR spiny lobster 
   min_year <- 1977
@@ -147,6 +147,8 @@
       year < (max_year+1) & year >= min_year
     )
   
+# check gears
+  unique(tip_spp$gear)  
 # replace "," with ";"
   tip_spp$gear <- str_replace(tip_spp$gear, ",", ";")  
 # check gears

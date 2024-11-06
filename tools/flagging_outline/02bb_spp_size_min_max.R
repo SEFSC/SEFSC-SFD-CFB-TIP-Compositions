@@ -8,7 +8,7 @@
 
 # Specify settings #### 
 # rds from end of 02aa script
-  date <- "20241024" 
+  date <- "20241104" 
 # find on itis.gov
   spp_itis <- c("097648", "097646") 
   spp <- "csl"

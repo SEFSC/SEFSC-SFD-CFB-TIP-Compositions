@@ -9,13 +9,12 @@
   # tip_spp_rds <- "prusvi_csl_spp_size_flag_20240711.rds" # rds from end of 02d script
 # if k is not being used to filter, specify this script  
 # date from end of 03a script
-  date <- "20241029" 
+  date <- "20241106" 
 # 2% gear list from correct time series 
 # date from end of 04a script
-  gear_date <- "20241030" 
+  # gear_date <- "20241105" 
   spp <- "csl"
-  isl <- "pr"
-  print_isl <- "Puerto Rico"
+  isl <- "PR"
   break_yr <- "2012"
   sedar <- "sedar91"
 
@@ -25,9 +24,10 @@
 
 # Read in formatted data ####
   tip_spp_rds <- paste0(isl, "_", spp, "_prep_keep_tip_", date, ".rds" )
-  gear_list <- paste0(isl, "_", spp, "_clean_gear_list_", gear_date, ".rds" )
   tip_spp <- readRDS(here::here("data", sedar, "rds", spp, isl, tip_spp_rds))
-  glmm_gear <- readRDS(here::here("data", sedar, "rds", spp, isl, gear_list))
+  # 
+  # gear_list <- paste0(isl, "_", spp, "_clean_gear_list_", gear_date, ".rds" )
+  # glmm_gear <- readRDS(here::here("data", sedar, "rds", spp, isl, gear_list))
 
 # Not using k: Prep data for analysis ####
   tip_spp_len <- tip_spp |> 

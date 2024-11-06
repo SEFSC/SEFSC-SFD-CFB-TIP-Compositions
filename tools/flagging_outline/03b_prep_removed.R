@@ -6,7 +6,7 @@
 
 # Specify settings ####
 # rds from end of 02aa script
-  date <- "20241024" 
+  date <- "20241104" 
 # rds from end of 02d script
   # tip_spp_rds_k <- "pr_yts_spp_size_flag_20240618.rds" 
   spp <- "csl"
@@ -20,7 +20,7 @@
   max_size <- 25
 # all complete years unless running truncated time series
   start_yr <- 1981
-  end_yr <- 2022
+  end_yr <- 2023
   sedar <- "sedar91"
   
 # Read in formatted data ####

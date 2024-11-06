@@ -4,12 +4,13 @@
 # run the 01a script with a data pull of the entire dataset first
 
 # Load libraries ####
-  librarian::shelf(here, tidyverse, measurements, expss, openxlsx)
+  librarian::shelf(here, tidyverse, measurements, expss, openxlsx, flextable)
 
 # Specify settings ####
 # rds from end of 01a script
-  date <- "20241024" 
-  spp_itis <- c("097648", "097646") # find on itis.gov 
+  date <- "20241104" 
+# find on itis.gov - all spp itis codes that could be assiciated with target species
+  spp_itis <- c("097648", "097646", "097651") 
   spp <- "csl"
   print_spp <- "Caribbean Spiny Lobster"
   print_isl <- "Puerto Rico - USVI"
@@ -52,7 +53,7 @@
       values_to = "count"
     )
   
-# create formated table 
+# create formatted table 
   flextable(count_overview) |>
     theme_box() %>%
     align(align = "center", part = "all") %>%
@@ -97,7 +98,7 @@
                         " vs. All Species Combined in TIP"))
 # view
   plot_count_overview
-  
+# save  
   ggsave(filename = here::here("data", sedar, "figure", "all", "plot_count_overview.png"))
 
 # plot percent representation     
@@ -111,7 +112,7 @@
                         " Percent Composition of Total TIP Interviews and Records"))
 # view
   plot_percent_overview  
-  
+# save  
   ggsave(filename = here::here("data", sedar, "figure", "all", "plot_percent_overview.png"))
 
 # plot coverage by fishery     
@@ -130,6 +131,6 @@
   
 # view
   plot_count_spp_fishery
-  
+# save  
   ggsave(filename = here::here("data", sedar, "figure", "all", "plot_count_spp_fishery.png"))
 

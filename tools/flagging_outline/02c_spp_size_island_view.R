@@ -8,14 +8,14 @@
 
 # Specify settings #### 
 # rds from end of 02aa script
-  date <- "20241024" 
+  date <- "20241104" 
 # find on itis.gov
   spp_itis <- c("097648", "097646") 
   spp <- "csl"
   print_spp <- "Caribbean Spiny Lobster"
 # chose island platform to focus on   
-  isl <- "pr" 
-  print_isl <- "Puerto Rico"
+  isl <- "stx" 
+  print_isl <- "St. Croix"
   sedar <- "sedar91"
   
 # create folder structure for sedar overall data
@@ -89,7 +89,7 @@
     ungroup() |>
     dplyr::mutate(gearn = fct_reorder(gearn, total_n)) |> 
     ggplot(aes(x = year, y = gearn, color = gearn, size = n)) +
-    facet_grid(species_code ~ island) +
+    # facet_grid(species_code ~ island) +
     geom_point() +
     labs(
       x = "Year", y = "", colour = "", shape = "",
@@ -113,7 +113,7 @@
                y = obs_weight_lbs, 
                color = sample_condition)) +
     # facet_wrap(~islandn, ncol = 2) + 
-    facet_grid(species_code ~ island) +
+    # facet_grid(species_code ~ island) +
     geom_point() +
     labs(
       x = "Year", y = "Weight (lbs)",
@@ -137,7 +137,7 @@
       color = length_type1
     )) +
     # facet_wrap(~islandn, ncol = 2) +
-    facet_grid(species_code ~ island) +
+    # facet_grid(species_code ~ island) +
     geom_point() +
     labs(
       x = "Year", y = "Length (cm)",

@@ -1,5 +1,5 @@
 ---
-title: "SEDAR 91 Trip Interview Program (TIP) Size Composition Analysis of Caribbean Spiny Lobster (Panulirus argus) in Puerto Rico, U.S. Caribbean, 1981-2022"
+title: "SEDAR 91 Trip Interview Program (TIP) Size Composition Analysis of Caribbean Spiny Lobster (Panulirus argus) in Puerto Rico, U.S. Caribbean, 1981-2023"
 format: docx
 editor: visual
 output-file: sedar_91_csl_pr_len_comp.docx
@@ -9,13 +9,15 @@ execute:
   cache: false
 ---
 
-#### Katherine Godwin^1^, Adyan Rios^2^
+#### Katherine Godwin^1^, Adyan Rios^2^, Kyle Dettloff^3^
 
-#### October 31, 2024
+#### `r format(Sys.Date(), format='%B %d, %Y')`
 
 ###### ^1^*Cooperative Institute for Marine & Atmospheric Studies, Rosenstiel School of Marine, Atmospheric, and Earth Science, University of Miami, 4600 Rickenbacker Causeway, Miami, FL 33149*
 
 ###### ^2^*National Marine Fisheries Service, Southeast Fisheries Science Center Sustainable Fisheries Division, 75 Virginia Beach Drive, Miami, FL 33149*
+
+###### ^3^*National Marine Fisheries Service, Southeast Fisheries Science Center Fisheries Statistics Division, 75 Virginia Beach Drive, Miami, FL 33149*
 
 \newpage
 
@@ -33,17 +35,17 @@ execute:
 #' and your collaborators.
 
 # load libraries 
-librarian::shelf(here, knitr)
+librarian::shelf(here)
 
 # specify settings 
-figures_date <- "20241031"
-glmm_date <- "20241030"
+figures_date <- "20241105"
+glmm_date <- "20241105"
 spp <- "csl"
 isl <- "pr"
 print_isl <- "Puerto Rico"
 print_spp <- "Caribbean spiny lobster"
 st_yr <- 1981
-end_yr <- 2022
+end_yr <- 2023
 stat_dif_gears <- "'lines hand' and all other gears"
 number <- "91"
 sedar <- "sedar91"
@@ -81,7 +83,6 @@ The GLMM analysis of landed `r print_spp` size composition among commercial fish
 
 <!-- The GLMM analysis of the full time series reported no statistical differences between the gears (@tbl-glm_tbl). -->
 
-
 <!-- The GLMM analysis of the full time series reported a statistical difference between the `r stat_dif_gears` gears (@tbl-glm_tbl). -->
 
 \newpage
@@ -104,8 +105,8 @@ abc1
 #| warning: false
 #| label: tbl-glm_tbl
 #| tbl-cap: !expr paste('GLMM analysis summary results for', print_isl, 'TIP', print_spp,  'lengths(cm) from', st_yr, 'to', end_yr,'. The column titled “group” indicates the group(s) where mean lengths are not statistically different from other gears with matching group number(s). The "n" column indicates the number of unique lengths recorded for each gear. The "Percentage" column indicates the percent of the total recorded lengths for each gear.')
-library(knitr)
-kable("")
+library(knitr) 
+kable("") 
 
 ```
 

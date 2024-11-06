@@ -9,7 +9,7 @@
 
 # Specify settings ####
 # date from end of 03a script
-  date <- "20241029" 
+  date <- "20241105" 
   spp <- "csl"
   isl <- "pr"
   # break_year <- 2012
@@ -99,7 +99,7 @@
            here::here("data", sedar, "figure", spp, isl, "glmm_density_plot_gear.png"),
          width = 14, height = 8)
   
-## Scatter plot with line of smoothed conditional mean ####
+  ## Scatter plot with line of smoothed conditional mean ####
   # takes forever to load
 #' filtered to gears with 30 or more occurrences for the purposes
 #' of plotting visibility
@@ -143,7 +143,6 @@
                 data = tip_spp_glm,
                 family = Gamma(link = log)
   )
-
 ## pairwise comparisons -  ####
 # compares each gear to each other and gives p value
   mod_contr <- emmeans::emmeans(
