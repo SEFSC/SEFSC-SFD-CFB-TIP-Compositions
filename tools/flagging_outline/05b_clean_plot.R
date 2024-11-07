@@ -19,15 +19,21 @@
   # clean_gear_bkyr <- "stx_csl_clean_gear_list_break_year_20241003.rds" 
   spp <- "csl"
   print_spp <- "Caribbean Spiny Lobster"
-  isl <- "pr"
-  print_isl <- "Puerto Rico"
+  # isl <- "pr"
+  # isl <- "stx"
+  isl <- "stt"
+  
+  # print_isl <- "Puerto Rico"
+  # print_isl <- "St. Croix"
+  print_isl <- "St. Thomas"
+  
   break_year <- 2012
   min_year <- 1981
   max_year <- 2023
   len_type <- "CARAPACE LENGTH"
   target_len <- "Carapace Length"
   sedar <- "sedar91"
-  disclaimer <- "Gears with less than three unique trip IDs or 30 records per year were removed."
+  disclaimer <- "Only nonconfidential data shown."
 
 # Read in formatted data ####
   tip_spp_rds <- paste0(isl, "_", spp, "_clean_filtered_", date, ".rds" )

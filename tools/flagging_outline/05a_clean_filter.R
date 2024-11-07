@@ -14,7 +14,7 @@
 # date from end of 04a script
   # gear_date <- "20241105" 
   spp <- "csl"
-  isl <- "PR"
+  isl <- "stt"
   break_yr <- "2012"
   sedar <- "sedar91"
 
