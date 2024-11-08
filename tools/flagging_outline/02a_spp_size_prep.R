@@ -10,7 +10,7 @@
 
 # Specify settings ####
 # rds from end of 01a script
-  date <- "20241104" 
+  date <- "20241108" 
 # find on itis.gov - all spp itis codes that could be assiciated with target species
   spp_itis <- c("097648", "097646", "097651") 
   spp <- "csl"
@@ -59,7 +59,13 @@
 # compare type1 and type2 lengths ####
   table(tip_spp_prep$length_type1, useNA = "always")
   table(tip_spp_prep$length_type2, useNA = "always")
-
+  table(tip_spp_prep$length_type1,tip_spp_prep$length_type2)
+  
+# compare type1 and type2 gears ####
+  table(tip_spp_prep$gear, useNA = "always")
+  table(tip_spp_prep$standardgearname_2, useNA = "always")
+  table(tip_spp_prep$gear,tip_spp_prep$standardgearname_2 )
+  
 # look at min and max standardized lengths ####
 ### use this as preliminary look at possible inaccurate lengths
   min(spp_size_calc$length1_cm, na.rm = TRUE)

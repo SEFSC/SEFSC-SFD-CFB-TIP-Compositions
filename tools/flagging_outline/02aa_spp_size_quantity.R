@@ -9,7 +9,7 @@
 
 # Specify settings #### 
 # rds from end of 02a script
-  date <- "20241104" 
+  date <- "20241108" 
 # find on itis.gov
   spp_itis <- c("097648", "097646") 
   spp <- "csl"
@@ -79,6 +79,11 @@
     add_count(island) |>
     dplyr::mutate(islandn = paste0(island, " (", n, ")")) |>
     select(-n)
+  
+  tip_dup_count <- tip_spp_quant_count |> 
+    group_by(island) |> 
+    summarize(n_records = n(),
+              n_fix = sum(quantity)) 
   
 # Save dataframe of just records with quantity >1 ####
   saveRDS(
