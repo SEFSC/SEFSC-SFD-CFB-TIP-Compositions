@@ -1,167 +1,19 @@
 # Load libraries ####
   librarian::shelf(here, tidyverse, measurements)
-
-# if pulling new data from oracle ->
-# cr_tip(state_codes = c("PR", "VI"))
-
-# Specify settings ####
-# specify date of extraction of all CAR region and species
-  date <- "20241104" 
-## Range currently set to not drop any obs 
-# note 1984 is first full year for fish, 1980 for USVI and 1981 for PR spiny lobster 
-  min_year <- 1977
-  max_year <- 2023 
-  sedar <- "sedar91"
-  
-# create folder structure for sedar overall data
-  if (!dir.exists(here("data", sedar))){ dir.create(here("data", sedar)) }
-  if (!dir.exists(here("data", sedar, "figure"))){ dir.create(here("data", sedar, "figure")) }
-  if (!dir.exists(here("data", sedar, "rds"))){ dir.create(here("data", sedar, "rds")) }
-  if (!dir.exists(here("data", sedar, "figure", "all"))){ dir.create(here("data", sedar, "figure", "all")) }
-
-# Read in raw data ####
-  tip_rds <- paste0("com_tip_PR_VI_", date, ".RDS" )
-  tip <- readRDS(here::here("data", "raw", tip_rds))
-  gear_nmfs <- read.csv(here::here("data", "CSVs", "gear_groups_nmfs.csv"))
-
-# Prep raw data ####
-  tip_spp <- tip |>
-# Standardize variable format
-    janitor::clean_names() |>
-    dplyr::mutate(
-# Simplify and standardize variable names
-      sampling_program = "TIP",
-      data_provider = "NMFS Miami",
-      stock = "Caribbean",
-      sampling_unit_id = as.character(id),
-      specimen_id = sample_id, 
-      interview_date = lubridate::as_date(interview_date),
-      month = format(as.Date(interview_date,format="%Y-%m-%d"), format = "%m"),
-      day = format(as.Date(interview_date,format="%Y-%m-%d"), format = "%d"),
-      year = as.numeric(year), 
-# Create island variable 
-      island = dplyr::case_when(
-        state_landed == "PUERTO RICO" ~ "pr",
-        state_landed == "VIRGIN ISLANDS" &
-          county_landed %in% c("ST JOHN", "ST THOMAS") ~ "stt",
-        state_landed == "VIRGIN ISLANDS" &
-          county_landed == "ST CROIX" ~ "stx",
-        .default = "not coded"
-      ),
-# Create gear variable 
-      gear = case_when(
-        land_standard_gear_name == "NOT CODED" ~ standardgearname_1,
-        is.na(land_standard_gear_name) ~ standardgearname_1, 
-        TRUE ~ land_standard_gear_name
-      ),
-# Create area grid variable 
-      area_square = case_when(
-        land_standard_area_name == "NA" ~ standardareaname_1,
-        TRUE ~ land_standard_area_name
-      ),
-# Create variable for fishery (rec or com)
-      fishery = dplyr::case_when(
-        fishing_mode %in% c(
-          "HEADBOAT",
-          "PARTY/CHARTER",
-          "PRIVATE RECREATIONAL",
-          "TOURNAMENT"
-        ) ~
-          "RECREATIONAL",
-        is.na(fishing_mode) ~ "UNKNOWN",
-        .default = fishing_mode
-      ),
-# Create state v federal variable 
-      area = case_when(
-        land_standard_gear_name == standardgearname_1 & 
-          state_landed == "PUERTO RICO" & 
-          distance_to_shore_miles_1 >= 9 ~ "federal",
-        land_standard_gear_name == standardgearname_1 & 
-          state_landed == "PUERTO RICO" & 
-          distance_to_shore_miles_1 < 9 ~ "state",
-        land_standard_gear_name == standardgearname_1 & 
-          state_landed == "VIRGIN ISLANDS" & 
-          distance_to_shore_miles_1 >= 3 ~ "federal",
-        land_standard_gear_name == standardgearname_1 & 
-          state_landed == "VIRGIN ISLANDS" & 
-          distance_to_shore_miles_1 < 3 ~ "state",
-        land_standard_gear_name == standardgearname_2 & 
-          state_landed == "PUERTO RICO" & 
-          distance_to_shore_miles_2 >= 9 ~ "federal",
-        land_standard_gear_name == standardgearname_2 & 
-          state_landed == "PUERTO RICO" & 
-          distance_to_shore_miles_2 < 9 ~ "state",
-        land_standard_gear_name == standardgearname_2 & 
-          state_landed == "VIRGIN ISLANDS" & 
-          distance_to_shore_miles_2 >= 3 ~ "federal",
-        land_standard_gear_name == standardgearname_2 & 
-          state_landed == "VIRGIN ISLANDS" & 
-          distance_to_shore_miles_2 < 3 ~ "state",
-        land_standard_gear_name == standardgearname_3 & 
-          state_landed == "PUERTO RICO" & 
-          distance_to_shore_miles_3 >= 9 ~ "federal",
-        land_standard_gear_name == standardgearname_3 & 
-          state_landed == "PUERTO RICO" & 
-          distance_to_shore_miles_3 < 9 ~ "state",
-        land_standard_gear_name == standardgearname_3 & 
-          state_landed == "VIRGIN ISLANDS" & 
-          distance_to_shore_miles_3 >= 3 ~ "federal",
-        land_standard_gear_name == standardgearname_3 & 
-          state_landed == "VIRGIN ISLANDS" & 
-          distance_to_shore_miles_3 < 3 ~ "state",
-        land_standard_gear_name == standardgearname_4 & 
-          state_landed == "PUERTO RICO" & 
-          distance_to_shore_miles_4 >= 9 ~ "federal",
-        land_standard_gear_name == standardgearname_4 & 
-          state_landed == "PUERTO RICO" & 
-          distance_to_shore_miles_4 < 9 ~ "state",
-        land_standard_gear_name == standardgearname_4 & 
-          state_landed == "VIRGIN ISLANDS" & 
-          distance_to_shore_miles_4 >= 3 ~ "federal",
-        land_standard_gear_name == standardgearname_4 & 
-          state_landed == "VIRGIN ISLANDS" & 
-          distance_to_shore_miles_4 < 3 ~ "state",
-        land_standard_gear_name == standardgearname_5 & 
-          state_landed == "PUERTO RICO" & 
-          distance_to_shore_miles_5 >= 9 ~ "federal",
-        land_standard_gear_name == standardgearname_5 & 
-          state_landed == "PUERTO RICO" & 
-          distance_to_shore_miles_5 < 9 ~ "state",
-        land_standard_gear_name == standardgearname_5 & 
-          state_landed == "VIRGIN ISLANDS" & 
-          distance_to_shore_miles_5 >= 3 ~ "federal",
-        land_standard_gear_name == standardgearname_5 & 
-          state_landed == "VIRGIN ISLANDS" & 
-          distance_to_shore_miles_5 < 3 ~ "state",
-        .default = "unknown"
-      )
-    ) |> 
-# Simplify variable names
-    dplyr::rename(
-      date = interview_date,
-      species_code = obs_standard_species_code, 
-      species_name = obs_standard_species_name,
-      fishery_mode = fishing_mode
-    )|> 
-# filter to years 
-    dplyr::filter(
-      year < (max_year+1) & year >= min_year
-    )
-  
-# figure out na gears
-  tip_spp_na <- tip_spp |> 
-    filter(is.na(gear))
-  
+ 
 # check gears
   unique(tip_spp$gear)  
+  
 # replace "," with ";"
   tip_spp$gear <- str_replace(tip_spp$gear, ",", ";") 
+
 # replace "NA" with "NOT CODED" 
   tip_spp <- tip_spp |> 
     mutate(gear =
            as.character(ifelse(is.na(gear),
                                "NOT CODED",
                                gear)))
+  
 # check gears
   unique(tip_spp$gear)
 
@@ -194,23 +46,18 @@
   # tip_range$length2_mm[1:25]
   
   
-# conf by year and gear 
+# confidentiality by year and gear and trip ID
   tip_count_a <- tip_nmfs |> 
     group_by(island, date, year, gear) |> 
-    mutate(n_ID = n_distinct(sampling_unit_id) ) |> 
+    mutate(n_ID_yr_gr = n_distinct(sampling_unit_id) ) |> 
     ungroup() |> 
     group_by(island, year, gear) |> 
-    summarize(max_c = max(n_ID), 
+    summarize(max_yr_gr_c = max(n_ID_yr_gr), 
               .groups = "drop") |> 
-    filter(max_c <= 2) |> 
-    mutate(isl_yr_gear_c = "TRUE") |> 
     right_join(tip_nmfs, 
                by = join_by(island, year, gear)) |> 
-    # replace_na(isl_yr_gear_c = "FALSE")
-    mutate(isl_yr_gear_c =
-             as.character(ifelse(is.na(isl_yr_gear_c),
-                                 "FALSE",
-                                 isl_yr_gear_c)))
+    mutate(isl_yr_gear_c = case_when(max_yr_gr_c <= 2 ~ "TRUE",
+                                  TRUE ~ "FALSE")) 
 # summary stats
     tip_sum_yr_gr <- tip_count_a |>
       select(island, year, gear, isl_yr_gear_c) |>
@@ -218,29 +65,22 @@
       filter(isl_yr_gear_c == "TRUE")
 
     table(tip_sum_yr_gr$island, tip_sum_yr_gr$year)
+    table(tip_sum_yr_gr$island )
     table(tip_count_a$isl_yr_gear_c)
-
     table(tip_count_a$isl_yr_gear_c)/nrow(tip_count_a)
 
-
-  
-# conf by gear 
+# confidentiality by gear and trip ID
   tip_count_b <- tip_count_a |> 
     group_by(island, date, gear) |> 
-    mutate(n_ID = n_distinct(sampling_unit_id) ) |> 
+    mutate(n_ID_gr = n_distinct(sampling_unit_id) ) |> 
     ungroup() |> 
     group_by(island, gear) |> 
-    summarize(max_c = max(n_ID), 
+    summarize(max_c_gr = max(n_ID_gr), 
               .groups = "drop") |> 
-    filter(max_c <= 2) |> 
-    mutate(isl_gear_c = "TRUE") |> 
     right_join(tip_count_a, 
                by = join_by(island, gear)) |> 
-    # replace_na(isl_yr_gear_c = "FALSE")
-    mutate(isl_gear_c =
-             as.character(ifelse(is.na(isl_gear_c),
-                                 "FALSE",
-                                 isl_gear_c)))  
+    mutate(isl_gear_c = case_when(max_c_gr <= 2 ~ "TRUE",
+                                  TRUE ~ "FALSE")) 
   
 # summary stats   
   tip_sum_yr <- tip_count_b |> 
@@ -249,27 +89,18 @@
     filter(isl_gear_c == "TRUE")
   
   table(tip_sum_yr$gear,tip_sum_yr$island )
-  table(tip_count_b$isl_gear_c)
   table(tip_sum_yr$island )
+  table(tip_count_b$isl_gear_c)
   table(tip_count_b$isl_gear_c)/nrow(tip_count_b)
   
-# conf by gear 
-  tip_count_c <- tip_count_a |> 
-    group_by(island, date, gear) |> 
-    mutate(n_ID = n_distinct(vessel_id) ) |> 
+# confidentiality by gear and vessel id 
+  tip_count_c <- tip_count_b |> 
+    group_by(island, gear) |> 
+    mutate(n_ves = n_distinct(vessel_id) ) |> 
     ungroup() |> 
-    # group_by(island, gear) |> 
-    # summarize(max_c = max(n_ID), 
-    #           .groups = "drop") |> 
-    filter(n_ID <= 2) |> 
-    mutate(vess_isl_gear_c = "TRUE") |> 
-    # right_join(tip_count_a, 
-    #            by = join_by(island, gear)) |> 
-    # replace_na(isl_yr_gear_c = "FALSE")
-    mutate(vess_isl_gear_c =
-             as.character(ifelse(is.na(vess_isl_gear_c),
-                                 "FALSE",
-                                 vess_isl_gear_c)))  
+    mutate(vess_isl_gear_c = case_when(n_ves <= 2 ~ "TRUE",
+                                  TRUE ~ "FALSE"))
+
 # summary stats   
   tip_sum_yr_vess <- tip_count_c |> 
     select(island, gear, vess_isl_gear_c) |> 
@@ -277,41 +108,53 @@
     filter(vess_isl_gear_c == "TRUE")
   
   table(tip_sum_yr_vess$gear,tip_sum_yr_vess$island )
-  # table(tip_count_b$isl_gear_c)
   table(tip_sum_yr_vess$island )
-  # table(tip_count_b$isl_gear_c)/nrow(tip_count_b)
+  table(tip_count_c$vess_isl_gear_c)
+  table(tip_count_c$vess_isl_gear_c)/nrow(tip_count_c)
+
+  
+# conf by gear, year, and vessel id 
+  tip_count_d <- tip_count_c |> 
+    group_by(island, year, gear) |> 
+    mutate(n_ves_yr = n_distinct(vessel_id) ) |> 
+    ungroup() |> 
+    mutate(vess_isl_yr_gear_c = case_when(n_ves_yr <= 2 ~ "TRUE",
+                                       TRUE ~ "FALSE"))
+
+# summary stats   
+  tip_sum_yr_vess_yr <- tip_count_d |> 
+    select(island, year, gear, vess_isl_yr_gear_c) |> 
+    distinct() |> 
+    filter(vess_isl_yr_gear_c == "TRUE")
+  
+  table(tip_sum_yr_vess_yr$gear,tip_sum_yr_vess_yr$island )
+  table(tip_sum_yr_vess_yr$island )
+  table(tip_count_d$vess_isl_yr_gear_c)
+  table(tip_count_d$vess_isl_yr_gear_c)/nrow(tip_count_d)
   
   
-# conf by gear 
-  tip_count_d <- tip_count_a |> 
+# conf by gear and license
+  tip_count_e <- tip_count_d |> 
     group_by(island, date, gear) |> 
     mutate(n_lic = n_distinct(license) ) |> 
     ungroup() |> 
-    # group_by(island, gear) |> 
-    # summarize(max_c = max(n_ID), 
-    #           .groups = "drop") |> 
-    filter(n_lic <= 2) |> 
-    mutate(lic_isl_gear_c = "TRUE") |> 
-    # right_join(tip_count_a, 
-    #            by = join_by(island, gear)) |> 
-    # replace_na(isl_yr_gear_c = "FALSE")
-    mutate(lic_isl_gear_c =
-             as.character(ifelse(is.na(lic_isl_gear_c),
-                                 "FALSE",
-                                 lic_isl_gear_c)))  
+    mutate(lic_isl_gear_c = case_when(n_lic <= 2 ~ "TRUE",
+                                      TRUE ~ "FALSE"))
+ 
 # summary stats   
-  tip_sum_yr_lic <- tip_count_d |> 
+  tip_sum_yr_lic <- tip_count_e |> 
     select(island, gear, lic_isl_gear_c) |> 
     distinct() |> 
     filter(lic_isl_gear_c == "TRUE")
   
   table(tip_sum_yr_lic$gear,tip_sum_yr_lic$island )
-  # table(tip_count_b$isl_gear_c)
   table(tip_sum_yr_lic$island )
-  # table(tip_count_b$isl_gear_c)/nrow(tip_count_b)
+  table(tip_count_e$lic_isl_gear_c)
+  table(tip_count_e$lic_isl_gear_c)/nrow(tip_count_e)
+
   
 # Select variables relevant to flagging investigation ####
-  tip_spp_relevant <- tip_count_b |>
+  tip_spp_relevant <- tip_count_e |>
     select(
       sampling_program, # denotes who recorded data
       data_provider, # noaa office handling data 
@@ -343,8 +186,9 @@
       sample_condition, # weight type
       fishery, # denotes recreational or commercial
       fishery_mode, # fishing_mode value
-      isl_yr_gear_c, # confidentiality flag island-year-gear strata
-      isl_gear_c, # confidentiality flag island-gear strata 
+      isl_yr_gear_c, # confidentiality flag island-year-gear-trip id  strata
+      isl_gear_c, # confidentiality flag island-gear-trip id strata 
+      vess_isl_gear_c, # confidentality flag island-gear-vessel id strata
     ) 
   
 
