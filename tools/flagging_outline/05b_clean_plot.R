@@ -10,22 +10,22 @@
 
 # Specify settings ####
 # date from end of 05a script
-  date <- "20241106" 
-# date from gears representing >2% (rds from 04a)
-  gear_date <- "20241105" 
+  date <- "20241109" 
+# date from non-confidential gears (rds from 04a)
+  gear_date <- "20241109" 
 # date of 02c
-  unfiltered_date <- "20241104"
+  unfiltered_date <- "20241108"
 # gears representing >2% after break year (rds from 04a)
   # clean_gear_bkyr <- "stx_csl_clean_gear_list_break_year_20241003.rds" 
   spp <- "csl"
   print_spp <- "Caribbean Spiny Lobster"
-  # isl <- "pr"
+  isl <- "pr"
   # isl <- "stx"
-  isl <- "stt"
+  # isl <- "stt"
   
-  # print_isl <- "Puerto Rico"
+  print_isl <- "Puerto Rico"
   # print_isl <- "St. Croix"
-  print_isl <- "St. Thomas"
+  # print_isl <- "St. Thomas/St. John"
   
   break_year <- 2012
   min_year <- 1981
@@ -39,8 +39,8 @@
   tip_spp_rds <- paste0(isl, "_", spp, "_clean_filtered_", date, ".rds" )
   tip_spp <- readRDS(here::here("data",  sedar, "rds", spp, isl, tip_spp_rds))
   
-  gear_list <- paste0(isl, "_", spp, "_clean_gear_list_", gear_date, ".rds" )
-  gear_2percent <- readRDS(here::here("data",  sedar, "rds", spp, isl, gear_list))
+  gear_list <- paste0(isl, "_", spp, "_nonconf_gear_list_", gear_date, ".rds" )
+  gear_nonconf <- readRDS(here::here("data",  sedar, "rds", spp, isl, gear_list))
   
   # gear_list_bkyr <- paste0(isl, "_", spp, "_clean_gear_list_break_year_", clean_gear_bkyr, ".rds" )
   # gear_2percent_bkyr <- readRDS(here::here("data",  sedar, "rds", spp, isl, gear_list_bkyr))
@@ -71,10 +71,18 @@
     select(-n)|>
     add_count(island) |>
     dplyr::mutate(islandn = paste0(island, " (", n, ")")) |>
-    select(-n)
+    select(-n) 
+  
+# create non-confidential gears dataframe ####
+  tip_spp_nc <- gear_nonconf |> 
+    select(Gear, confidential) |> 
+    mutate(gear = as.character(Gear)) |> 
+    select(-Gear) |> 
+    right_join(tip_spp_count, by = join_by(gear)) |> 
+    filter(confidential == "FALSE")
 
 # Plot gears by number of fish measured used over time ####
-  gear_data <- tip_spp_count |>
+  gear_data <- tip_spp_nc |>
     group_by(year, gearn) |>
     dplyr::summarize(n = n(), .groups = "drop") |>
     mutate(year = as.integer(year))
@@ -106,7 +114,7 @@
   abc1 = gear_by_yr
 
 # Plot gears by number of unqiue interviews over time ####
-  gear_data_id <- tip_spp_count %>% 
+  gear_data_id <- tip_spp_nc %>% 
     group_by(gear) %>% 
     dplyr::mutate(n_ID = n_distinct(sampling_unit_id)) |> 
     dplyr::filter(n_ID >= 3) %>% ungroup %>%
@@ -126,7 +134,7 @@
          title = paste(print_isl, "Unique Interviews"),
          caption = disclaimer) +
     theme_bw() + 
-    theme(legend.position="null", text = element_text(size = 20), 
+    theme(legend.position="null", text = element_text(size = 15), 
           title = element_text(size = 15))
 # add line at breakyear if needed 
     # geom_vline(xintercept = (break_year - 0.5),  
@@ -182,14 +190,14 @@
     scale_color_discrete(
       labels=c(paste0(min_year, "_", max_year, "-", full_mean), 
                paste0(break_year, "_", max_year, "-", truncated_mean)))+
-    theme(legend.title = element_text(size=20), 
-          legend.text = element_text(size=20),
+    theme(legend.title = element_text(size=15), 
+          legend.text = element_text(size=15),
           legend.position = "bottom",
-          axis.text.x=element_text(size=20),
-          axis.text.y=element_text(size=20),
-          axis.title.x = element_text( size = 20),
-          axis.title.y = element_text( size = 20),
-          title = element_text(size = 20))
+          axis.text.x=element_text(size = 15),
+          axis.text.y=element_text(size = 15),
+          axis.title.x = element_text( size = 15),
+          axis.title.y = element_text( size = 15),
+          title = element_text(size = 15))
 # view  
   agr_den_NOgears_compare
 # save  
@@ -219,14 +227,14 @@
     guides(color=guide_legend(title="Mean"))+
     scale_color_discrete(
       labels=c(paste0(full_mean)))+
-    theme(legend.title = element_text(size=20), 
-          legend.text = element_text(size=20),
+    theme(legend.title = element_text(size=15), 
+          legend.text = element_text(size=15),
           legend.position = "bottom",
-          axis.text.x=element_text(size=20),
-          axis.text.y=element_text(size=20),
-          axis.title.x = element_text( size = 20),
-          axis.title.y = element_text( size = 20),
-          title = element_text(size = 20))
+          axis.text.x=element_text(size=15),
+          axis.text.y=element_text(size=15),
+          axis.title.x = element_text( size = 15),
+          axis.title.y = element_text( size = 15),
+          title = element_text(size = 15))
 # view
   agr_den_NOgears_full
 # save  
@@ -236,7 +244,8 @@
   
 # save figure under alphanumeric identifier    
   abc4 = agr_den_NOgears_full  
-
+  
+### GEAR INDIVIDUALS ####
 # create aggregated density graph of all lengths separated by gear  
 # create count of records to use in figure labels   
   ycounts_all =tip_spp %>% 
@@ -265,11 +274,11 @@
     theme(legend.title = element_text(size=12), 
           legend.text = element_text(size=12),
           legend.position = "bottom",
-          axis.text.x=element_text(size=20),
-          axis.text.y=element_text(size=20),
-          axis.title.x = element_text( size = 20),
-          axis.title.y = element_text( size = 20),
-          title = element_text(size = 20))+
+          axis.text.x=element_text(size=15),
+          axis.text.y=element_text(size=15),
+          axis.title.x = element_text( size = 15),
+          axis.title.y = element_text( size = 15),
+          title = element_text(size = 15))+
     guides(color=guide_legend(ncol = 2))+
     geom_vline(data=muv, aes(xintercept=grp.mean, color=gear),
                linetype="dashed")
@@ -284,18 +293,15 @@
   abc5 = agr_den_all_gears
   
   
-### GEAR INDIVIDUALS ####
-# filter to gears >2% representation  
-  tip_spp_top_gears <- tip_spp |> 
-    filter(gear %in% gear_2percent$Gear) 
 
+# use NON CONFIDENTIAL gears ####  
 # create count of records to use in figure labels   
-  ycounts_top =tip_spp_top_gears %>% 
+  ycounts_top = tip_spp_nc %>% 
     tabyl("gear") %>%
     mutate(n_labels = paste0(gear, " (n= ", n, ")" ))
 
 # calculate means to use in figure    
-  muv <- plyr::ddply(tip_spp_top_gears, 
+  muv <- plyr::ddply(tip_spp_nc, 
                      "gear", 
                      summarise, 
                      grp.mean=mean(length1_cm))
@@ -303,24 +309,24 @@
   head(muv)
   
 # create density plot showing individual gears representing >2% of data   
-  agr_den_top_gears <- tip_spp_top_gears %>% 
+  agr_den_top_gears <- tip_spp_nc %>% 
     ggplot(aes(length1_cm))+
     geom_density(aes(color = gear),
                  linewidth = 0.75)+
     scale_color_hue(labels=ycounts_top$n_labels)+
     labs(color = "Gear" , 
          x = paste0(target_len, " (cm)"), 
-         title = paste0(print_isl, " ", print_spp, " relevant gears"))+ 
+         title = paste0(print_isl, " ", print_spp, " non-confidential gears"))+ 
     #title = paste0(county,  "\n (N = ", sum(ycounts$n), ")"))+
     # theme_minimal()
     theme(legend.title = element_text(size=12), 
           legend.text = element_text(size=12),
           legend.position = "bottom",
-          axis.text.x=element_text(size=20),
-          axis.text.y=element_text(size=20),
-          axis.title.x = element_text( size = 20),
-          axis.title.y = element_text( size = 20),
-          title = element_text(size = 20))+
+          axis.text.x=element_text(size=15),
+          axis.text.y=element_text(size=15),
+          axis.title.x = element_text( size = 15),
+          axis.title.y = element_text( size = 15),
+          title = element_text(size = 15))+
     guides(color=guide_legend(ncol = 2))+
     geom_vline(data=muv, aes(xintercept=grp.mean, color=gear),
                linetype="dashed")
@@ -336,49 +342,49 @@
 
 ##### if using time break continue, IF NOT - SKIP to next figure #####  
 ### top gears after time break #### 
-# filter to gears representing >2% of records
-  tip_spp_break_gears <- tip_spp_break |> 
-      filter(gear %in% gear_2percent_bkyr$Gear) 
-
-# create count of records for figure labels    
-  ycounts_bkyr =tip_spp_break_gears %>% 
-    tabyl("gear") %>%
-    mutate(n_labels = paste0(gear, " (n= ", n, ")" ))
-
-# calculate mean to display on density plot     
-  muv_break <- 
-    plyr::ddply(tip_spp_break_gears, 
-                "gear", summarise, grp.mean=mean(length1_cm))
-# view means
-    head(muv_break)
-
-# create density graph of gears representing >2% of records after break year       
-  agr_den_break <- tip_spp_break_gears %>% 
-    ggplot(aes(length1_cm))+
-    geom_density(aes(color = gear),linewidth = 0.75)+
-    scale_color_hue(labels=ycounts_bkyr$n_labels)+
-    labs(color = "Gear" , x = paste0(target_len, " (cm)"), title = print_isl)+ 
-    #title = paste0(print_isl,  "\n (N = ", sum(ycounts$n), ")"))+
-    theme(legend.title = element_text(size=20), 
-          legend.text = element_text(size=20),
-          legend.position = "bottom",
-          axis.text.x=element_text(size=20),
-          axis.text.y=element_text(size=20),
-          axis.title.x = element_text( size = 20),
-          axis.title.y = element_text( size = 20),
-          title = element_text(size = 20))+
-    guides(color=guide_legend(ncol = 2))+
-    geom_vline(data=muv12, aes(xintercept=grp.mean, color=gear),
-               linetype="dashed")
-# view
-  agr_den_break
-# save
-  ggsave(filename = 
-           here::here("data", sedar, "figure", spp, isl, "agr_den_break.png"),
-         width = 14, height = 8)
-  
-# save figure under alphanumeric identifier    
-  abc7 = agr_den_break
+# # filter to gears representing >2% of records
+#   tip_spp_break_gears <- tip_spp_break |> 
+#       filter(gear %in% gear_2percent_bkyr$Gear) 
+# 
+# # create count of records for figure labels    
+#   ycounts_bkyr =tip_spp_break_gears %>% 
+#     tabyl("gear") %>%
+#     mutate(n_labels = paste0(gear, " (n= ", n, ")" ))
+# 
+# # calculate mean to display on density plot     
+#   muv_break <- 
+#     plyr::ddply(tip_spp_break_gears, 
+#                 "gear", summarise, grp.mean=mean(length1_cm))
+# # view means
+#     head(muv_break)
+# 
+# # create density graph of gears representing >2% of records after break year       
+#   agr_den_break <- tip_spp_break_gears %>% 
+#     ggplot(aes(length1_cm))+
+#     geom_density(aes(color = gear),linewidth = 0.75)+
+#     scale_color_hue(labels=ycounts_bkyr$n_labels)+
+#     labs(color = "Gear" , x = paste0(target_len, " (cm)"), title = print_isl)+ 
+#     #title = paste0(print_isl,  "\n (N = ", sum(ycounts$n), ")"))+
+#     theme(legend.title = element_text(size=20), 
+#           legend.text = element_text(size=20),
+#           legend.position = "bottom",
+#           axis.text.x=element_text(size=20),
+#           axis.text.y=element_text(size=20),
+#           axis.title.x = element_text( size = 20),
+#           axis.title.y = element_text( size = 20),
+#           title = element_text(size = 20))+
+#     guides(color=guide_legend(ncol = 2))+
+#     geom_vline(data=muv12, aes(xintercept=grp.mean, color=gear),
+#                linetype="dashed")
+# # view
+#   agr_den_break
+# # save
+#   ggsave(filename = 
+#            here::here("data", sedar, "figure", spp, isl, "agr_den_break.png"),
+#          width = 14, height = 8)
+#   
+# # save figure under alphanumeric identifier    
+#   abc7 = agr_den_break
   
 #### SKIP TO HERE ####
 ## Annual Density plots ####
@@ -419,7 +425,7 @@ plot_ann_den_full <-
    
 # create annual density plot of lengths over all years 
   plot_ann_den_top <-
-    tip_spp_top_gears %>% 
+    tip_spp_nc %>% 
     group_by(year) %>%
     dplyr::mutate(year_labs = paste0(year, "\n n = ", n())) %>%
     ggplot(aes(length1_cm))+
@@ -429,7 +435,7 @@ plot_ann_den_full <-
     #scale_color_manual(values = gearcols, labels = counts$n_labels)+
     # scale_color_hue(labels=fcounts$n_labels)+
     labs(x = paste0(target_len, " (cm)"), 
-         title = paste0(print_isl, " ", print_spp, "Top Gears", "\n (N = ", sum(ycounts_top$n), ")"))+
+         title = paste0(print_isl, " ", print_spp, " Non- Gears", "\n (N = ", sum(ycounts_top$n), ")"))+
     facet_wrap(~year_labs, ncol = 7)  
 # view 
   plot_ann_den_top
@@ -447,7 +453,7 @@ plot_ann_den_full <-
 #   mutate(n_labels = paste0(gear, " (n= ", n, ")" ))
 
 plot_ann_den_separate <-
-  tip_spp_top_gears %>% 
+    tip_spp_nc %>% 
   group_by(year) %>%
   dplyr::mutate(year_labs = paste0(year, "\n n = ", n())) %>%
   ggplot(aes(length1_cm, color = gear))+

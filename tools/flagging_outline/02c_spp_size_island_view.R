@@ -8,14 +8,20 @@
 
 # Specify settings #### 
 # rds from end of 02aa script
-  date <- "20241104" 
+  date <- "20241108" 
 # find on itis.gov
   spp_itis <- c("097648", "097646") 
   spp <- "csl"
   print_spp <- "Caribbean Spiny Lobster"
+  
 # chose island platform to focus on   
-  isl <- "stx" 
-  print_isl <- "St. Croix"
+  # isl <- "stt" 
+  # print_isl <- "St. Thomas/St. John"
+  # isl <- "stx" 
+  # print_isl <- "St. Croix"
+  isl <- "pr"
+  print_isl <- "Puerto Rico"
+  
   sedar <- "sedar91"
   
 # create folder structure for sedar overall data
@@ -117,7 +123,7 @@
     geom_point() +
     labs(
       x = "Year", y = "Weight (lbs)",
-      title = "Area-time distribution of Weights sampled",
+      title = paste(print_isl, "Area-time distribution of Weights sampled"),
       color = "Sample Condition (# obs)",
       subtitle = paste("N = ", nrow(tip_spp_count))
     )
@@ -141,7 +147,7 @@
     geom_point() +
     labs(
       x = "Year", y = "Length (cm)",
-      title = "Area-time distribution of Lengths sampled",
+      title = paste(print_isl,"Area-time distribution of Lengths sampled"),
       color = "Length Type (# obs)",
       subtitle = paste("N = ", nrow(tip_spp_count))
     )

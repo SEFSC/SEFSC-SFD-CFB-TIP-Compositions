@@ -6,12 +6,12 @@
 
 # Specify settings ####
 # rds from end of 02aa script
-  date <- "20241104" 
+  date <- "20241107" 
 # rds from end of 02d script
   # tip_spp_rds_k <- "pr_yts_spp_size_flag_20240618.rds" 
   spp <- "csl"
 # from here on chose one island to work with moving forward
-  isl <- "pr"
+  isl <- "stt"
   data_keep <- "TIP"
   len_mode <- "COMMERCIAL"
   len_type <- "CARAPACE LENGTH"
@@ -39,27 +39,27 @@
       )
     )
 
-## flag too small sample sizes
-  tip_spp_flag2 <- tip_spp |>
-    filter(
-      island == isl,
-      # sampling_program == data_keep,
-      !is.na(length1_mm),
-    ) |>
-    group_by(gear) |>
-    dplyr::mutate(n_ID = n_distinct(sampling_unit_id)) |>
-    ungroup() |>
-    group_by(year) |>
-    dplyr::mutate(n_yr = n()) |>
-    ungroup() |> 
-  dplyr::mutate(
-    remove_flag = case_when(
-      n_ID < 3 ~ "drop",
-      n_yr < 30 ~ "drop",
-      .default = "keep"
-    )
-  ) |> 
-    select(-n_ID, -n_yr)
+# ## flag too small sample sizes
+#   tip_spp_flag2 <- tip_spp |>
+#     filter(
+#       island == isl,
+#       # sampling_program == data_keep,
+#       !is.na(length1_mm),
+#     ) |>
+#     group_by(gear) |>
+#     dplyr::mutate(n_ID = n_distinct(sampling_unit_id)) |>
+#     ungroup() |>
+#     group_by(year) |>
+#     dplyr::mutate(n_yr = n()) |>
+#     ungroup() |> 
+#   dplyr::mutate(
+#     remove_flag = case_when(
+#       n_ID < 3 ~ "drop",
+#       n_yr < 30 ~ "drop",
+#       .default = "keep"
+#     )
+#   ) |> 
+#     select(-n_ID, -n_yr)
 
 ## flag incorrect sector, len_type, year
   tip_spp_flag3 <- tip_spp |>
@@ -68,13 +68,13 @@
       # sampling_program == data_keep,
       !is.na(length1_mm),
     ) |>
-    group_by(gear) |>
-    dplyr::mutate(n_ID = n_distinct(sampling_unit_id)) |>
-    dplyr::filter(n_ID >= 3) |>
-    ungroup() |>
-    group_by(year) |>
-    filter(n() >= 30) |>
-    ungroup() |>
+    # group_by(gear) |>
+    # dplyr::mutate(n_ID = n_distinct(sampling_unit_id)) |>
+    # dplyr::filter(n_ID >= 3) |>
+    # ungroup() |>
+    # group_by(year) |>
+    # filter(n() >= 30) |>
+    # ungroup() |>
     dplyr::mutate(
       remove_flag = case_when(
       fishery != len_mode ~ "drop",
@@ -85,22 +85,23 @@
       length1_cm < min_size ~ "drop",
       length1_cm > max_size ~ "drop",
       .default = "keep"
-    )) |> 
-    select(-n_ID)
+    )) 
+  # |> 
+  #   select(-n_ID)
 
 # filter to only removed data from 3 levels of filtering 
   tip_settings_removed1 <- tip_spp_flag1 |>
     filter(remove_flag == "drop")
   
-  tip_settings_removed2 <- tip_spp_flag2 |>
-    filter(remove_flag == "drop")
+  # tip_settings_removed2 <- tip_spp_flag2 |>
+  #   filter(remove_flag == "drop")
   
   tip_settings_removed3 <- tip_spp_flag3 |>
     filter(remove_flag == "drop")
 
 # combine flagged records into one data set ####
   tip_dropped <- tip_settings_removed1 |> 
-    bind_rows(tip_settings_removed2) |> 
+    # bind_rows(tip_settings_removed2) |> 
     bind_rows(tip_settings_removed3)
     
 
