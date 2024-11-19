@@ -5,6 +5,7 @@
     load_dot_env(file = here("data", "tip.env"))
     dbname <- Sys.getenv("db")
     tip_view <- Sys.getenv("tip_view_name")
+    tip_land <- Sys.getenv("tip_landings")
     
     con <- dbConnect(dbDriver("Oracle"), 
                      username = keyring::key_list(dbname)[1,2], 

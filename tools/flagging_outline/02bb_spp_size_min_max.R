@@ -8,7 +8,7 @@
 
 # Specify settings #### 
 # rds from end of 02aa script
-  date <- "20241104" 
+  date <- "20241118" 
 # find on itis.gov
   spp_itis <- c("097648", "097646") 
   spp <- "csl"
@@ -17,8 +17,9 @@
   print_isl <- "Puerto Rico - USVI"
 # if there is a regulated min/max size, use that. 
 # if not, use min size based on 02a:67-89/02b:figures
-  min_size <- 3.5
-  max_size <- 7.5
+  min_size <- 3.5 
+  max_size <- 6
+# folder name 
   sedar <- "sedar91"
 
 # Read in formatted data ####
@@ -27,6 +28,7 @@
   
 # filter to lengths smaller than minimum ####
   spp_min <- tip_spp |> 
+# min size in inches because regulation is inches    
     filter(length1_inch < min_size)|>
     add_count(island) |>
     dplyr::mutate(islandn = paste0(island, " (", n, ")")) |>
@@ -128,10 +130,10 @@
          width = 14, height = 8)
   
   
-# set minimum size
+# set minimum size in cm
   min_size <- 2.5
   
-# extra data falling below min_size limit to send to Sarah for investigation 
+# extract data falling below min_size limit to send to Sarah for investigation 
   tip_min <- tip_spp |> 
     filter(length1_cm < min_size)
   
@@ -171,6 +173,7 @@
  
 # filter to lengths larger than maximum ####
   spp_max <- tip_spp |> 
+# min size in inches because regulation is inches    
     filter(length1_inch >= max_size)|>
     add_count(island) |>
     dplyr::mutate(islandn = paste0(island, " (", n, ")")) |>
@@ -271,7 +274,7 @@
            here::here("data", sedar, "figure", spp, "all", "max_length_gear_date.png"),
          width = 14, height = 8)
   
-# set minimum size
+# set minimum size in cm
   max_size <- 25
   
 # extra data falling below min_size limit to send to Sarah for investigation 

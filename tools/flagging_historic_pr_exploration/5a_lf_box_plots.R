@@ -28,7 +28,7 @@ spp_print <- "Schoolmaster"
 # gr <- "LINES HAND" 
 
 # Read in raw data ####
-tip <- readRDS(here::here("data", tip_pr))
+tip <- readRDS(here::here("data", "archive", tip_pr))
 unique(tip$species_name)
 ## find mode across all gears, time, region ####
 med_all <- median(tip$length1_cm, na.rm = TRUE)

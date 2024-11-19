@@ -9,7 +9,7 @@
 
 # Specify settings #### 
 # rds from end of 02a script
-  date <- "20241108" 
+  date <- "20241118" 
 # find on itis.gov
   spp_itis <- c("097648", "097646") 
   spp <- "csl"
@@ -17,6 +17,7 @@
   print_spp <- "Caribbean Spiny Lobster"
   print_isl <- "Puerto Rico - USVI"
   save_isl <- "prusvi"
+# folder name 
   sedar <- "sedar91"
   
 # Read in formatted data ####

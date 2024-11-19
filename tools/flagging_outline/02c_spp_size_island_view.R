@@ -8,7 +8,7 @@
 
 # Specify settings #### 
 # rds from end of 02aa script
-  date <- "20241108" 
+  date <- "20241118" 
 # find on itis.gov
   spp_itis <- c("097648", "097646") 
   spp <- "csl"
@@ -21,7 +21,7 @@
   # print_isl <- "St. Croix"
   isl <- "pr"
   print_isl <- "Puerto Rico"
-  
+# folder name  
   sedar <- "sedar91"
   
 # create folder structure for sedar overall data
@@ -117,7 +117,7 @@
   weight_time <- tip_spp_count |>
     ggplot(aes(x = date, 
                y = obs_weight_lbs, 
-               color = sample_condition)) +
+               color = condition_type)) +
     # facet_wrap(~islandn, ncol = 2) + 
     # facet_grid(species_code ~ island) +
     geom_point() +

@@ -10,7 +10,7 @@
 
 # Specify settings ####
 # rds from end of 01a script
-  date <- "20241108" 
+  date <- "20241118" 
 # find on itis.gov - all spp itis codes that could be assiciated with target species
   spp_itis <- c("097648", "097646", "097651") 
   spp <- "csl"
@@ -19,6 +19,7 @@
   print_isl <- "Puerto Rico - USVI"
   save_spp <- "csl"
   save_isl <- "prusvi"
+# folder name 
   sedar <- "sedar91"
   
 # create folder structure for sedar overall data
@@ -156,12 +157,16 @@
     dplyr::group_by(
       island,
       species_code,
-      sample_condition
+      condition_type,
+      # sample_condition
     ) |>
     dplyr::summarize(
       .groups = "drop",
       n = dplyr::n(),
       percent_tip = round(n / nrow(tip_spp) * 100, 1),
+      percent_spp = round(n / nrow(tip_spp_prep) * 100, 1),
+      na_weight_kg = sum(is.na(obs_weight_kg)),
+      percent_na_weight_kg = round(na_weight_kg / n * 100, 1),
       first_year = min(year),
       last_year = max(year),
       n_years = dplyr::n_distinct(year),

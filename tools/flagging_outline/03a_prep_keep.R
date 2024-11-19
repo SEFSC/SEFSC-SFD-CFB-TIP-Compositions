@@ -7,7 +7,7 @@
 
 # Specify settings ####
 # rds from end of 02aa script
-  date <- "20241108" 
+  date <- "20241118" 
   spp <- "csl"
 # from here on chose one island to work with moving forward
   # isl <- "stt"
@@ -22,6 +22,7 @@
 # all complete years unless running truncated time series
   start_yr <- 1981 
   end_yr <- 2023
+# folder name
   sedar <- "sedar91"
   
 #### make sure you have run 02c so you have the correct file structure to save ####

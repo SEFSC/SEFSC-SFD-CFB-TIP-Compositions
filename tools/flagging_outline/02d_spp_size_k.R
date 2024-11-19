@@ -8,7 +8,7 @@
 
 # Specify settings #### 
 # rds from end of 02aa script
-  date <- "20241024" 
+  date <- "20241113" 
 # find on itis.gov
   spp_itis <- c("097648", "097646") 
   spp <- "csl"
@@ -84,8 +84,8 @@
     ) |>
     dplyr::bind_rows(k_tip, k_overall)
 
-# Plot k by fishery and data source
-  plot_k <- spp_k_prep |>
+# Plot wl by fishery and data source
+  plot_wl <- spp_k_prep |>
     mutate(fishery_sampling_program = paste(fishery, sampling_program)) |>
     ggplot(
       aes(
@@ -96,16 +96,54 @@
     ) +
     geom_point()
 # view plot  
-  plot_k
+  plot_wl
+  
+# save   
+  ggsave(filename = 
+           here::here("data", sedar, "figure", spp, "all", "plot_wl.png"),
+         width = 14, height = 8)
 
-# Plot k by fishery, data source, and island
-  plot_k_island <- spp_k_prep |>
+# Plot wl by fishery, data source, and island
+  plot_wl_island_fishery <- spp_k_prep |>
     ggplot(aes(x = length1_inch, y = obs_weight_lbs, color = sampling_program)) +
     geom_point() +
     facet_grid(fishery ~ island)
 # view plot  
-  plot_k_island
+  plot_wl_island_fishery
+  
+# save   
+  ggsave(filename = 
+           here::here("data", sedar, "figure", spp, "all", "plot_wl_island_fishery.png"),
+         width = 14, height = 8)
+  
+  
+# Plot wl by data source, and island
+  plot_wl_island <- spp_k_prep |>
+    ggplot(aes(x = length1_inch, y = obs_weight_lbs, color = sampling_program)) +
+    geom_point() +
+    facet_grid( ~ island)
+# view plot  
+  plot_wl_island
+  
+# save   
+  ggsave(filename = 
+           here::here("data", sedar, "figure", spp, "all", "plot_wl_island.png"),
+         width = 14, height = 8)
 
+# Plot wl by sex and island
+  plot_wl_island_sex <- spp_k_prep |>
+    filter(sex_name %in% c("FEMALE", "MALE")) |> 
+    ggplot(aes(x = length1_inch, y = obs_weight_lbs, color = sex_name)) +
+    geom_point(show.legend = FALSE) +
+    facet_grid(sex_name ~ island) 
+# view plot  
+  plot_wl_island_sex
+  
+# save   
+  ggsave(filename = 
+           here::here("data", sedar, "figure", spp, "all", "plot_wl_island_sex.png"),
+         width = 14, height = 8)
+  
 # Flagging process ####
 
 # SPECIFY SETTINGS #
@@ -171,3 +209,39 @@
       )
     )
   )
+  
+  
+# Save only complete wl pairs spp_k_prep ####
+  saveRDS(
+    spp_k_prep,
+    file = here::here(
+      "data",
+      sedar,
+      "rds",
+      spp, 
+      "all",
+      paste0(
+        save_isl, "_",
+        save_spp, "_spp_size_wl_complete_",
+        format(Sys.time(), "%Y%m%d"), ".rds"
+      )
+    )
+  )
+  
+# write csv
+  write.csv(spp_k_prep,
+            file = here::here(
+              "data",
+              sedar,
+              "rds",
+              spp, 
+              "all",
+              paste0(
+                spp, "_spp_size_wl_complete_",
+                format(Sys.time(), "%Y%m%d"),
+                ".csv"
+              )
+            ),
+            row.names = FALSE
+  )
+  

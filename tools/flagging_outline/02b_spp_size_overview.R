@@ -8,13 +8,14 @@
 
 # Specify settings #### 
 # date from end of 02aa script
-  date <- "20241104"
+  date <- "20241118"
 # find on itis.gov
   spp_itis <- c("097648", "097646") 
   spp <- "csl"
   isl <- c("pr", "stt", "stx")
   print_spp <- "Caribbean Spiny Lobster"
   print_isl <- "Puerto Rico - USVI"
+# folder name 
   sedar <- "sedar91"
 
 # Read in formatted data ####
@@ -63,7 +64,7 @@
     dplyr::mutate(fishery_sampling_program = paste(fishery, sampling_program)) |>
     dplyr::filter(record_type == "complete") |>
     ggplot2::ggplot(aes(
-      x = length1_inch,
+      x = length1_cm,
       y = obs_weight_lbs,
       color = fishery_sampling_program
     )) +

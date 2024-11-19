@@ -9,7 +9,7 @@
 
 # Specify settings ####
 # date from end of 03a script
-  date <- "20241108" 
+  date <- "20241118" 
   spp <- "csl"
   print_spp <- "Caribbean Spiny Lobster"
 

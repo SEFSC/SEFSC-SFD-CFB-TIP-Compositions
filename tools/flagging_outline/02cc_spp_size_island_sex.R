@@ -8,14 +8,19 @@
 
 # Specify settings #### 
 # rds from end of 02c script
-  date <- "20241105" 
+  date <- "20241118" 
 # find on itis.gov
   spp_itis <- c("097648", "097646") 
   spp <- "csl"
   print_spp <- "Caribbean Spiny Lobster"
 # chose island platform to focus on   
-  isl <- "stx" 
-  print_isl <- "St. Croix"
+  # isl <- "stt" 
+  # print_isl <- "St. Thomas/St. John"
+  # isl <- "stx" 
+  # print_isl <- "St. Croix"
+  isl <- "pr"
+  print_isl <- "Puerto Rico"
+# folder name  
   sedar <- "sedar91"
 
 # Read in formatted data ####

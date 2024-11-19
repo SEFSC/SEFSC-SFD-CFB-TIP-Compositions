@@ -23,17 +23,17 @@ execute:
 librarian::shelf(here)
 
 # specify settings 
-figures_date <- "20241108"
-glmm_date <- "20241109"
+figures_date <- "20241119"
+glmm_date <- "20241119"
 spp <- "csl"
 print_spp <- "Caribbean spiny lobster"
 
-isl <- "stt"
-print_isl <- "St. Thomas/St. John"
+# isl <- "stt"
+# print_isl <- "St. Thomas/St. John"
 # isl <- "stx"
 # print_isl <- "St. Croix"
-# isl <- "pr"
-# print_isl <- "Puerto Rico"
+isl <- "pr"
+print_isl <- "Puerto Rico"
 
 scientific <- "Panulirus argus"
 st_yr <- 1981
@@ -110,7 +110,6 @@ abc1
 
 ```
 
-
 \newpage
 
 ```{r all lengths GLMM tbl}
@@ -132,6 +131,7 @@ library(flextable)
 glm_tbl
 
 ```
+
 \*`r disclaimer`
 
 \newpage

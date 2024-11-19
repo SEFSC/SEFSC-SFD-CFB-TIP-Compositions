@@ -8,17 +8,17 @@
 
 # Specify settings ####
 # rds from end of 01a script
-  date <- "20241104" 
+    date <- "20241118" 
 # find on itis.gov - all spp itis codes that could be assiciated with target species
-  spp_itis <- c("097648", "097646", "097651") 
-  spp <- "csl"
-  print_spp <- "Caribbean Spiny Lobster"
-  print_isl <- "Puerto Rico - USVI"
-  sedar <- "sedar91"
-  
+    spp_itis <- c("097648", "097646", "097651") 
+    spp <- "csl"
+    print_spp <- "Caribbean Spiny Lobster"
+    print_isl <- "Puerto Rico - USVI"
+    sedar <- "sedar91"
+    
 # Read in formatted data ####
-  tip_spp_rds <- paste0("format_tip_", date, ".rds" )
-  tip_spp <- readRDS(here::here("data", sedar, "rds", tip_spp_rds))
+    tip_spp_rds <- paste0("format_tip_", date, ".rds" )
+    tip_spp <- readRDS(here::here("data", sedar, "rds", tip_spp_rds))
 
 # Tabulate TIP interviews and records by island and year ####
 # count all records and interviews

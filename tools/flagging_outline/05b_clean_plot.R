@@ -10,21 +10,21 @@
 
 # Specify settings ####
 # date from end of 05a script
-  date <- "20241109" 
+  date <- "20241119" 
 # date from non-confidential gears (rds from 04a)
-  gear_date <- "20241109" 
+  gear_date <- "20241119" 
 # date of 02c
-  unfiltered_date <- "20241108"
+  unfiltered_date <- "20241118"
 # gears representing >2% after break year (rds from 04a)
   # clean_gear_bkyr <- "stx_csl_clean_gear_list_break_year_20241003.rds" 
   spp <- "csl"
   print_spp <- "Caribbean Spiny Lobster"
-  isl <- "pr"
-  # isl <- "stx"
-  # isl <- "stt"
   
+  isl <- "pr"
   print_isl <- "Puerto Rico"
+  # isl <- "stx"
   # print_isl <- "St. Croix"
+  # isl <- "stt"
   # print_isl <- "St. Thomas/St. John"
   
   break_year <- 2012
@@ -147,6 +147,113 @@
          width = 14, height = 8)
 # save figure under alphanumeric identifier    
   abc2 = gear_by_id
+  
+# Plot gears by number of fish measured used over time ####
+  mean_data <- tip_spp_nc |>
+    group_by(year) |>
+    dplyr::summarize(n = n(), 
+                     mean_mm = mean(length1_mm),
+                     mean_cm = mean(length1_cm),
+                     mean_in = mean(length1_inch),
+                     .groups = "drop") |>
+    mutate(year = as.integer(year))
+  
+  library(ggpmisc)
+  
+  mean_by_yr <- mean_data |>
+    # filter(YEAR > 2011) |> 
+    # group_by(gear) |>
+    # dplyr::mutate(total_n = sum(n_ID)) |> 
+    # ungroup() |>   
+    # dplyr::mutate(gear = fct_reorder(gear, total_n)) %>%
+    ggplot(aes(x = year, y = mean_in, 
+               # color = gear, size = n_ID
+               )) +
+    geom_point()  +
+    stat_summary(fun.data= mean_cl_normal) +
+    geom_smooth(method = "lm", se=TRUE) +
+    stat_poly_eq(mapping = use_label("R2")) +
+    labs(x = "Year", y = "Length (in)", colour = "", shape = "", 
+         title = paste(print_isl, "Mean Length Over Time"),
+         caption = disclaimer) +
+    theme_bw() + 
+    theme(legend.position="null", text = element_text(size = 15), 
+          title = element_text(size = 15))
+
+# view  
+  mean_by_yr
+# save  
+  ggsave(filename = 
+           here::here("data", sedar, "figure", spp, isl, "mean_by_yr.png"),
+         width = 14, height = 8)
+# save figure under alphanumeric identifier    
+  abc21 = mean_by_yr
+  
+# histogram plot of means across time   
+  plot_mean_hist <- tip_spp_nc |>
+    group_by(year) |> 
+    ggplot(aes(x = year, y =length1_inch, group = year)) +
+    geom_boxplot(notch = FALSE,
+                 outlier.shape = NA
+                 ) +
+    # ggplot2::facet_wrap( ~ region_id) +
+    # coord_cartesian(ylim = NULL ) +
+    coord_cartesian(ylim = c(2,6.75) ) +
+    labs(
+      # color = "Gear Group",
+      x = "Start Year",
+      y = "Length (in)", 
+      title = paste(print_spp, print_isl, "Length Samples")
+    ) +
+    theme(
+      # legend.title = element_text(size = 14),
+      legend.text = element_text(size = 8),
+      legend.position = "bottom",
+      legend.title = element_blank()
+    ) 
+  # +
+    # geom_hline(yintercept = med_all,  
+               # color = "darkgrey", linewidth=1)
+  
+# view
+  plot_mean_hist
+  
+# save  
+  ggsave(filename = 
+           here::here("data", sedar, "figure", spp, isl, "plot_mean_hist.png"),
+         width = 14, height = 8)
+# save figure under alphanumeric identifier    
+  abc23 = plot_mean_hist
+  
+# graph number of total lengths measured per year    
+  count_by_yr <- mean_data |>
+    # filter(YEAR > 2011) |> 
+    # group_by(gear) |>
+    # dplyr::mutate(total_n = sum(n_ID)) |> 
+    # ungroup() |>   
+    # dplyr::mutate(gear = fct_reorder(gear, total_n)) %>%
+    ggplot(aes(x = year, y = n, 
+               # color = gear, size = n_ID
+    )) +
+    geom_point()  +
+    stat_summary(fun.data= mean_cl_normal) +
+    geom_smooth(method = "lm", se=TRUE) +
+    stat_poly_eq(mapping = use_label("R2")) +
+    labs(x = "Year", y = "Count of Records", colour = "", shape = "", 
+         title = paste(print_isl, "Count of Lengths Over Time"),
+         caption = disclaimer) +
+    theme_bw() + 
+    theme(legend.position="null", text = element_text(size = 15), 
+          title = element_text(size = 15))
+  
+# view  
+  count_by_yr
+# save  
+  ggsave(filename = 
+           here::here("data", sedar, "figure", spp, isl, "count_by_yr.png"),
+         width = 14, height = 8)
+  # save figure under alphanumeric identifier    
+  abc22 = count_by_yr 
 
 # Gear Density Plots ####
 
@@ -339,6 +446,8 @@
   
 # save figure under alphanumeric identifier    
   abc6 = agr_den_top_gears
+  
+  
 
 ##### if using time break continue, IF NOT - SKIP to next figure #####  
 ### top gears after time break #### 

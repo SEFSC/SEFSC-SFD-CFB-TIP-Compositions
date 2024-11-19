@@ -9,7 +9,7 @@
   # tip_spp_rds <- "prusvi_csl_spp_size_flag_20240711.rds" # rds from end of 02d script
 # if k is not being used to filter, specify this script  
 # date from end of 03a script
-  date <- "20241108" 
+  date <- "20241118" 
 # 2% gear list from correct time series 
 # date from end of 04a script
   # gear_date <- "20241105" 
