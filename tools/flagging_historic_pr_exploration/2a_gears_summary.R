@@ -1,13 +1,13 @@
 # 2a_gears
 
-# Load libraries ####
-librarian::shelf(here, tidyverse, measurements, flextable, ggplot2, reshape2)
-
-# Specify settings ####
-tip_pr <- "pr_time_grouped_tip_20240822.rds" # add formatted data
-
-# Read in raw data ####
-tip <- readRDS(here::here("data", tip_pr))
+# # Load libraries ####
+# librarian::shelf(here, tidyverse, measurements, flextable, ggplot2, reshape2)
+# 
+# # Specify settings ####
+# tip_pr <- "pr_time_grouped_tip_20240822.rds" # add formatted data
+# 
+# # Read in raw data ####
+# tip <- readRDS(here::here("data", tip_pr))
 
 # read in gear group table ####
 gear_group <- 
@@ -15,11 +15,11 @@ gear_group <-
   janitor::clean_names()
 
 ## attach gear groups to records ####
-tip_gear_group <- tip %>%
+tip_gear_group <- tip_seasons %>%
   mutate(
     gear_group =
       gear_group$major_gear_group[match(
-        tip$gear,
+        tip_seasons$gear,
         gear_group$gear_name
       )]
   )

@@ -1,3 +1,11 @@
+
+librarian::shelf(fs)
+dir_tree(
+  path = here(),
+  type = "directory"
+)
+
+
 # Load libraries ####
     librarian::shelf(here, tidyverse, measurements)
 

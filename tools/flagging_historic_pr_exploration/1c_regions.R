@@ -1,13 +1,13 @@
 # 1c_regions_seasons
-
-# Load libraries ####
-  librarian::shelf(here, tidyverse, measurements, flextable, ggplot2, reshape2)
-
-# Specify settings ####
-  tip_pr <- "pr_format_tip_20241021.rds" # add formatted data
-
-# Read in raw data ####
-  tip <- readRDS(here::here("data", "historic", "rds", tip_pr))
+# 
+# # Load libraries ####
+#   librarian::shelf(here, tidyverse, measurements, flextable, ggplot2, reshape2)
+# 
+# # Specify settings ####
+#   tip_pr <- "pr_format_tip_20241021.rds" # add formatted data
+# 
+# # Read in raw data ####
+#   tip <- readRDS(here::here("data", "historic", "rds", tip_pr))
 
 
 # Region designation ####

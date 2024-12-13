@@ -1,17 +1,17 @@
 # 1b_overview
 
-# Load libraries ####
-  librarian::shelf(here, tidyverse, measurements, flextable, ggplot2, reshape2)
-
-# Specify settings ####
-  tip_pr <- "pr_format_tip_20241021.rds" # add formatted data
-
-# Read in raw data ####
-  tip <- readRDS(here::here("data", "historic", "rds", tip_pr))
+# # Load libraries ####
+#   librarian::shelf(here, tidyverse, measurements, flextable, ggplot2, reshape2)
+# 
+# # Specify settings ####
+#   tip_pr <- "pr_format_tip_20241021.rds" # add formatted data
+# 
+# # Read in raw data ####
+#   tip <- readRDS(here::here("data", "historic", "rds", tip_pr))
 
 # Set up data ####
 ## Convert units and calculate k ####
-  size_calc <- tip |>
+  size_calc <- tip_spp_relevant |>
     dplyr::mutate(
       length1_cm = measurements::conv_unit(length1_mm, "mm", "cm"),
       length1_inch = measurements::conv_unit(length1_mm, "mm", "inch"),
