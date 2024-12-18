@@ -16,7 +16,7 @@ print_spp <- "Queen triggerfish"
 # Red hind reh 
 
 # Read in raw data ####
-tip <- readRDS(here::here("data", tip_pr))
+tip <- readRDS(here::here("data", "archive", tip_pr))
 
 # Calculate modes ####
 ## create mode function ####

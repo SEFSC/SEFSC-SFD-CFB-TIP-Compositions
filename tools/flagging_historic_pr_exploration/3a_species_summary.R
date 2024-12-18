@@ -2,12 +2,12 @@
 
 # # Load libraries ####
 # librarian::shelf(here, tidyverse, measurements, flextable, ggplot2, reshape2)
-# 
-# # Specify settings ####
-# tip_pr <- "pr_gear_grouped_tip_20240822.rds" # add formatted data
-# 
-# # Read in raw data ####
-# tip <- readRDS(here::here("data", tip_pr))
+
+# Specify settings ####
+tip_pr <- "pr_gear_grouped_tip_20241213.rds" # add formatted data
+
+# Read in raw data ####
+tip <- readRDS(here::here("data", tip_pr))
 
 # read in species table ####
 species_conver <- 
@@ -17,15 +17,26 @@ species_conver <-
 summary(species_conver)
 
 ## attach gear groups to records ####
-tip_species <- tip_gear_clean  |> 
+tip_species <- tip  |> 
   # mutate(species_code = as.numeric(species_code)) |> 
   mutate(
     species_name =
       species_conver$name[match(
-        tip_gear_clean$species_code,
+        tip$species_code,
         species_conver$standard_species_id
       )]
   )
+
+## attach gear groups to records ####
+# tip_species <- tip_gear_clean  |> 
+#   # mutate(species_code = as.numeric(species_code)) |> 
+#   mutate(
+#     species_name =
+#       species_conver$name[match(
+#         tip_gear_clean$species_code,
+#         species_conver$standard_species_id
+#       )]
+#   )
 summary(tip_species$species_code)
 # check for na's
 tip_species_na <- tip_species |> 
@@ -156,3 +167,4 @@ saveRDS(
     )
   )
 )
+

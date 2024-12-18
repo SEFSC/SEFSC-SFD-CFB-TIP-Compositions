@@ -1,6 +1,13 @@
 # 3b_target_species
 # caribbean target species 
 
+# # Specify settings ####
+tip_pr <- "pr_species_name_tip_20241216.rds" # add formatted data
+
+# Read in raw data ####
+tip <- readRDS(here::here("data", tip_pr))
+
+
 # read in target species table ####
 carb_target_species <- 
   readr::read_csv("data/CSVs/reef_fish_spp_itis_codes.csv") |> 
@@ -9,8 +16,12 @@ carb_target_species <-
 summary(species_conver)
 
 # filter to target species 
-tip_target_species <- tip_species_clean |> 
+tip_target_species <- tip |> 
   filter(species_code %in% carb_target_species$itis_code)
+
+# # filter to target species 
+# tip_target_species <- tip_species_clean |> 
+#   filter(species_code %in% carb_target_species$itis_code)
 
 # Tabulate TIP interviews and records by year grouping and species ####
 ## count all records and interviews for each species####
@@ -123,7 +134,7 @@ flextable(target_species_tbl) |>
 
 # Save formatted tip_spp ####
 saveRDS(
-  target_species_tbl,
+  tip_target_species,
   file = here::here(
     "data",
     paste0( "pr_target_spp_",

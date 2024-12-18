@@ -117,7 +117,7 @@ saveRDS(
   )
 )
 
-# save dataframe of discards
+# save dataframe of discards removed
 saveRDS(
   remove_discard,
   file = here::here(

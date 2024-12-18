@@ -11,8 +11,8 @@
   spp <- "csl"
 # from here on chose one island to work with moving forward
   # isl <- "stt"
-  # isl <- "stx"
-  isl <- "pr"
+  isl <- "stx"
+  # isl <- "pr"
   data_keep <- "TIP"
   len_mode <- "COMMERCIAL"
   len_type <- "CARAPACE LENGTH"
@@ -42,13 +42,6 @@
       length_type1 == len_type,
       year >= start_yr & year <= end_yr,
     ) |>
-    # group_by(gear) |>
-    # dplyr::mutate(n_ID = n_distinct(sampling_unit_id)) |>
-    # dplyr::filter(n_ID >= 3) |>
-    # ungroup() |>
-    # group_by(year) |>
-    # filter(n() >= 30) |>
-    # ungroup() |>
     dplyr::filter(
       length1_cm > min_size,
       length1_cm <= max_size
@@ -153,20 +146,21 @@
     )
   )
     
-    #### tests ####
-#     
-# # create variable to indicate if data is confidential on database or spp level
-#     tip_db_spp_conf <- tip_spp_conf |> 
-#       mutate(isl_gear_spp_c = case_when(isl_yr_gr_spp_c == "TRUE" & 
-#                                               isl_gear_c == "TRUE"  ~ "TRUE",
-#                                             TRUE ~ "FALSE"),
-#              isl_yr_gear_spp_c = case_when(isl_yr_gr_spp_c == "TRUE" &
-#                                                 isl_yr_gear_c == "TRUE" ~ "TRUE", 
-#                                               TRUE ~ "FALSE"))
-#     
-#     table(tip_db_spp_conf$gear, tip_db_spp_conf$isl_yr_gear_spp_c)
-      
-# 
-# # filter out conf data
-#     tip_filtered <- tip_conf3 |>
-#       filter(is_confidential_id == "N" & is_confidential_n == "N" & is_confidential_yr == "N")
+    
+# write csv
+    write.csv(tip_spp_conf,
+              file = here::here(
+                "data",
+                sedar,
+                "rds",
+                spp,
+                isl,
+                paste0(
+                  isl, "_",
+                  spp, "_prep_keep_tip_",
+                  format(Sys.time(), "%Y%m%d"), "_c.csv"
+                )
+              ),
+              row.names = FALSE
+    )
+    
