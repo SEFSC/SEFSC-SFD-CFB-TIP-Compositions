@@ -76,7 +76,7 @@
         color = "Gear Type",
         x = "Start Year",
         y = "Percent",
-        title = paste("Percent Interview Count of ", print_spp, " by Gear Grouping")
+        title = paste("Percent Interview Count of", print_spp, "by Gear Grouping")
       ) +
       theme(
         # legend.title = element_text(size = 12),
@@ -88,6 +88,12 @@
 # view
     plot_target_spp
     
+# save  
+    ggsave(filename = here::here("data",
+                                 "historic", 
+                                 "figure", 
+                                 paste0(save_spp, "_all.png")) ,
+           width = 14, height = 8)
     
 # # Calculate modes ####
 # ## create mode function ####
