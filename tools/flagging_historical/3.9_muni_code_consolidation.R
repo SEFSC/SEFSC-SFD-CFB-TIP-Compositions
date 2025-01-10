@@ -172,3 +172,94 @@ mer_mrip_merge_ID <- rowid_to_column(combo_merge, "SITE_ID") |>
 
 
 write.csv(combo_merge_ID, file = "tools/output/combo_merge_muni.csv", row.names = FALSE)
+
+
+
+#### redo combo of location tables #### 
+
+
+# libraries
+librarian::shelf(here, tidyverse, ROracle, keyring, 
+                 dotenv, lubridate, readr, stringr)
+
+# load csvs
+# edits before upload: remove accents on letters, 
+# convert degree to decimal coordinates - in process
+pr_area_comparisons_mrip <- 
+  read_csv("data/CSVs/pr_area_comparisons_mrip.csv")
+pr_area_comparisons_tip <- 
+  read_csv("data/CSVs/pr_area_comparisons_tip.csv")
+pr_area_comparisons_historical <- 
+  read_csv("data/CSVs/pr_area_comparisons_historical.csv")
+pr_area_comparisons_mer <- 
+  read_csv("data/CSVs/pr_area_comparisons_mer.csv")
+pr_mrip_mer_area_comparison_spatialjoin <- 
+  read_csv("data/CSVs/mrip_mer_overlap.csv")
+
+# MRIP ####
+# condense and clean table
+mrip_only <- pr_area_comparisons_mrip |> 
+  janitor::clean_names() |> 
+  dplyr::select(mrip_site_id, mrip_site_name, mrip_street_address, 
+                mrip_city, mrip_county_code, 
+                mrip_county, mrip_zip, mrip_latitude, mrip_longitude) |> 
+  dplyr::rename(mer_lat = mer_lat_d,
+                mer_long = mer_long_d)
+
+# make needed columns lowercase
+pr_area_comparisons_mrip$MRIP_Site_Name <- 
+  tolower(pr_area_comparisons_mrip$MRIP_Site_Name)
+pr_area_comparisons_mrip$MRIP_City <- 
+  tolower(pr_area_comparisons_mrip$MRIP_City)
+pr_area_comparisons_mrip$MRIP_County <- 
+  tolower(pr_area_comparisons_mrip$MRIP_County)
+
+
+# condense and clean table
+mrip_mer_combo <- pr_mrip_mer_area_comparison_spatialjoin |> 
+  janitor::clean_names() |> 
+  dplyr::select(mer_name, mer_municipio, mer_lip_number, mer_code, mer_lat_d, mer_long_d,
+                near_dist, mrip_site_id, mrip_site_name, mrip_city, mrip_county_code, 
+                mrip_county, mrip_zip, mrip_latitude, mrip_longitude) |> 
+  dplyr::rename(mer_lat = mer_lat_d,
+                mer_long = mer_long_d)
+
+
+# make everything lower case
+# mrip
+
+# tip
+pr_area_comparisons_tip$TIP_PLACE_NAME <- 
+  tolower(pr_area_comparisons_tip$TIP_PLACE_NAME)
+pr_area_comparisons_tip$TIP_CNTY_NAME <- 
+  tolower(pr_area_comparisons_tip$TIP_CNTY_NAME)
+pr_area_comparisons_tip$TIP_STATE_ID <- 
+  tolower(pr_area_comparisons_tip$TIP_STATE_ID)
+
+# historical
+pr_area_comparisons_historical$H_muni_name <- 
+  tolower(pr_area_comparisons_historical$H_muni_name)
+pr_area_comparisons_historical$H_muni_cd <- 
+  tolower(pr_area_comparisons_historical$H_muni_cd)
+pr_area_comparisons_historical$H_region <- 
+  tolower(pr_area_comparisons_historical$H_region)
+
+# mer
+pr_area_comparisons_mer$MER_Municipio <- 
+  tolower(pr_area_comparisons_mer$MER_Municipio)
+pr_area_comparisons_mer$MER_Name <- 
+  tolower(pr_area_comparisons_mer$MER_Name)
+pr_area_comparisons_mer$MER_PR_Region <- 
+  tolower(pr_area_comparisons_mer$MER_PR_Region)
+pr_area_comparisons_mer$MER_code <- 
+  tolower(pr_area_comparisons_mer$MER_code)
+
+# combo mer/mrip
+pr_mrip_mer_area_comparison_spatialjoin$MER_Name <- 
+  tolower(pr_mrip_mer_area_comparison_spatialjoin$MER_Name)
+pr_mrip_mer_area_comparison_spatialjoin$MER_Municipio <- 
+  tolower(pr_mrip_mer_area_comparison_spatialjoin$MER_Municipio)
+pr_mrip_mer_area_comparison_spatialjoin$MRIP_Site_Name <- 
+  tolower(pr_mrip_mer_area_comparison_spatialjoin$MRIP_Site_Name)
+pr_mrip_mer_area_comparison_spatialjoin$MRIP_County <- 
+  tolower(pr_mrip_mer_area_comparison_spatialjoin$MRIP_County)
