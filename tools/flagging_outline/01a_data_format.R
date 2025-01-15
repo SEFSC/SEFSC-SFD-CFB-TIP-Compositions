@@ -273,60 +273,9 @@ dir_tree(
         mutate(vess_isl_gear_c = case_when(n_ves <= 2 ~ "TRUE",
                                       TRUE ~ "FALSE"))
     
-# summary stats   
-      # tip_sum_yr_vess <- tip_count_c |> 
-      #   select(island, gear, vess_isl_gear_c) |> 
-      #   distinct() |> 
-      #   filter(vess_isl_gear_c == "TRUE")
-      # 
-      # table(tip_sum_yr_vess$gear,tip_sum_yr_vess$island )
-      # table(tip_sum_yr_vess$island )
-      # table(tip_count_c$vess_isl_gear_c)
-      # table(tip_count_c$vess_isl_gear_c)/nrow(tip_count_c)
-    
-      
-# conf by gear, year, and vessel id 
-      tip_count_d <- tip_count_c |> 
-        group_by(island, year, gear) |> 
-        mutate(n_ves_yr = n_distinct(vessel_id) ) |> 
-        ungroup() |> 
-        mutate(vess_isl_yr_gear_c = case_when(n_ves_yr <= 2 ~ "TRUE",
-                                           TRUE ~ "FALSE"))
-    
-# summary stats   
-      # tip_sum_yr_vess_yr <- tip_count_d |> 
-      #   select(island, year, gear, vess_isl_yr_gear_c) |> 
-      #   distinct() |> 
-      #   filter(vess_isl_yr_gear_c == "TRUE")
-      # 
-      # table(tip_sum_yr_vess_yr$gear,tip_sum_yr_vess_yr$island )
-      # table(tip_sum_yr_vess_yr$island )
-      # table(tip_count_d$vess_isl_yr_gear_c)
-      # table(tip_count_d$vess_isl_yr_gear_c)/nrow(tip_count_d)
-      
-      
-# conf by gear and license
-      tip_count_e <- tip_count_d |> 
-        group_by(island, date, gear) |> 
-        mutate(n_lic = n_distinct(license) ) |> 
-        ungroup() |> 
-        mutate(lic_isl_gear_c = case_when(n_lic <= 2 ~ "TRUE",
-                                          TRUE ~ "FALSE"))
-     
-# summary stats   
-      # tip_sum_yr_lic <- tip_count_e |> 
-      #   select(island, gear, lic_isl_gear_c) |> 
-      #   distinct() |> 
-      #   filter(lic_isl_gear_c == "TRUE")
-      # 
-      # table(tip_sum_yr_lic$gear,tip_sum_yr_lic$island )
-      # table(tip_sum_yr_lic$island )
-      # table(tip_count_e$lic_isl_gear_c)
-      # table(tip_count_e$lic_isl_gear_c)/nrow(tip_count_e)
-    
       
 # Select variables relevant to flagging investigation ####
-      tip_spp_relevant <- tip_count_e |>
+      tip_spp_relevant <- tip_count_c |>
         select(
           sampling_program, # denotes who recorded data
           data_provider, # noaa office handling data 
