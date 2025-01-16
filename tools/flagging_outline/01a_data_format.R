@@ -1,16 +1,11 @@
-
-librarian::shelf(fs)
-dir_tree(
-  path = here(),
-  type = "directory"
-)
-
+# 01a_data_format
+# format the data from oracle into usable variables and set up file structure
 
 # Load libraries ####
     librarian::shelf(here, tidyverse, measurements)
 
 # if pulling new data from oracle ->
-# cr_tip(state_codes = c("PR", "VI"))
+    # cr_tip(state_codes = c("PR", "VI"))
 
 # Specify settings ####
 # specify date of extraction of all CAR region and species
@@ -27,6 +22,7 @@ dir_tree(
     if (!dir.exists(here("data", sedar, "figure"))){ dir.create(here("data", sedar, "figure")) }
     if (!dir.exists(here("data", sedar, "rds"))){ dir.create(here("data", sedar, "rds")) }
     if (!dir.exists(here("data", sedar, "figure", "all"))){ dir.create(here("data", sedar, "figure", "all")) }
+    
 # Read in raw data ####
     tip_rds <- paste0("com_tip_PR_VI_", date, ".RDS" )
     tip <- readRDS(here::here("data", "raw", tip_rds))
@@ -272,6 +268,17 @@ dir_tree(
         ungroup() |> 
         mutate(vess_isl_gear_c = case_when(n_ves <= 2 ~ "TRUE",
                                       TRUE ~ "FALSE"))
+      
+# summary stats   
+      # tip_sum_vess <- tip_count_c |> 
+      #   select(island, gear, vess_isl_gear_c) |> 
+      #   distinct() |> 
+      #   filter(vess_isl_gear_c == "TRUE")
+      # 
+      # table(tip_sum_vess$gear,tip_sum_vess$island )
+      # table(tip_sum_vess$island )
+      # table(tip_count_c$vess_isl_gear_c)
+      # table(tip_count_c$vess_isl_gear_c)/nrow(tip_count_c)
     
       
 # Select variables relevant to flagging investigation ####
