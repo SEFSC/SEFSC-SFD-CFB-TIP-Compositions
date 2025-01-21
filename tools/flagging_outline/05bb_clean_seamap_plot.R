@@ -6,20 +6,20 @@
 # specify settings
 
 # pr
-    isl <- "pr"
-    print_isl <- "Puerto Rico"
-  # date from end of 05a script 
-    tip_date <- "20241119"
+  #   isl <- "pr"
+  #   print_isl <- "Puerto Rico"
+  # # date from end of 05a script 
+  #   tip_date <- "20241119"
 # stt
   #   isl <- "stt"
   #   print_isl <- "St. Thomas/St. John"
   # # date from end of 05a script
   #   tip_date <- "20241108"
 # stx    
-  #   isl <- "stx"
-  #   print_isl <- "St. Croix"
-  # # date from end of 05a script
-  #   tip_date <- "20241108"
+    isl <- "stx"
+    print_isl <- "St. Croix"
+  # date from end of 05a script
+    tip_date <- "20241108"
     
     seamap_date <- "20250103"
     target_len <- "Carapace Length"
@@ -66,7 +66,7 @@
                  linetype="dashed", linewidth=1) +
       labs(x = paste0(target_len, " (cm)"), 
            title = paste0(print_isl, " ", print_spp,
-                          " aggregated length density"))+
+                          " Aggregated Length Density"))+
       guides(color=guide_legend(title="Source-Mean"))+
       scale_color_discrete(
         labels=c(paste("SEAMAP-C", seamap_mean),
@@ -79,7 +79,7 @@
             axis.text.y=element_text(size = 15),
             axis.title.x = element_text( size = 15),
             axis.title.y = element_text( size = 15),
-            title = element_text(size = 15))
+            title = element_text(size = 12))
 # view  
     seamap_compare_agr
 # save  
@@ -96,9 +96,9 @@
 # filter tip to target years
     unique(seamap_len$year)
 # specify seamap-c years
-    # target_years <- "2022-2023" #stx
-    target_years <- "2022" #stt
     # target_years <- "2021-2023" #pr
+    # target_years <- "2022" #stt
+    target_years <- "2022-2023" #stx
     
     tip_spp_yrs <- tip_spp |> 
       # dplyr::filter(year %in% c(2022, 2023)) #stx
@@ -133,7 +133,7 @@
                  linetype="dashed", linewidth=1) +
       labs(x = paste0(target_len, " (cm)"), 
            title = paste(print_isl, print_spp,
-                          "aggregated length density", target_years ))+
+                          "Aggregated Length Density", target_years ))+
       guides(color=guide_legend(title="Source-Mean"))+
       scale_color_discrete(
         labels=c(paste("SEAMAP-C", seamap_mean),
@@ -146,7 +146,7 @@
             axis.text.y=element_text(size = 15),
             axis.title.x = element_text( size = 15),
             axis.title.y = element_text( size = 15),
-            title = element_text(size = 15))
+            title = element_text(size = 12))
 # view  
     seamap_compare_agr_target
   # save  
