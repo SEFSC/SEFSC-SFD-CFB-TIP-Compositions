@@ -5,7 +5,7 @@
     librarian::shelf(here, tidyverse, measurements)
 
 # if pulling new data from oracle ->
-    # cr_tip(state_codes = c("PR", "VI"))
+  # run 1.0_create extraction first
 
 # Specify settings ####
 # specify date of extraction of all CAR region and species

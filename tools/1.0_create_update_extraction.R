@@ -9,12 +9,12 @@
     source(file <- here("tools", "0.3_create_functions.R"))
     source(file <- here("tools", "0.4_create_functions_pt2.R"))
   
-  # SEDAR 57U ####
-    cr_tip_sp(state_codes = c('PR', 'VI'), sp_codes = c(97648, 97646))
-    n_cr_tip(state_codes = c('PR', 'VI'))
-    
-  # SEDAR 84 ####
-    cr_tip_sp(state_codes = c('PR', 'VI'), sp_codes =168907)
+  # # SEDAR 57U ####
+  #   cr_tip_sp(state_codes = c('PR', 'VI'), sp_codes = c(97648, 97646))
+  #   n_cr_tip(state_codes = c('PR', 'VI'))
+  #   
+  # # SEDAR 84 ####
+  #   cr_tip_sp(state_codes = c('PR', 'VI'), sp_codes =168907)
     
   # SEDARs moving forward ###
     cr_tip(state_codes = c("PR", "VI"))
